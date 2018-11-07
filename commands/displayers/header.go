@@ -16,7 +16,7 @@ package displayers
 import (
 	"strings"
 
-	"github.com/digitalocean/doctl"
+	"github.com/Ankr-network/dccn-cli"
 )
 
 func handleColumns(ns string, config doctl.Config) ([]string, error) {

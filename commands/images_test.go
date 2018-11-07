@@ -17,8 +17,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/godo"
 	"github.com/stretchr/testify/assert"
 )
 

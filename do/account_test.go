@@ -16,7 +16,7 @@ package do
 import (
 	"testing"
 
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/digitalocean/doctl/pkg/units"
+	"github.com/Ankr-network/dccn-cli/pkg/units"
 )
 
 // TestMemInfo tests parseMemInfo with a static meminfo string

@@ -24,9 +24,9 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	"github.com/Ankr-network/dccn-cli/do"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,8 +40,8 @@ const (
 // DoitCmd is the base command.
 var DoitCmd = &Command{
 	Command: &cobra.Command{
-		Use:   "doctl",
-		Short: "doctl is a command line interface for the DigitalOcean API.",
+		Use:   "dccnctl",
+		Short: "dccnctl is a command line interface for the Ankr DCCN Hub.",
 	},
 }
 
@@ -173,12 +173,14 @@ func addCommands() {
 	DoitCmd.AddCommand(Account())
 	DoitCmd.AddCommand(Auth())
 	DoitCmd.AddCommand(Completion())
+	//DCCN-CLI compute
 	DoitCmd.AddCommand(computeCmd())
 	DoitCmd.AddCommand(Projects())
 	DoitCmd.AddCommand(Version())
 }
 
 func computeCmd() *Command {
+	//DCCN-CLI compute
 	cmd := &Command{
 		Command: &cobra.Command{
 			Use:   "compute",
@@ -191,6 +193,7 @@ func computeCmd() *Command {
 	cmd.AddCommand(CDN())
 	cmd.AddCommand(Certificate())
 	cmd.AddCommand(DropletAction())
+	//DCCN-CLI task
 	cmd.AddCommand(Droplet())
 	cmd.AddCommand(Domain())
 	cmd.AddCommand(Firewall())
@@ -329,6 +332,7 @@ type CmdConfig struct {
 	LoadBalancers     func() do.LoadBalancersService
 	FloatingIPs       func() do.FloatingIPsService
 	FloatingIPActions func() do.FloatingIPActionsService
+	//DCCN-CLI task
 	Droplets          func() do.DropletsService
 	DropletActions    func() do.DropletActionsService
 	Domains           func() do.DomainsService

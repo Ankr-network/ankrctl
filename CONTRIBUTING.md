@@ -74,7 +74,7 @@ so first install mockery in your `GOPATH` then run the `script/regenmocks.sh` sc
 
 ### Releasing `doctl`
 
-First, make sure the [CHANGELOG](https://github.com/digitalocean/doctl/blob/master/CHANGELOG.md)
+First, make sure the [CHANGELOG](https://github.com/Ankr-network/dccn-cli/blob/master/CHANGELOG.md)
 contains all changes for the version you're going to release.
 
 #### Setup
@@ -98,7 +98,7 @@ in `builds/major.minor.patch/release`.
 Mark the release on GitHub with `scripts/release.sh v<version>` (e.g. `scripts/release.sh v1.5.0`, _note_ the `v`),
 then upload using `scripts/upload.sh <version>`.
 
-Finally, go to [releases](https://github.com/digitalocean/doctl/releases) and update the release
+Finally, go to [releases](https://github.com/Ankr-network/dccn-cli/releases) and update the release
 description to contain all changelog entries for this specific release.
 
 Also don't forget to update:

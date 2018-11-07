@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 )
 
 // SSHKey wraps godo Key.

@@ -25,7 +25,7 @@
   version = "v1.1.0"
 
 [[projects]]
-  name = "github.com/digitalocean/godo"
+  name = "github.com/Ankr-network/godo"
   packages = [".","util"]
   revision = "6472cf252de3eba83b26ca4bb7dc962a519c53e1"
   version = "v1.5.0"

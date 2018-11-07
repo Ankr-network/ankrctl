@@ -17,10 +17,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/pkg/runner"
-	"github.com/digitalocean/doctl/pkg/runner/mocks"
-	"github.com/digitalocean/doctl/pkg/ssh"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/pkg/runner"
+	"github.com/Ankr-network/dccn-cli/pkg/runner/mocks"
+	"github.com/Ankr-network/dccn-cli/pkg/ssh"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )

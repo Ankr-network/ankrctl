@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/digitalocean/doctl/pkg/units"
+	"github.com/Ankr-network/dccn-cli/pkg/units"
 )
 
 // ReadMemInfo retrieves memory statistics of the host system and returns a

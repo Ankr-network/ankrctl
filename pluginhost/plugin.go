@@ -20,7 +20,7 @@ import (
 	"net/rpc/jsonrpc"
 	"os"
 
-	"github.com/digitalocean/doctl"
+	"github.com/Ankr-network/dccn-cli"
 	"github.com/natefinch/pie"
 	"github.com/spf13/viper"
 )

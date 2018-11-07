@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 )
 
 func ExampleWaitForActive() {

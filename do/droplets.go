@@ -16,8 +16,8 @@ package do
 import (
 	"context"
 
-	"github.com/digitalocean/godo"
-	"github.com/digitalocean/godo/util"
+	"github.com/Ankr-network/godo"
+	"github.com/Ankr-network/godo/util"
 )
 
 // DropletIPTable is a table of interface IPS.
@@ -51,6 +51,7 @@ type Kernels []Kernel
 
 // DropletsService is an interface for interacting with DigitalOcean's droplet api.
 type DropletsService interface {
+	//DCCN-CLI task list
 	List() (Droplets, error)
 	ListByTag(string) (Droplets, error)
 	Get(int) (*Droplet, error)
@@ -77,7 +78,7 @@ func NewDropletsService(client *godo.Client) DropletsService {
 		client: client,
 	}
 }
-
+//DCCN-CLI task list
 func (ds *dropletsService) List() (Droplets, error) {
 	f := func(opt *godo.ListOptions) ([]interface{}, *godo.Response, error) {
 		list, resp, err := ds.client.Droplets.List(context.TODO(), opt)
@@ -97,7 +98,7 @@ func (ds *dropletsService) List() (Droplets, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	
 	list := make(Droplets, len(si))
 	for i := range si {
 		a := si[i].(godo.Droplet)

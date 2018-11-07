@@ -19,12 +19,12 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/do"
-	domocks "github.com/digitalocean/doctl/do/mocks"
-	"github.com/digitalocean/doctl/pkg/runner"
-	"github.com/digitalocean/doctl/pkg/ssh"
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/do"
+	domocks "github.com/Ankr-network/dccn-cli/do/mocks"
+	"github.com/Ankr-network/dccn-cli/pkg/runner"
+	"github.com/Ankr-network/dccn-cli/pkg/ssh"
+	"github.com/Ankr-network/godo"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

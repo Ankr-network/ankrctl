@@ -14,7 +14,7 @@ limitations under the License.
 package commands
 
 import (
-	"github.com/digitalocean/doctl/commands/displayers"
+	"github.com/Ankr-network/dccn-cli/commands/displayers"
 	"github.com/spf13/cobra"
 )
 

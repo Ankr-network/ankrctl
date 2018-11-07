@@ -16,7 +16,7 @@ package ssh
 import (
 	"runtime"
 
-	"github.com/digitalocean/doctl/pkg/runner"
+	"github.com/Ankr-network/dccn-cli/pkg/runner"
 )
 
 // Options is the type used to specify options passed to the SSH command

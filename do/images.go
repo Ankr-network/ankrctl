@@ -14,7 +14,7 @@ limitations under the License.
 package do
 
 import (
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 	"context"
 )
 

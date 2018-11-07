@@ -17,9 +17,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	"github.com/Ankr-network/dccn-cli/do"
 	"github.com/spf13/cobra"
 )
 

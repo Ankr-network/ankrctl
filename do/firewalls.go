@@ -17,7 +17,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 )
 
 // Firewall wraps a godo Firewall.

@@ -13,7 +13,7 @@ limitations under the License.
 
 package doctl
 
-import "github.com/digitalocean/doctl/pkg/runner"
+import "github.com/Ankr-network/dccn-cli/pkg/runner"
 
 // MockRunner is an implemenation of Runner for mocking.
 type MockRunner struct {

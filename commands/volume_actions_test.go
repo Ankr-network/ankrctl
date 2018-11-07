@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/digitalocean/doctl"
+	"github.com/Ankr-network/dccn-cli"
 	"github.com/stretchr/testify/assert"
 )
 

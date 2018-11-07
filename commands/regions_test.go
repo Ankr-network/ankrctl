@@ -16,8 +16,8 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/dccn-cli/do"
+	"github.com/Ankr-network/godo"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -16,7 +16,7 @@ package do
 import (
 	"context"
 
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 )
 
 // Certificate wraps a godo Certificate.

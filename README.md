@@ -1,4 +1,4 @@
-# doctl [![Build Status](https://travis-ci.org/digitalocean/doctl.svg?branch=master)](https://travis-ci.org/digitalocean/doctl) [![GoDoc](https://godoc.org/github.com/digitalocean/doctl?status.svg)](https://godoc.org/github.com/digitalocean/doctl) [![Go Report Card](https://goreportcard.com/badge/github.com/digitalocean/doctl)](https://goreportcard.com/report/github.com/digitalocean/doctl)
+# doctl [![Build Status](https://travis-ci.org/digitalocean/doctl.svg?branch=master)](https://travis-ci.org/digitalocean/doctl) [![GoDoc](https://godoc.org/github.com/Ankr-network/dccn-cli?status.svg)](https://godoc.org/github.com/Ankr-network/dccn-cli) [![Go Report Card](https://goreportcard.com/badge/github.com/Ankr-network/dccn-cli)](https://goreportcard.com/report/github.com/Ankr-network/dccn-cli)
 
 ```
 doctl is a command line interface for the DigitalOcean API.
@@ -52,20 +52,20 @@ Support for Windows package managers is on the way.
 
 ### Option 2 — Downloading a Release from GitHub
 
-Visit the [Releases page](https://github.com/digitalocean/doctl/releases) for the [`doctl` GitHub project](https://github.com/digitalocean/doctl), and find the appropriate archive for your operating system and architecture.  You can download the archive from from your browser, or copy its URL and retrieve it to your home directory with `wget` or `curl`.
+Visit the [Releases page](https://github.com/Ankr-network/dccn-cli/releases) for the [`doctl` GitHub project](https://github.com/Ankr-network/dccn-cli), and find the appropriate archive for your operating system and architecture.  You can download the archive from from your browser, or copy its URL and retrieve it to your home directory with `wget` or `curl`.
 
 For example, with `wget`:
 
 ```
 cd ~
-wget https://github.com/digitalocean/doctl/releases/download/v1.11.0/doctl-1.11.0-linux-amd64.tar.gz
+wget https://github.com/Ankr-network/dccn-cli/releases/download/v1.11.0/doctl-1.11.0-linux-amd64.tar.gz
 ```
 
 Or with `curl`:
 
 ```
 cd ~
-curl -OL https://github.com/digitalocean/doctl/releases/download/v1.11.0/doctl-1.11.0-linux-amd64.tar.gz
+curl -OL https://github.com/Ankr-network/dccn-cli/releases/download/v1.11.0/doctl-1.11.0-linux-amd64.tar.gz
 ```
 
 Extract the binary. On GNU/Linux or OS X systems, you can use `tar`.
@@ -76,7 +76,7 @@ tar xf ~/doctl-1.11.0-linux-amd64.tar.gz
 
 Or download and extract with this oneliner:
 ```
-curl -sL https://github.com/digitalocean/doctl/releases/download/v1.11.0/doctl-1.11.0-linux-amd64.tar.gz | tar -xzv
+curl -sL https://github.com/Ankr-network/dccn-cli/releases/download/v1.11.0/doctl-1.11.0-linux-amd64.tar.gz | tar -xzv
 ```
 
 On Windows systems, you should be able to double-click the zip archive to extract the `doctl` executable.
@@ -94,14 +94,14 @@ Windows users can follow [How to: Add Tool Locations to the PATH Environment Var
 If you have a [Go environment](https://www.digitalocean.com/community/tutorials/how-to-install-go-1-6-on-ubuntu-16-04) configured, you can install the development version of `doctl` from the command line.
 
 ```
-go get -u github.com/digitalocean/doctl/cmd/doctl
+go get -u github.com/Ankr-network/dccn-cli/cmd/doctl
 ```
 
 While the development version is a good way to take a peek at `doctl`'s latest features before they get released, be aware that it may have bugs. Officially released versions will generally be more stable.
 
 ### Option 4 — Building with Docker
 
-If you have [Docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04) configured, you can build a Docker image using `doctl`'s [Dockerfile](https://github.com/digitalocean/doctl/blob/master/Dockerfile) and run `doctl` within a container.
+If you have [Docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04) configured, you can build a Docker image using `doctl`'s [Dockerfile](https://github.com/Ankr-network/dccn-cli/blob/master/Dockerfile) and run `doctl` within a container.
 
 ```
 docker build -t doctl .
@@ -247,4 +247,4 @@ doctl compute ssh <user>@<droplet-name>
 * [How To Work with DigitalOcean Load Balancers Using Doctl](https://www.digitalocean.com/community/tutorials/how-to-work-with-digitalocean-load-balancers-using-doctl)
 * [How To Secure Web Server Infrastructure With DigitalOcean Cloud Firewalls Using Doctl](https://www.digitalocean.com/community/tutorials/how-to-secure-web-server-infrastructure-with-digitalocean-cloud-firewalls-using-doctl)
 * [How To Work with DigitalOcean Block Storage Using Doctl](https://www.digitalocean.com/community/tutorials/how-to-work-with-digitalocean-block-storage-using-doctl)
-* [doctl Releases](https://github.com/digitalocean/doctl/releases)
+* [doctl Releases](https://github.com/Ankr-network/dccn-cli/releases)

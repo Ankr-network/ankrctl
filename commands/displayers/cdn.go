@@ -16,7 +16,7 @@ package displayers
 import (
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/Ankr-network/dccn-cli/do"
 )
 
 type CDN struct {

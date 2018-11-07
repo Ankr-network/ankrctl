@@ -22,10 +22,10 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	"github.com/Ankr-network/dccn-cli/do"
+	"github.com/Ankr-network/godo"
 	"github.com/gobwas/glob"
 	"github.com/pborman/uuid"
 	"github.com/spf13/cobra"
@@ -33,14 +33,15 @@ import (
 
 // Droplet creates the droplet command.
 func Droplet() *Command {
+	//DCCN-CLI task
 	cmd := &Command{
 		Command: &cobra.Command{
-			Use:     "droplet",
-			Aliases: []string{"d"},
-			Short:   "droplet commands",
-			Long:    "droplet is used to access droplet commands",
+			Use:     "task",
+			Aliases: []string{"t"},
+			Short:   "task commands",
+			Long:    "task is used to access task commands",
 		},
-		DocCategories: []string{"droplet"},
+		DocCategories: []string{"task"},
 		IsIndex:       true,
 	}
 
@@ -81,8 +82,8 @@ func Droplet() *Command {
 
 	CmdBuilder(cmd, RunDropletKernels, "kernels <droplet-id>", "droplet kernels", Writer,
 		aliasOpt("k"), displayerType(&displayers.Kernel{}), docCategories("droplet"))
-
-	cmdRunDropletList := CmdBuilder(cmd, RunDropletList, "list [GLOB]", "list droplets", Writer,
+	//DCCN-CLI task list
+	cmdRunDropletList := CmdBuilder(cmd, RunDropletList, "list [GLOB]", "list tasks", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Droplet{}), docCategories("droplet"))
 	AddStringFlag(cmdRunDropletList, doctl.ArgRegionSlug, "", "", "Droplet region")
 	AddStringFlag(cmdRunDropletList, doctl.ArgTagName, "", "", "Tag name")

@@ -11,7 +11,7 @@ If you submit a pull request, please keep the following guidelines in mind:
 Assuming your `$GOPATH` is set up according to your desires, run:
 
 ```sh
-go get github.com/digitalocean/godo
+go get github.com/Ankr-network/godo
 ```
 
 ## Running tests

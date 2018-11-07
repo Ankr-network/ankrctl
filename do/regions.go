@@ -16,7 +16,7 @@ package do
 import (
 	"context"
 
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 )
 
 // Region wraps godo Region.

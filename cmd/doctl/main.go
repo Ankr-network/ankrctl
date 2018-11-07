@@ -16,7 +16,7 @@ package main
 import (
 	"log"
 
-	"github.com/digitalocean/doctl/commands"
+	"github.com/Ankr-network/dccn-cli/commands"
 )
 
 func main() {

@@ -21,9 +21,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/doctl/pkg/ssh"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/do"
+	"github.com/Ankr-network/dccn-cli/pkg/ssh"
 )
 
 var (

@@ -8,7 +8,7 @@ mkdir -p $OUT_DIR
 
 go build \
   -o $OUT_DIR/doctl \
-  -ldflags "-X github.com/digitalocean/doctl/Build=`git rev-parse --short HEAD`" \
-  github.com/digitalocean/doctl/cmd/doctl
+  -ldflags "-X github.com/Ankr-network/dccn-cli/Build=`git rev-parse --short HEAD`" \
+  github.com/Ankr-network/dccn-cli/cmd/doctl
 
 chmod +x $OUT_DIR/doctl

@@ -26,9 +26,9 @@ import (
 	"strings"
 
 	"github.com/blang/semver"
-	"github.com/digitalocean/doctl/pkg/runner"
-	"github.com/digitalocean/doctl/pkg/ssh"
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/dccn-cli/pkg/runner"
+	"github.com/Ankr-network/dccn-cli/pkg/ssh"
+	"github.com/Ankr-network/godo"
 	jww "github.com/spf13/jwalterweatherman"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"

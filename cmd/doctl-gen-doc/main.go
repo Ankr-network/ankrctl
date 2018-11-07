@@ -25,7 +25,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/digitalocean/doctl/commands"
+	"github.com/Ankr-network/dccn-cli/commands"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 )

@@ -17,8 +17,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/install"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/install"
 )
 
 var (

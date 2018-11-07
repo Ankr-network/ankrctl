@@ -19,8 +19,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/pluginhost"
+	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	"github.com/Ankr-network/dccn-cli/pluginhost"
 	"github.com/spf13/cobra"
 )
 

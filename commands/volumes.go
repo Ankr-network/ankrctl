@@ -16,10 +16,10 @@ package commands
 import (
 	"fmt"
 
-	"github.com/digitalocean/doctl"
-	"github.com/digitalocean/doctl/commands/displayers"
-	"github.com/digitalocean/doctl/do"
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	"github.com/Ankr-network/dccn-cli/do"
+	"github.com/Ankr-network/godo"
 	"github.com/dustin/go-humanize"
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"

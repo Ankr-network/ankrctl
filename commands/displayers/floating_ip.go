@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/digitalocean/doctl/do"
+	"github.com/Ankr-network/dccn-cli/do"
 )
 
 type FloatingIP struct {

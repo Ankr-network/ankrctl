@@ -1,10 +1,10 @@
-[![Build Status](https://travis-ci.org/digitalocean/godo.svg)](https://travis-ci.org/digitalocean/godo)
+[![Build Status](https://travis-ci.org/Ankr-network/godo.svg)](https://travis-ci.org/Ankr-network/godo)
 
 # Godo
 
 Godo is a Go client library for accessing the DigitalOcean V2 API.
 
-You can view the client API docs here: [http://godoc.org/github.com/digitalocean/godo](http://godoc.org/github.com/digitalocean/godo)
+You can view the client API docs here: [http://godoc.org/github.com/Ankr-network/godo](http://godoc.org/github.com/Ankr-network/godo)
 
 You can view DigitalOcean API docs here: [https://developers.digitalocean.com/documentation/v2/](https://developers.digitalocean.com/documentation/v2/)
 
@@ -12,7 +12,7 @@ You can view DigitalOcean API docs here: [https://developers.digitalocean.com/do
 ## Usage
 
 ```go
-import "github.com/digitalocean/godo"
+import "github.com/Ankr-network/godo"
 ```
 
 Create a new DigitalOcean client, then use the exposed services to
@@ -31,7 +31,7 @@ package main
 
 import (
 	"context"
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 	"golang.org/x/oauth2"
 )
 
@@ -142,7 +142,7 @@ To see the list of past versions, run `git tag`.
 
 For a comprehensive list of examples, check out the [API documentation](https://developers.digitalocean.com/documentation/v2/).
 
-For details on all the functionality in this library, see the [GoDoc](http://godoc.org/github.com/digitalocean/godo) documentation.
+For details on all the functionality in this library, see the [GoDoc](http://godoc.org/github.com/Ankr-network/godo) documentation.
 
 
 ## Contributing

@@ -3,7 +3,7 @@ package do
 import (
 	"context"
 
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 )
 
 // CDN is a wrapper for godo.CDN.

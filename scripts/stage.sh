@@ -17,7 +17,7 @@ if [[ -n "$label" ]]; then
   ver="${ver}-${label}"
 fi
 
-RELEASE_PACKAGE=github.com/digitalocean/doctl/cmd/doctl
+RELEASE_PACKAGE=github.com/Ankr-network/dccn-cli/cmd/doctl
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OUTPUT_DIR="${DIR}/../builds/${ver}"
 STAGE_DIR=$OUTPUT_DIR/stage
@@ -29,7 +29,7 @@ rm -f $STAGE_DIR/doctl $STAGE_DIR/doctl.exe
 
 if [[ -z $SKIPBUILD ]]; then
   echo "building doctl"
-  baseFlag="-X github.com/digitalocean/doctl"
+  baseFlag="-X github.com/Ankr-network/dccn-cli"
   ldflags="${baseFlag}.Build=$(git rev-parse --short HEAD)"
   ldflags="${ldflags} $baseFlag.Major=${major} $baseFlag.Minor=${minor} $baseFlag.Patch=${patch} $baseFlag.Label=release"
   if [[ -n "$label" ]]; then

@@ -19,7 +19,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/digitalocean/godo"
+	"github.com/Ankr-network/godo"
 )
 
 const maxFetchPages = 5

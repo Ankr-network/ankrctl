@@ -24,7 +24,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/digitalocean/doctl/install"
+	"github.com/Ankr-network/dccn-cli/install"
 	"github.com/fatih/color"
 )
 

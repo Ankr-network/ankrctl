@@ -16,7 +16,7 @@ package commands
 import (
 	"testing"
 
-	"github.com/digitalocean/doctl"
+	"github.com/Ankr-network/dccn-cli"
 	"github.com/stretchr/testify/assert"
 )
 
