@@ -90,6 +90,7 @@ const (
 	ArgRecordTag = "record-tag"
 	// ArgRegionSlug is a region slug argument.
 	ArgRegionSlug = "region"
+	ArgZoneSlug = "zone"
 	// ArgSizeSlug is a size slug argument.
 	ArgSizeSlug = "size"
 	// ArgsSSHKeyPath is a ssh argument.

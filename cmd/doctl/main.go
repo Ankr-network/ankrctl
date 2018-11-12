@@ -20,6 +20,6 @@ import (
 )
 
 func main() {
-	log.SetPrefix("doctl: ")
+	log.SetPrefix("dccnctl: ")
 	commands.Execute()
 }

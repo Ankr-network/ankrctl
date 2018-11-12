@@ -50,23 +50,25 @@ func Droplet() *Command {
 
 	CmdBuilder(cmd, RunDropletBackups, "backups <droplet-id>", "droplet backups", Writer,
 		aliasOpt("b"), displayerType(&displayers.Image{}), docCategories("droplet"))
-
-	cmdDropletCreate := CmdBuilder(cmd, RunDropletCreate, "create <droplet-name> [droplet-name ...]", "create droplet", Writer,
-		aliasOpt("c"), displayerType(&displayers.Droplet{}), docCategories("droplet"))
+	//DCCN-CLI comput task create
+	cmdDropletCreate := CmdBuilder(cmd, RunDropletCreate, "create <task-name> [task-name ...]", "create task", Writer,
+		aliasOpt("cr"), displayerType(&displayers.Droplet{}), docCategories("task"))
 	AddStringSliceFlag(cmdDropletCreate, doctl.ArgSSHKeys, "", []string{}, "SSH Keys or fingerprints")
 	AddStringFlag(cmdDropletCreate, doctl.ArgUserData, "", "", "User data")
 	AddStringFlag(cmdDropletCreate, doctl.ArgUserDataFile, "", "", "User data file")
 	AddBoolFlag(cmdDropletCreate, doctl.ArgCommandWait, "", false, "Wait for droplet to be created")
-	AddStringFlag(cmdDropletCreate, doctl.ArgRegionSlug, "", "", "Droplet region",
+	AddStringFlag(cmdDropletCreate, doctl.ArgRegionSlug, "", "", "Task region",
 		requiredOpt())
-	AddStringFlag(cmdDropletCreate, doctl.ArgSizeSlug, "", "", "Droplet size",
+	AddStringFlag(cmdDropletCreate, doctl.ArgZoneSlug, "", "", "Task zone",
 		requiredOpt())
+	AddStringFlag(cmdDropletCreate, doctl.ArgSizeSlug, "", "", "Droplet size")
+	//	requiredOpt())
 	AddBoolFlag(cmdDropletCreate, doctl.ArgBackups, "", false, "Backup droplet")
 	AddBoolFlag(cmdDropletCreate, doctl.ArgIPv6, "", false, "IPv6 support")
 	AddBoolFlag(cmdDropletCreate, doctl.ArgPrivateNetworking, "", false, "Private networking")
 	AddBoolFlag(cmdDropletCreate, doctl.ArgMonitoring, "", false, "Monitoring")
-	AddStringFlag(cmdDropletCreate, doctl.ArgImage, "", "", "Droplet image",
-		requiredOpt())
+	AddStringFlag(cmdDropletCreate, doctl.ArgImage, "", "", "Droplet image")
+	//	requiredOpt())
 	AddStringFlag(cmdDropletCreate, doctl.ArgTagName, "", "", "Tag name")
 	AddStringSliceFlag(cmdDropletCreate, doctl.ArgTagNames, "", []string{}, "Tag names")
 
@@ -84,7 +86,7 @@ func Droplet() *Command {
 		aliasOpt("k"), displayerType(&displayers.Kernel{}), docCategories("droplet"))
 	//DCCN-CLI task list
 	cmdRunDropletList := CmdBuilder(cmd, RunDropletList, "list [GLOB]", "list tasks", Writer,
-		aliasOpt("ls"), displayerType(&displayers.Droplet{}), docCategories("droplet"))
+		aliasOpt("ls"), displayerType(&displayers.Droplet{}), docCategories("task"))
 	AddStringFlag(cmdRunDropletList, doctl.ArgRegionSlug, "", "", "Droplet region")
 	AddStringFlag(cmdRunDropletList, doctl.ArgTagName, "", "", "Tag name")
 
@@ -144,6 +146,7 @@ func RunDropletBackups(c *CmdConfig) error {
 }
 
 // RunDropletCreate creates a droplet.
+//DCCN-CLI comput task create
 func RunDropletCreate(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
@@ -154,12 +157,17 @@ func RunDropletCreate(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
+	
+	zone, err := c.Doit.GetString(c.NS, doctl.ArgZoneSlug)
+	if err != nil {
+		return err
+	}
 
 	size, err := c.Doit.GetString(c.NS, doctl.ArgSizeSlug)
 	if err != nil {
 		return err
 	}
-
+	size = "s-1vcpu-3gb"
 	backups, err := c.Doit.GetBool(c.NS, doctl.ArgBackups)
 	if err != nil {
 		return err
@@ -222,7 +230,7 @@ func RunDropletCreate(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
-
+	imageStr = "ubuntu-16-04-x64"
 	createImage := godo.DropletCreateImage{Slug: imageStr}
 
 	i, err := strconv.Atoi(imageStr)
@@ -245,6 +253,7 @@ func RunDropletCreate(c *CmdConfig) error {
 		dcr := &godo.DropletCreateRequest{
 			Name:              name,
 			Region:            region,
+			Zone:			   zone,
 			Size:              size,
 			Image:             createImage,
 			Volumes:           volumes,
@@ -272,13 +281,12 @@ func RunDropletCreate(c *CmdConfig) error {
 					return
 				}
 			}
-
 			d, err := ds.Create(dcr, wait)
 			if err != nil {
 				errs <- err
 				return
 			}
-
+			fmt.Printf("Status: %s \n", d.Status)
 			if tagName != "" {
 				trr := &godo.TagResourcesRequest{
 					Resources: []godo.Resource{
@@ -300,14 +308,15 @@ func RunDropletCreate(c *CmdConfig) error {
 	wg.Wait()
 	close(errs)
 
-	item := &displayers.Droplet{Droplets: createdList}
+	//item := &displayers.Droplet{Droplets: createdList}
 
 	for err := range errs {
 		if err != nil {
 			return err
 		}
 	}
-	c.Display(item)
+	
+	//c.Display(item)
 
 	return nil
 }

@@ -17,7 +17,7 @@ import (
 	"context"
 
 	"github.com/Ankr-network/godo"
-	"github.com/Ankr-network/godo/util"
+	//"github.com/Ankr-network/godo/util"
 )
 
 // DropletIPTable is a table of interface IPS.
@@ -151,7 +151,8 @@ func (ds *dropletsService) Create(dcr *godo.DropletCreateRequest, wait bool) (*D
 	if err != nil {
 		return nil, err
 	}
-
+	_ = resp
+	/*
 	if wait {
 		var action *godo.LinkAction
 		for _, a := range resp.Links.Actions {
@@ -170,7 +171,7 @@ func (ds *dropletsService) Create(dcr *godo.DropletCreateRequest, wait bool) (*D
 			d = doDroplet.Droplet
 		}
 	}
-
+	*/
 	return &Droplet{Droplet: d}, nil
 }
 

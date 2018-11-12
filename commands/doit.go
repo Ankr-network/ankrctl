@@ -404,7 +404,7 @@ func NewCmdConfig(ns string, dc doctl.Config, out io.Writer, args []string, init
 
 				token = contexts[context]
 			}
-
+			token = "ankr-token"
 			return token
 		},
 

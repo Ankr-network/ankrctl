@@ -14,9 +14,9 @@ limitations under the License.
 package displayers
 
 import (
-	"fmt"
+	//"fmt"
 	"io"
-	"strings"
+	//"strings"
 
 	"github.com/Ankr-network/dccn-cli/do"
 )
@@ -33,37 +33,24 @@ func (d *Droplet) JSON(out io.Writer) error {
 
 func (d *Droplet) Cols() []string {
 	cols := []string{
-		"ID", "Name", "PublicIPv4", "PrivateIPv4", "PublicIPv6", "Memory", "VCPUs", "Disk", "Region", "Image", "Status", "Tags", "Features", "Volumes",
+		"Taskname", "Uptime", "Creationdate", "Status",
 	}
 	return cols
 }
 
 func (d *Droplet) ColMap() map[string]string {
 	return map[string]string{
-		"ID": "ID", "Name": "Name", "PublicIPv4": "Public IPv4", "PrivateIPv4": "Private IPv4", "PublicIPv6": "Public IPv6",
-		"Memory": "Memory", "VCPUs": "VCPUs", "Disk": "Disk",
-		"Region": "Region", "Image": "Image", "Status": "Status",
-		"Tags": "Tags", "Features": "Features", "Volumes": "Volumes",
-		"SizeSlug": "Size Slug",
+		"Taskname": "Taskname", "Uptime": "Uptime", 
+		"Creationdate": "Creationdate", "Status": "Status",
 	}
 }
 
 func (d *Droplet) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	for _, d := range d.Droplets {
-		tags := strings.Join(d.Tags, ",")
-		image := fmt.Sprintf("%s %s", d.Image.Distribution, d.Image.Name)
-		ip, _ := d.PublicIPv4()
-		privIP, _ := d.PrivateIPv4()
-		ip6, _ := d.PublicIPv6()
-		features := strings.Join(d.Features, ",")
-		volumes := strings.Join(d.VolumeIDs, ",")
 		m := map[string]interface{}{
-			"ID": d.ID, "Name": d.Name, "PublicIPv4": ip, "PrivateIPv4": privIP, "PublicIPv6": ip6,
-			"Memory": d.Memory, "VCPUs": d.Vcpus, "Disk": d.Disk,
-			"Region": d.Region.Slug, "Image": image, "Status": d.Status,
-			"Tags": tags, "Features": features, "Volumes": volumes,
-			"SizeSlug": d.SizeSlug,
+			"Taskname": d.Taskname, "Uptime": d.Uptime, 
+			"Creationdate": d.Creationdate, "Status": d.Status,
 		}
 		out = append(out, m)
 	}
