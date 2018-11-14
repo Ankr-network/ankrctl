@@ -45,65 +45,66 @@ func Droplet() *Command {
 		IsIndex:       true,
 	}
 
-	CmdBuilder(cmd, RunDropletActions, "actions <droplet-id>", "droplet actions", Writer,
-		aliasOpt("a"), displayerType(&displayers.Action{}), docCategories("droplet"))
+	//CmdBuilder(cmd, RunDropletActions, "actions <droplet-id>", "droplet actions", Writer,
+	//	aliasOpt("a"), displayerType(&displayers.Action{}), docCategories("droplet"))
 
-	CmdBuilder(cmd, RunDropletBackups, "backups <droplet-id>", "droplet backups", Writer,
-		aliasOpt("b"), displayerType(&displayers.Image{}), docCategories("droplet"))
+	//CmdBuilder(cmd, RunDropletBackups, "backups <droplet-id>", "droplet backups", Writer,
+	//	aliasOpt("b"), displayerType(&displayers.Image{}), docCategories("droplet"))
 	//DCCN-CLI comput task create
 	cmdDropletCreate := CmdBuilder(cmd, RunDropletCreate, "create <task-name> [task-name ...]", "create task", Writer,
 		aliasOpt("cr"), displayerType(&displayers.Droplet{}), docCategories("task"))
-	AddStringSliceFlag(cmdDropletCreate, doctl.ArgSSHKeys, "", []string{}, "SSH Keys or fingerprints")
-	AddStringFlag(cmdDropletCreate, doctl.ArgUserData, "", "", "User data")
-	AddStringFlag(cmdDropletCreate, doctl.ArgUserDataFile, "", "", "User data file")
+	//AddStringSliceFlag(cmdDropletCreate, doctl.ArgSSHKeys, "", []string{}, "SSH Keys or fingerprints")
+	//AddStringFlag(cmdDropletCreate, doctl.ArgUserData, "", "", "User data")
+	//AddStringFlag(cmdDropletCreate, doctl.ArgUserDataFile, "", "", "User data file")
 	AddBoolFlag(cmdDropletCreate, doctl.ArgCommandWait, "", false, "Wait for droplet to be created")
 	AddStringFlag(cmdDropletCreate, doctl.ArgRegionSlug, "", "", "Task region",
 		requiredOpt())
 	AddStringFlag(cmdDropletCreate, doctl.ArgZoneSlug, "", "", "Task zone",
 		requiredOpt())
-	AddStringFlag(cmdDropletCreate, doctl.ArgSizeSlug, "", "", "Droplet size")
+	//AddStringFlag(cmdDropletCreate, doctl.ArgSizeSlug, "", "", "Droplet size")
 	//	requiredOpt())
-	AddBoolFlag(cmdDropletCreate, doctl.ArgBackups, "", false, "Backup droplet")
-	AddBoolFlag(cmdDropletCreate, doctl.ArgIPv6, "", false, "IPv6 support")
-	AddBoolFlag(cmdDropletCreate, doctl.ArgPrivateNetworking, "", false, "Private networking")
-	AddBoolFlag(cmdDropletCreate, doctl.ArgMonitoring, "", false, "Monitoring")
-	AddStringFlag(cmdDropletCreate, doctl.ArgImage, "", "", "Droplet image")
+	//AddBoolFlag(cmdDropletCreate, doctl.ArgBackups, "", false, "Backup droplet")
+	//AddBoolFlag(cmdDropletCreate, doctl.ArgIPv6, "", false, "IPv6 support")
+	//AddBoolFlag(cmdDropletCreate, doctl.ArgPrivateNetworking, "", false, "Private networking")
+	//AddBoolFlag(cmdDropletCreate, doctl.ArgMonitoring, "", false, "Monitoring")
+	//AddStringFlag(cmdDropletCreate, doctl.ArgImage, "", "", "Droplet image")
 	//	requiredOpt())
-	AddStringFlag(cmdDropletCreate, doctl.ArgTagName, "", "", "Tag name")
-	AddStringSliceFlag(cmdDropletCreate, doctl.ArgTagNames, "", []string{}, "Tag names")
+	//AddStringFlag(cmdDropletCreate, doctl.ArgTagName, "", "", "Tag name")
+	//AddStringSliceFlag(cmdDropletCreate, doctl.ArgTagNames, "", []string{}, "Tag names")
 
-	AddStringSliceFlag(cmdDropletCreate, doctl.ArgVolumeList, "", []string{}, "Volumes to attach")
-
-	cmdRunDropletDelete := CmdBuilder(cmd, RunDropletDelete, "delete <droplet-id|droplet-name> [droplet-id|droplet-name ...]", "Delete droplet by id or name", Writer,
-		aliasOpt("d", "del", "rm"), docCategories("droplet"))
+	//AddStringSliceFlag(cmdDropletCreate, doctl.ArgVolumeList, "", []string{}, "Volumes to attach")
+	//DCCN-CLI comput task delete
+	cmdRunDropletDelete := CmdBuilder(cmd, RunDropletDelete, "delete <task-id|task-name> [task-id|task-name ...]", "Delete task by id or name", Writer,
+		aliasOpt("d", "del", "rm"), docCategories("Task"))
 	AddBoolFlag(cmdRunDropletDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force droplet delete")
 
-	cmdRunDropletGet := CmdBuilder(cmd, RunDropletGet, "get <droplet-id>", "get droplet", Writer,
-		aliasOpt("g"), displayerType(&displayers.Droplet{}), docCategories("droplet"))
-	AddStringFlag(cmdRunDropletGet, doctl.ArgTemplate, "", "", "Go template format. Few sample values:{{.ID}} {{.Name}} {{.Memory}} {{.Region.Name}} {{.Image}} {{.Tags}}")
+	//cmdRunDropletGet := CmdBuilder(cmd, RunDropletGet, "get <droplet-id>", "get droplet", Writer,
+	//	aliasOpt("g"), displayerType(&displayers.Droplet{}), docCategories("droplet"))
+	//AddStringFlag(cmdRunDropletGet, doctl.ArgTemplate, "", "", "Go template format. Few sample values:{{.ID}} {{.Name}} {{.Memory}} {{.Region.Name}} {{.Image}} {{.Tags}}")
 
-	CmdBuilder(cmd, RunDropletKernels, "kernels <droplet-id>", "droplet kernels", Writer,
-		aliasOpt("k"), displayerType(&displayers.Kernel{}), docCategories("droplet"))
+	//CmdBuilder(cmd, RunDropletKernels, "kernels <droplet-id>", "droplet kernels", Writer,
+	//	aliasOpt("k"), displayerType(&displayers.Kernel{}), docCategories("droplet"))
 	//DCCN-CLI task list
 	cmdRunDropletList := CmdBuilder(cmd, RunDropletList, "list [GLOB]", "list tasks", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Droplet{}), docCategories("task"))
-	AddStringFlag(cmdRunDropletList, doctl.ArgRegionSlug, "", "", "Droplet region")
-	AddStringFlag(cmdRunDropletList, doctl.ArgTagName, "", "", "Tag name")
+	_ = cmdRunDropletList
+	//AddStringFlag(cmdRunDropletList, doctl.ArgRegionSlug, "", "", "Droplet region")
+	//AddStringFlag(cmdRunDropletList, doctl.ArgTagName, "", "", "Tag name")
 
-	CmdBuilder(cmd, RunDropletNeighbors, "neighbors <droplet-id>", "droplet neighbors", Writer,
-		aliasOpt("n"), displayerType(&displayers.Droplet{}), docCategories("droplet"))
+	//CmdBuilder(cmd, RunDropletNeighbors, "neighbors <droplet-id>", "droplet neighbors", Writer,
+	//	aliasOpt("n"), displayerType(&displayers.Droplet{}), docCategories("droplet"))
 
-	CmdBuilder(cmd, RunDropletSnapshots, "snapshots <droplet-id>", "snapshots", Writer,
-		aliasOpt("s"), displayerType(&displayers.Image{}), docCategories("droplet"))
+	//CmdBuilder(cmd, RunDropletSnapshots, "snapshots <droplet-id>", "snapshots", Writer,
+	//	aliasOpt("s"), displayerType(&displayers.Image{}), docCategories("droplet"))
 
-	cmdRunDropletTag := CmdBuilder(cmd, RunDropletTag, "tag <droplet-id|droplet-name>", "tag", Writer,
-		docCategories("droplet"))
-	AddStringFlag(cmdRunDropletTag, doctl.ArgTagName, "", "", "Tag name",
-		requiredOpt())
+	//cmdRunDropletTag := CmdBuilder(cmd, RunDropletTag, "tag <droplet-id|droplet-name>", "tag", Writer,
+	//	docCategories("droplet"))
+	//AddStringFlag(cmdRunDropletTag, doctl.ArgTagName, "", "", "Tag name",
+	//	requiredOpt())
 
-	cmdRunDropletUntag := CmdBuilder(cmd, RunDropletUntag, "untag <droplet-id|droplet-name>", "untag", Writer,
-		docCategories("droplet"))
-	AddStringSliceFlag(cmdRunDropletUntag, doctl.ArgTagName, "", []string{}, "tag names")
+	//cmdRunDropletUntag := CmdBuilder(cmd, RunDropletUntag, "untag <droplet-id|droplet-name>", "untag", Writer,
+	//	docCategories("droplet"))
+	//AddStringSliceFlag(cmdRunDropletUntag, doctl.ArgTagName, "", []string{}, "tag names")
 
 	return cmd
 }
@@ -286,7 +287,12 @@ func RunDropletCreate(c *CmdConfig) error {
 				errs <- err
 				return
 			}
-			fmt.Printf("Status: %s \n", d.Status)
+			if (d.Status == "Success"){
+				fmt.Printf("Task id %d created successfully. \n", d.ID)
+			}else{
+				fmt.Printf("Fail to create task. \n")
+			}
+			
 			if tagName != "" {
 				trr := &godo.TagResourcesRequest{
 					Resources: []godo.Resource{
@@ -476,25 +482,31 @@ func RunDropletDelete(c *CmdConfig) error {
 	if len(c.Args) < 1 && tagName == "" {
 		return doctl.NewMissingArgsErr(c.NS)
 	} else if len(c.Args) > 0 && tagName != "" {
-		return fmt.Errorf("please specify droplets identifiers or a tag name")
+		return fmt.Errorf("please specify task identifiers or a tag name")
 	} else if tagName != "" {
-		if force || AskForConfirm("delete droplet by \""+tagName+"\" tag") == nil {
+		if force || AskForConfirm("delete task by \""+tagName+"\" tag") == nil {
 			return ds.DeleteByTag(tagName)
 		}
 		return nil
 	}
 
-	if force || AskForConfirm(fmt.Sprintf("delete %d droplet(s)", len(c.Args))) == nil {
+	if force || AskForConfirm(fmt.Sprintf("delete %d task(s)", len(c.Args))) == nil {
 
 		fn := func(ids []int) error {
 			for _, id := range ids {
-				if err := ds.Delete(id); err != nil {
-					return fmt.Errorf("unable to delete droplet %d: %v", id, err)
+				if status, err := ds.Delete(id); err != nil {
+					return fmt.Errorf("unable to delete task %d: %v", id, err)
+				}else{
+					fmt.Printf("Delete task id %d...%s! \n", id, status)
 				}
 			}
 			return nil
 		}
-		return matchDroplets(c.Args, ds, fn)
+		if extractedIDs, err := allInt(c.Args); err == nil {
+			return fn(extractedIDs)
+		}
+		return err
+		//return matchDroplets(c.Args, ds, fn)
 	}
 	return fmt.Errorf("operation aborted")
 
@@ -637,7 +649,7 @@ func RunDropletList(c *CmdConfig) error {
 			skip = false
 		} else {
 			for _, m := range matches {
-				if m.Match(droplet.Name) {
+				if m.Match(droplet.Taskname) {
 					skip = false
 				}
 			}

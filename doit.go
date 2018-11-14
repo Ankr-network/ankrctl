@@ -36,7 +36,7 @@ import (
 
 const (
 	// NSRoot is a configuration key that signifies this value is at the root.
-	NSRoot = "doctl"
+	NSRoot = "ankr"
 
 	// LatestReleaseURL is the latest release URL endpoint.
 	LatestReleaseURL = "https://api.github.com/repos/digitalocean/doctl/releases/latest"
@@ -96,7 +96,7 @@ func (v Version) String() string {
 // Complete is the complete version for doit.
 func (v Version) Complete(lv LatestVersioner) string {
 	var buffer bytes.Buffer
-	buffer.WriteString(fmt.Sprintf("doctl version %s", v.String()))
+	buffer.WriteString(fmt.Sprintf("ankr version %s", v.String()))
 
 	if v.Build != "" {
 		buffer.WriteString(fmt.Sprintf("\nGit commit hash: %s", v.Build))
@@ -176,7 +176,7 @@ var _ Config = &LiveConfig{}
 // GetGodoClient returns a GodoClient.
 func (c *LiveConfig) GetGodoClient(trace bool, accessToken string) (*godo.Client, error) {
 	if accessToken == "" {
-		return nil, fmt.Errorf("access token is required. (hint: run 'doctl auth init')")
+		return nil, fmt.Errorf("access token is required. (hint: run 'ankr auth init')")
 	}
 
 	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: accessToken})

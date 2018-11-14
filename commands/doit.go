@@ -40,8 +40,8 @@ const (
 // DoitCmd is the base command.
 var DoitCmd = &Command{
 	Command: &cobra.Command{
-		Use:   "dccnctl",
-		Short: "dccnctl is a command line interface for the Ankr DCCN Hub.",
+		Use:   "ankr",
+		Short: "ankr is a command line interface for the Ankr DCCN Hub.",
 	},
 }
 
@@ -80,17 +80,17 @@ var ErrNoAccessToken = errors.New("no access token has been configured")
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	DoitCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.config/doctl/config.yaml)")
-	DoitCmd.PersistentFlags().StringVarP(&Token, doctl.ArgAccessToken, "t", "", "API V2 Access Token")
+	//DoitCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.config/doctl/config.yaml)")
+	DoitCmd.PersistentFlags().StringVarP(&Token, doctl.ArgAccessToken, "t", "", "Access Token")
 	DoitCmd.PersistentFlags().StringVarP(&Output, "output", "o", "text", "output format [text|json]")
-	DoitCmd.PersistentFlags().StringVarP(&ApiURL, "api-url", "u", "", "Override default API V2 endpoint")
+	DoitCmd.PersistentFlags().StringVarP(&ApiURL, "api-url", "u", "", "Override default endpoint")
 	DoitCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 	DoitCmd.PersistentFlags().BoolVarP(&Trace, "trace", "", false, "trace api access")
 
 	DoitCmd.PersistentFlags().StringVarP(&Context, doctl.ArgContext, "", "", "authentication context name")
 
-	viper.SetEnvPrefix("DIGITALOCEAN")
-	viper.BindEnv(doctl.ArgAccessToken, "DIGITALOCEAN_ACCESS_TOKEN")
+	viper.SetEnvPrefix("ANKR")
+	viper.BindEnv(doctl.ArgAccessToken, "ANKR_ACCESS_TOKEN")
 	viper.BindPFlag(doctl.ArgAccessToken, DoitCmd.PersistentFlags().Lookup("access-token"))
 	viper.BindEnv("api-url", "DIGITALOCEAN_API_URL")
 	viper.BindPFlag("api-url", DoitCmd.PersistentFlags().Lookup("api-url"))
@@ -170,13 +170,13 @@ func Execute() {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	DoitCmd.AddCommand(Account())
-	DoitCmd.AddCommand(Auth())
-	DoitCmd.AddCommand(Completion())
+	//DoitCmd.AddCommand(Account())
+	//DoitCmd.AddCommand(Auth())
+	//DoitCmd.AddCommand(Completion())
 	//DCCN-CLI compute
 	DoitCmd.AddCommand(computeCmd())
-	DoitCmd.AddCommand(Projects())
-	DoitCmd.AddCommand(Version())
+	//DoitCmd.AddCommand(Projects())
+	//DoitCmd.AddCommand(Version())
 }
 
 func computeCmd() *Command {
@@ -189,31 +189,31 @@ func computeCmd() *Command {
 		},
 	}
 
-	cmd.AddCommand(Actions())
-	cmd.AddCommand(CDN())
-	cmd.AddCommand(Certificate())
-	cmd.AddCommand(DropletAction())
+	//cmd.AddCommand(Actions())
+	//cmd.AddCommand(CDN())
+	//cmd.AddCommand(Certificate())
+	//cmd.AddCommand(DropletAction())
 	//DCCN-CLI task
 	cmd.AddCommand(Droplet())
-	cmd.AddCommand(Domain())
-	cmd.AddCommand(Firewall())
-	cmd.AddCommand(FloatingIP())
-	cmd.AddCommand(FloatingIPAction())
-	cmd.AddCommand(Images())
-	cmd.AddCommand(ImageAction())
-	cmd.AddCommand(LoadBalancer())
-	cmd.AddCommand(Plugin())
-	cmd.AddCommand(Region())
-	cmd.AddCommand(Size())
-	cmd.AddCommand(Snapshot())
-	cmd.AddCommand(SSHKeys())
-	cmd.AddCommand(Tags())
-	cmd.AddCommand(Volume())
-	cmd.AddCommand(VolumeAction())
+	//cmd.AddCommand(Domain())
+	//cmd.AddCommand(Firewall())
+	//cmd.AddCommand(FloatingIP())
+	//cmd.AddCommand(FloatingIPAction())
+	//cmd.AddCommand(Images())
+	//cmd.AddCommand(ImageAction())
+	//cmd.AddCommand(LoadBalancer())
+	//cmd.AddCommand(Plugin())
+	//cmd.AddCommand(Region())
+	//cmd.AddCommand(Size())
+	//cmd.AddCommand(Snapshot())
+	//cmd.AddCommand(SSHKeys())
+	//cmd.AddCommand(Tags())
+	//cmd.AddCommand(Volume())
+	//cmd.AddCommand(VolumeAction())
 
 	// SSH is different since it doesn't have any subcommands. In this case, let's
 	// give it a parent at init time.
-	SSH(cmd)
+	//SSH(cmd)
 
 	return cmd
 }

@@ -57,7 +57,7 @@ type DropletsService interface {
 	Get(int) (*Droplet, error)
 	Create(*godo.DropletCreateRequest, bool) (*Droplet, error)
 	CreateMultiple(*godo.DropletMultiCreateRequest) (Droplets, error)
-	Delete(int) error
+	Delete(int) (string, error)
 	DeleteByTag(string) error
 	Kernels(int) (Kernels, error)
 	Snapshots(int) (Images, error)
@@ -145,7 +145,7 @@ func (ds *dropletsService) Get(id int) (*Droplet, error) {
 
 	return &Droplet{Droplet: d}, nil
 }
-
+//DCCN-CLI comput task create
 func (ds *dropletsService) Create(dcr *godo.DropletCreateRequest, wait bool) (*Droplet, error) {
 	d, resp, err := ds.client.Droplets.Create(context.TODO(), dcr)
 	if err != nil {
@@ -188,10 +188,10 @@ func (ds *dropletsService) CreateMultiple(dmcr *godo.DropletMultiCreateRequest) 
 
 	return droplets, nil
 }
-
-func (ds *dropletsService) Delete(id int) error {
-	_, err := ds.client.Droplets.Delete(context.TODO(), id)
-	return err
+//DCCN-CLI comput task delete
+func (ds *dropletsService) Delete(id int) (string, error) {
+	status, err := ds.client.Droplets.Delete(context.TODO(), id)
+	return status, err
 }
 
 func (ds *dropletsService) DeleteByTag(tag string) error {
