@@ -1,13 +1,9 @@
 FROM alpine:3.5
 
-ENV DOCTL_VERSION=1.11.0
-
-RUN apk add --no-cache curl
-
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
 
-WORKDIR /app
+WORKDIR /go/src/github.com/
 
-RUN curl -L https://github.com/Ankr-network/dccn-cli/releases/download/v${DOCTL_VERSION}/doctl-${DOCTL_VERSION}-linux-amd64.tar.gz  | tar xz
+COPY cmd/ankr/ankr .
 
-ENTRYPOINT ["./doctl"]
+ENTRYPOINT ["./ankr"]

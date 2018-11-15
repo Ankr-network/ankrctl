@@ -1,0 +1,36 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build:
+    environment:
+      PATH: /go/src/:$PATH
+    docker:
+      # Build in Python container to install AWS CLI
+      - image: circleci/golang:1.10
+    working_directory: /go/src/github.com/Ankr-network/dccn-cli
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: get godo
+          command: |
+            cd ..
+            git clone -b feat/swdev-79-dccncli https://github.com/Ankr-network/godo.git
+      - run:
+          name: Install AWSCLI
+      command: |
+            curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+            unzip awscli-bundle.zip
+            sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+      - run:
+          name: "Log in to AWS ECR"
+          command: eval $(aws ecr get-login --no-include-email --region us-west-2)
+
+      - run:
+          name: "Build & Push Docker Image"
+          command: |
+            docker build -t dccn-cli .
+            docker tag dccn-cli:latest 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:dccn-cli
+            docker push 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:dccn-cli
