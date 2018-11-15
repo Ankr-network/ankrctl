@@ -19,8 +19,12 @@ jobs:
             cd ..
             git clone -b feat/swdev-79-dccncli https://github.com/Ankr-network/godo.git
       - run:
+          name: build ankr cli 
+          command: |
+            go build -o ankr dccn-cli/cmd/ankr/main.go 
+      - run:
           name: Install AWSCLI
-      command: |
+          command: |
             curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
             unzip awscli-bundle.zip
             sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
