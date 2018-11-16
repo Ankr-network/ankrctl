@@ -4,8 +4,6 @@
 version: 2
 jobs:
   build:
-    environment:
-      PATH: /go/src/:$PATH
     docker:
       # Build in Python container to install AWS CLI
       - image: circleci/golang:1.10
@@ -16,12 +14,12 @@ jobs:
       - run:
           name: get godo
           command: |
-            cd ..
+            cd $GOPATH/src/github.com/Ankr-network
             git clone -b feat/swdev-79-dccncli https://github.com/Ankr-network/godo.git
       - run:
           name: build ankr cli 
           command: |
-            go build -o ankr dccn-cli/cmd/ankr/main.go 
+            go build -o ankr $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/ankr/main.go 
       - run:
           name: Install AWSCLI
           command: |
