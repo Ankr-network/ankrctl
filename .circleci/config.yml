@@ -13,7 +13,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: copy ssh key
-            cp ${HOME}/.ssh/id_circleci_github id_rsa
+          command: cp ${HOME}/.ssh/id_circleci_github id_rsa
       - run:
           name: Install AWSCLI
           command: |
