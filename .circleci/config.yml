@@ -12,9 +12,6 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: copy ssh key
-          command: cp ${HOME}/.ssh/id_circleci_github id_rsa
-      - run:
           name: Install AWSCLI
           command: |
             curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
