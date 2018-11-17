@@ -12,14 +12,8 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: get godo
-          command: |
-            cd $GOPATH/src/github.com/Ankr-network
-            git clone -b feat/swdev-79-dccncli https://github.com/Ankr-network/godo.git
-      - run:
-          name: build ankr cli 
-          command: |
-            go build -o ankr $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/ankr/main.go 
+          name: copy ssh key
+            cp ${HOME}/.ssh/id_circleci_github id_rsa
       - run:
           name: Install AWSCLI
           command: |
