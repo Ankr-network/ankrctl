@@ -9,11 +9,11 @@ jobs:
       - image: circleci/golang:1.10
     working_directory: /go/src/github.com/Ankr-network/dccn-cli
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "fb:e6:19:e7:21:de:65:fd:1f:60:22:6a:87:56:5e:36"
       - checkout
       - setup_remote_docker
-      - add_ssh_keys:
-        fingerprints:
-          - "fb:e6:19:e7:21:de:65:fd:1f:60:22:6a:87:56:5e:36"
       - run: ls -al ${HOME}/.ssh/
       - run:
           name: Install AWSCLI
