@@ -1,6 +1,6 @@
 FROM golang:alpine as builder
 
-RUN apk update && apk add git && apk add --update bash
+RUN apk update && apk add git && apk add --update bash && apk add openssh
 
 COPY . $GOPATH/src/github.com/Ankr-network/dccn-cli/
 COPY id_rsa /root/.ssh/
