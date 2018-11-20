@@ -16,8 +16,9 @@ jobs:
       - setup_remote_docker
       - run:
           name: copy ssh key
-          command: sudo ls -al ${HOME}/.ssh/
-          command: sudo cp ${HOME}/.ssh/id_rsa id_rsa
+          command: |
+            sudo ls -al ${HOME}/.ssh/
+            sudo cp ${HOME}/.ssh/id_rsa id_rsa
       - run:
           name: Install AWSCLI
           command: |
