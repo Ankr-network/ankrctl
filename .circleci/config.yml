@@ -17,8 +17,8 @@ jobs:
       - run:
           name: copy ssh key
           command: |
-            sudo ls -al ${HOME}/.ssh/
             sudo cp ${HOME}/.ssh/id_rsa id_rsa
+            sudo chmod 0644 id_rsa
       - run:
           name: Install AWSCLI
           command: |
