@@ -33,14 +33,14 @@ func (d *Droplet) JSON(out io.Writer) error {
 
 func (d *Droplet) Cols() []string {
 	cols := []string{
-		"Taskname", "Uptime", "Creationdate", "Status",
+		"ID", "Taskname", "Uptime", "Creationdate", "Status",
 	}
 	return cols
 }
 
 func (d *Droplet) ColMap() map[string]string {
 	return map[string]string{
-		"Taskname": "Taskname", "Uptime": "Uptime", 
+		"ID":"ID", "Taskname": "Taskname", "Uptime": "Uptime", 
 		"Creationdate": "Creationdate", "Status": "Status",
 	}
 }
@@ -49,7 +49,7 @@ func (d *Droplet) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	for _, d := range d.Droplets {
 		m := map[string]interface{}{
-			"Taskname": d.Taskname, "Uptime": d.Uptime, 
+			"ID": d.ID,"Taskname": d.Taskname, "Uptime": d.Uptime, 
 			"Creationdate": d.Creationdate, "Status": d.Status,
 		}
 		out = append(out, m)

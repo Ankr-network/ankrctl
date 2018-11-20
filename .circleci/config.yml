@@ -11,10 +11,13 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "fb:e6:19:e7:21:de:65:fd:1f:60:22:6a:87:56:5e:36"
+            - "91:de:2e:da:16:ab:18:de:71:0f:e2:bf:5f:44:5c:55"
       - checkout
       - setup_remote_docker
-      - run: ls -al ${HOME}/.ssh/
+      - run:
+          name: copy ssh key
+          command: sudo ls -al ${HOME}/.ssh/
+          command: sudo cp ${HOME}/.ssh/id_rsa id_rsa
       - run:
           name: Install AWSCLI
           command: |
