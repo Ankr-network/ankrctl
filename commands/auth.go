@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -26,7 +26,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// ErrUnknownTerminal signifies an unknown terminal. It is returned when doit
+// ErrUnknownTerminal signifies an unknown terminal. It is returned when ankr
 // can't ascertain the current terminal type with requesting an auth token.
 var ErrUnknownTerminal = errors.New("unknown terminal")
 
@@ -38,7 +38,7 @@ func retrieveUserTokenFromCommandLine() (string, error) {
 	}
 
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("DigitalOcean access token: ")
+	fmt.Print("AnkrNetwork access token: ")
 	return reader.ReadString('\n')
 }
 
@@ -53,7 +53,7 @@ func (use *UnknownSchemeError) Error() string {
 	return "unknown scheme: " + use.Scheme
 }
 
-// Auth creates auth commands for doctl.
+// Auth creates auth commands for dccncli.
 func Auth() *Command {
 	cmd := &Command{
 		Command: &cobra.Command{
@@ -69,8 +69,8 @@ func Auth() *Command {
 	return cmd
 }
 
-// RunAuthInit initializes the doctl config. Configuration is stored in $XDG_CONFIG_HOME/doctl. On Unix, if
-// XDG_CONFIG_HOME is not set, use $HOME/.config. On Windows use %APPDATA%/doctl/config.
+// RunAuthInit initializes the dccncli config. Configuration is stored in $XDG_CONFIG_HOME/dccncli. On Unix, if
+// XDG_CONFIG_HOME is not set, use $HOME/.config. On Windows use %APPDATA%/dccncli/config.
 func RunAuthInit(retrieveUserTokenFunc func() (string, error)) func(c *CmdConfig) error {
 	return func(c *CmdConfig) error {
 		token := c.getContextAccessToken()
@@ -78,7 +78,7 @@ func RunAuthInit(retrieveUserTokenFunc func() (string, error)) func(c *CmdConfig
 		if token == "" {
 			in, err := retrieveUserTokenFunc()
 			if err != nil {
-				return fmt.Errorf("unable to read DigitalOcean access token: %s", err)
+				return fmt.Errorf("unable to read AnkrNetwork access token: %s", err)
 			}
 			token = strings.TrimSpace(in)
 		} else {
@@ -93,7 +93,7 @@ func RunAuthInit(retrieveUserTokenFunc func() (string, error)) func(c *CmdConfig
 
 		// need to initial the godo client since we've changed the configuration.
 		if err := c.initServices(c); err != nil {
-			return fmt.Errorf("unable to initialize DigitalOcean API client with new token: %s", err)
+			return fmt.Errorf("unable to initialize AnkrNetwork API client with new token: %s", err)
 		}
 
 		if _, err := c.Account().Get(); err != nil {

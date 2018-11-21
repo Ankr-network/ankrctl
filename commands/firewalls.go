@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -40,45 +40,45 @@ func Firewall() *Command {
 	CmdBuilder(cmd, RunFirewallGet, "get <id>", "get firewall", Writer, aliasOpt("g"), displayerType(&displayers.Firewall{}))
 
 	cmdFirewallCreate := CmdBuilder(cmd, RunFirewallCreate, "create", "create firewall", Writer, aliasOpt("c"), displayerType(&displayers.Firewall{}))
-	AddStringFlag(cmdFirewallCreate, doctl.ArgFirewallName, "", "", "firewall name", requiredOpt())
-	AddStringFlag(cmdFirewallCreate, doctl.ArgInboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,droplet_id:1,droplet_id:2,tag:frontend, use quoted string of space-separated values for multiple rules")
-	AddStringFlag(cmdFirewallCreate, doctl.ArgOutboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
-	AddStringSliceFlag(cmdFirewallCreate, doctl.ArgDropletIDs, "", []string{}, "comma-separated list of droplet IDs, example value: 123,456")
-	AddStringSliceFlag(cmdFirewallCreate, doctl.ArgTagNames, "", []string{}, "comma-separated list of tag names, example value: frontend,backend")
+	AddStringFlag(cmdFirewallCreate, dccncli.ArgFirewallName, "", "", "firewall name", requiredOpt())
+	AddStringFlag(cmdFirewallCreate, dccncli.ArgInboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,task_id:1,task_id:2,tag:frontend, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdFirewallCreate, dccncli.ArgOutboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
+	AddStringSliceFlag(cmdFirewallCreate, dccncli.ArgTaskIDs, "", []string{}, "comma-separated list of task IDs, example value: 123,456")
+	AddStringSliceFlag(cmdFirewallCreate, dccncli.ArgTagNames, "", []string{}, "comma-separated list of tag names, example value: frontend,backend")
 
 	cmdFirewallUpdate := CmdBuilder(cmd, RunFirewallUpdate, "update <id>", "update firewall", Writer, aliasOpt("u"), displayerType(&displayers.Firewall{}))
-	AddStringFlag(cmdFirewallUpdate, doctl.ArgFirewallName, "", "", "firewall name", requiredOpt())
-	AddStringFlag(cmdFirewallUpdate, doctl.ArgInboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,droplet_id:123, use quoted string of space-separated values for multiple rules")
-	AddStringFlag(cmdFirewallUpdate, doctl.ArgOutboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
-	AddStringSliceFlag(cmdFirewallUpdate, doctl.ArgDropletIDs, "", []string{}, "comma-separated list of droplet IDs, example value: 123,456")
-	AddStringSliceFlag(cmdFirewallUpdate, doctl.ArgTagNames, "", []string{}, "comma-separated list of tag names, example value: frontend,backend")
+	AddStringFlag(cmdFirewallUpdate, dccncli.ArgFirewallName, "", "", "firewall name", requiredOpt())
+	AddStringFlag(cmdFirewallUpdate, dccncli.ArgInboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,task_id:123, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdFirewallUpdate, dccncli.ArgOutboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
+	AddStringSliceFlag(cmdFirewallUpdate, dccncli.ArgTaskIDs, "", []string{}, "comma-separated list of task IDs, example value: 123,456")
+	AddStringSliceFlag(cmdFirewallUpdate, dccncli.ArgTagNames, "", []string{}, "comma-separated list of tag names, example value: frontend,backend")
 
 	CmdBuilder(cmd, RunFirewallList, "list", "list firewalls", Writer, aliasOpt("ls"), displayerType(&displayers.Firewall{}))
 
-	CmdBuilder(cmd, RunFirewallListByDroplet, "list-by-droplet <droplet_id>", "list firewalls by droplet ID", Writer, displayerType(&displayers.Firewall{}))
+	CmdBuilder(cmd, RunFirewallListByTask, "list-by-task <task_id>", "list firewalls by task ID", Writer, displayerType(&displayers.Firewall{}))
 
 	cmdRunRecordDelete := CmdBuilder(cmd, RunFirewallDelete, "delete <id> [id ...]", "delete firewall", Writer, aliasOpt("d", "rm"))
-	AddBoolFlag(cmdRunRecordDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force firewall delete")
+	AddBoolFlag(cmdRunRecordDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force firewall delete")
 
-	cmdAddDroplets := CmdBuilder(cmd, RunFirewallAddDroplets, "add-droplets <id>", "add droplets to the firewall", Writer)
-	AddStringSliceFlag(cmdAddDroplets, doctl.ArgDropletIDs, "", []string{}, "comma-separated list of droplet IDs, example valus: 123,456")
+	cmdAddTasks := CmdBuilder(cmd, RunFirewallAddTasks, "add-tasks <id>", "add tasks to the firewall", Writer)
+	AddStringSliceFlag(cmdAddTasks, dccncli.ArgTaskIDs, "", []string{}, "comma-separated list of task IDs, example valus: 123,456")
 
-	cmdRemoveDroplets := CmdBuilder(cmd, RunFirewallRemoveDroplets, "remove-droplets <id>", "remove droplets from the firewall", Writer)
-	AddStringSliceFlag(cmdRemoveDroplets, doctl.ArgDropletIDs, "", []string{}, "comma-separated list of droplet IDs, example value: 123,456")
+	cmdRemoveTasks := CmdBuilder(cmd, RunFirewallRemoveTasks, "remove-tasks <id>", "remove tasks from the firewall", Writer)
+	AddStringSliceFlag(cmdRemoveTasks, dccncli.ArgTaskIDs, "", []string{}, "comma-separated list of task IDs, example value: 123,456")
 
 	cmdAddTags := CmdBuilder(cmd, RunFirewallAddTags, "add-tags <id>", "add tags to the firewall", Writer)
-	AddStringSliceFlag(cmdAddTags, doctl.ArgTagNames, "", []string{}, "comma-separated list of tag names, example valus: frontend,backend")
+	AddStringSliceFlag(cmdAddTags, dccncli.ArgTagNames, "", []string{}, "comma-separated list of tag names, example valus: frontend,backend")
 
 	cmdRemoveTags := CmdBuilder(cmd, RunFirewallRemoveTags, "remove-tags <id>", "remove tags from the firewall", Writer)
-	AddStringSliceFlag(cmdRemoveTags, doctl.ArgTagNames, "", []string{}, "comma-separated list of tag names, example value: frontend,backend")
+	AddStringSliceFlag(cmdRemoveTags, dccncli.ArgTagNames, "", []string{}, "comma-separated list of tag names, example value: frontend,backend")
 
 	cmdAddRules := CmdBuilder(cmd, RunFirewallAddRules, "add-rules <id>", "add inbound/outbound rules to the firewall", Writer)
-	AddStringFlag(cmdAddRules, doctl.ArgInboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
-	AddStringFlag(cmdAddRules, doctl.ArgOutboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdAddRules, dccncli.ArgInboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdAddRules, dccncli.ArgOutboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
 
 	cmdRemoveRules := CmdBuilder(cmd, RunFirewallRemoveRules, "remove-rules <id>", "remove inbound/outbound rules from the firewall", Writer)
-	AddStringFlag(cmdRemoveRules, doctl.ArgInboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,load_balancer_uid:lb-uuid, use quoted string of space-separated values for multiple rules")
-	AddStringFlag(cmdRemoveRules, doctl.ArgOutboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdRemoveRules, dccncli.ArgInboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,load_balancer_uid:lb-uuid, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdRemoveRules, dccncli.ArgOutboundRules, "", "", "comma-separated key:value list, example value: protocol:tcp,ports:22,address:0.0.0.0/0, use quoted string of space-separated values for multiple rules")
 
 	return cmd
 }
@@ -86,7 +86,7 @@ func Firewall() *Command {
 // RunFirewallGet retrieves an existing Firewall by its identifier.
 func RunFirewallGet(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	id := c.Args[0]
 
@@ -120,7 +120,7 @@ func RunFirewallCreate(c *CmdConfig) error {
 // RunFirewallUpdate updates an existing Firewall with new configuration.
 func RunFirewallUpdate(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	fID := c.Args[0]
 
@@ -151,18 +151,18 @@ func RunFirewallList(c *CmdConfig) error {
 	return c.Display(items)
 }
 
-// RunFirewallListByDroplet lists Firewalls for a given Droplet.
-func RunFirewallListByDroplet(c *CmdConfig) error {
+// RunFirewallListByTask lists Firewalls for a given Task.
+func RunFirewallListByTask(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	dID, err := strconv.Atoi(c.Args[0])
 	if err != nil {
-		return fmt.Errorf("invalid droplet id: [%v]", c.Args[0])
+		return fmt.Errorf("invalid task id: [%v]", c.Args[0])
 	}
 
 	fs := c.Firewalls()
-	list, err := fs.ListByDroplet(dID)
+	list, err := fs.ListByTask(dID)
 	if err != nil {
 		return err
 	}
@@ -174,10 +174,10 @@ func RunFirewallListByDroplet(c *CmdConfig) error {
 // RunFirewallDelete deletes a Firewall by its identifier.
 func RunFirewallDelete(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -196,54 +196,54 @@ func RunFirewallDelete(c *CmdConfig) error {
 	return nil
 }
 
-// RunFirewallAddDroplets adds droplets to a Firewall.
-func RunFirewallAddDroplets(c *CmdConfig) error {
+// RunFirewallAddTasks adds tasks to a Firewall.
+func RunFirewallAddTasks(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	fID := c.Args[0]
 
-	dropletIDsList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgDropletIDs)
+	taskIDsList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTaskIDs)
 	if err != nil {
 		return err
 	}
 
-	dropletIDs, err := extractDropletIDs(dropletIDsList)
+	taskIDs, err := extractTaskIDs(taskIDsList)
 	if err != nil {
 		return err
 	}
 
-	return c.Firewalls().AddDroplets(fID, dropletIDs...)
+	return c.Firewalls().AddTasks(fID, taskIDs...)
 }
 
-// RunFirewallRemoveDroplets removes droplets from a Firewall.
-func RunFirewallRemoveDroplets(c *CmdConfig) error {
+// RunFirewallRemoveTasks removes tasks from a Firewall.
+func RunFirewallRemoveTasks(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	fID := c.Args[0]
 
-	dropletIDsList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgDropletIDs)
+	taskIDsList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTaskIDs)
 	if err != nil {
 		return err
 	}
 
-	dropletIDs, err := extractDropletIDs(dropletIDsList)
+	taskIDs, err := extractTaskIDs(taskIDsList)
 	if err != nil {
 		return err
 	}
 
-	return c.Firewalls().RemoveDroplets(fID, dropletIDs...)
+	return c.Firewalls().RemoveTasks(fID, taskIDs...)
 }
 
 // RunFirewallAddTags adds tags to a Firewall.
 func RunFirewallAddTags(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	fID := c.Args[0]
 
-	tagList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgTagNames)
+	tagList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTagNames)
 	if err != nil {
 		return err
 	}
@@ -254,11 +254,11 @@ func RunFirewallAddTags(c *CmdConfig) error {
 // RunFirewallRemoveTags removes tags from a Firewall.
 func RunFirewallRemoveTags(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	fID := c.Args[0]
 
-	tagList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgTagNames)
+	tagList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTagNames)
 	if err != nil {
 		return err
 	}
@@ -269,7 +269,7 @@ func RunFirewallRemoveTags(c *CmdConfig) error {
 // RunFirewallAddRules adds rules to a Firewall.
 func RunFirewallAddRules(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	fID := c.Args[0]
 
@@ -284,7 +284,7 @@ func RunFirewallAddRules(c *CmdConfig) error {
 // RunFirewallRemoveRules removes rules from a Firewall.
 func RunFirewallRemoveRules(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	fID := c.Args[0]
 
@@ -297,13 +297,13 @@ func RunFirewallRemoveRules(c *CmdConfig) error {
 }
 
 func buildFirewallRequestFromArgs(c *CmdConfig, r *godo.FirewallRequest) error {
-	name, err := c.Doit.GetString(c.NS, doctl.ArgFirewallName)
+	name, err := c.Ankr.GetString(c.NS, dccncli.ArgFirewallName)
 	if err != nil {
 		return err
 	}
 	r.Name = name
 
-	ira, err := c.Doit.GetString(c.NS, doctl.ArgInboundRules)
+	ira, err := c.Ankr.GetString(c.NS, dccncli.ArgInboundRules)
 	if err != nil {
 		return err
 	}
@@ -314,7 +314,7 @@ func buildFirewallRequestFromArgs(c *CmdConfig, r *godo.FirewallRequest) error {
 	}
 	r.InboundRules = inboundRules
 
-	ora, err := c.Doit.GetString(c.NS, doctl.ArgOutboundRules)
+	ora, err := c.Ankr.GetString(c.NS, dccncli.ArgOutboundRules)
 	if err != nil {
 		return err
 	}
@@ -325,18 +325,18 @@ func buildFirewallRequestFromArgs(c *CmdConfig, r *godo.FirewallRequest) error {
 	}
 	r.OutboundRules = outboundRules
 
-	dropletIDsList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgDropletIDs)
+	taskIDsList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTaskIDs)
 	if err != nil {
 		return err
 	}
 
-	dropletIDs, err := extractDropletIDs(dropletIDsList)
+	taskIDs, err := extractTaskIDs(taskIDsList)
 	if err != nil {
 		return err
 	}
-	r.DropletIDs = dropletIDs
+	r.TaskIDs = taskIDs
 
-	tagsList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgTagNames)
+	tagsList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTagNames)
 	if err != nil {
 		return err
 	}
@@ -346,7 +346,7 @@ func buildFirewallRequestFromArgs(c *CmdConfig, r *godo.FirewallRequest) error {
 }
 
 func buildFirewallRulesRequestFromArgs(c *CmdConfig, rr *godo.FirewallRulesRequest) error {
-	ira, err := c.Doit.GetString(c.NS, doctl.ArgInboundRules)
+	ira, err := c.Ankr.GetString(c.NS, dccncli.ArgInboundRules)
 	if err != nil {
 		return err
 	}
@@ -357,7 +357,7 @@ func buildFirewallRulesRequestFromArgs(c *CmdConfig, rr *godo.FirewallRulesReque
 	}
 	rr.InboundRules = inboundRules
 
-	ora, err := c.Doit.GetString(c.NS, doctl.ArgOutboundRules)
+	ora, err := c.Ankr.GetString(c.NS, dccncli.ArgOutboundRules)
 	if err != nil {
 		return err
 	}
@@ -413,7 +413,7 @@ func extractOutboundRules(s string) (rules []godo.OutboundRule, err error) {
 
 func extractRule(ruleStr string, sd string) (map[string]interface{}, error) {
 	rule := map[string]interface{}{}
-	var dropletIDs []int
+	var taskIDs []int
 	var addresses, lbUIDs, tags []string
 
 	kvs := strings.Split(ruleStr, ",")
@@ -426,12 +426,12 @@ func extractRule(ruleStr string, sd string) (map[string]interface{}, error) {
 		switch pair[0] {
 		case "address":
 			addresses = append(addresses, pair[1])
-		case "droplet_id":
+		case "task_id":
 			i, err := strconv.Atoi(pair[1])
 			if err != nil {
-				return nil, fmt.Errorf("Provided value [%v] for droplet id is not of type int", pair[0])
+				return nil, fmt.Errorf("Provided value [%v] for task id is not of type int", pair[0])
 			}
-			dropletIDs = append(dropletIDs, i)
+			taskIDs = append(taskIDs, i)
 		case "load_balancer_uid":
 			lbUIDs = append(lbUIDs, pair[1])
 		case "tag":
@@ -443,7 +443,7 @@ func extractRule(ruleStr string, sd string) (map[string]interface{}, error) {
 
 	rule[sd] = map[string]interface{}{
 		"addresses":          addresses,
-		"droplet_ids":        dropletIDs,
+		"task_ids":        taskIDs,
 		"load_balancer_uids": lbUIDs,
 		"tags":               tags,
 	}

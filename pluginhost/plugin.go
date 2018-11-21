@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Host is an object consumers can retrieve doit information from.
+// Host is an object consumers can retrieve ankr information from.
 type Host struct {
 	client *rpc.Client
 }
@@ -45,7 +45,7 @@ func NewHost(pluginPath string) (*Host, error) {
 // Call a method on the plugin.
 func (h *Host) Call(method string, args ...string) (string, error) {
 	opts := &CallOptions{
-		AccessToken: viper.GetString(doctl.ArgAccessToken),
+		AccessToken: viper.GetString(dccncli.ArgAccessToken),
 		Args:        args,
 	}
 

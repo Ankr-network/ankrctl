@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -97,7 +97,7 @@ func TestImagesUpdate(t *testing.T) {
 		tm.images.On("Update", testImage.ID, iur).Return(&testImage, nil)
 
 		config.Args = append(config.Args, strconv.Itoa(testImage.ID))
-		config.Doit.Set(config.NS, doctl.ArgImageName, "new-name")
+		config.Ankr.Set(config.NS, dccncli.ArgImageName, "new-name")
 		err := RunImagesUpdate(config)
 		assert.NoError(t, err)
 	})
@@ -108,7 +108,7 @@ func TestImagesDelete(t *testing.T) {
 		tm.images.On("Delete", testImage.ID).Return(nil)
 
 		config.Args = append(config.Args, strconv.Itoa(testImage.ID))
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunImagesDelete(config)
 		assert.NoError(t, err)
@@ -122,7 +122,7 @@ func TestImagesDeleteMultiple(t *testing.T) {
 		tm.images.On("Delete", testImageSecondary.ID).Return(nil)
 
 		config.Args = append(config.Args, strconv.Itoa(testImage.ID), strconv.Itoa(testImageSecondary.ID))
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunImagesDelete(config)
 		assert.NoError(t, err)

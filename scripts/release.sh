@@ -7,7 +7,7 @@ if [[ -z "$tag" ]]; then
 fi
 
 github-release release \
-  --user digitalocean \
-  --repo doctl \
+  --user ankrnetwork \
+  --repo dccncli \
   --name "$tag" \
   --pre-release --tag "$tag"

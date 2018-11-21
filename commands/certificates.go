@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -38,17 +38,17 @@ func Certificate() *Command {
 	CmdBuilder(cmd, RunCertificateGet, "get <id>", "get certificate", Writer, aliasOpt("g"))
 
 	cmdCertificateCreate := CmdBuilder(cmd, RunCertificateCreate, "create", "create new certificate", Writer, aliasOpt("c"))
-	AddStringFlag(cmdCertificateCreate, doctl.ArgCertificateName, "", "", "certificate name", requiredOpt())
-	AddStringSliceFlag(cmdCertificateCreate, doctl.ArgCertificateDNSNames, "", []string{}, "comma-separated list of domain names, required for lets_encrypt certificate")
-	AddStringFlag(cmdCertificateCreate, doctl.ArgPrivateKeyPath, "", "", "path to a private key for the certificate, required for custom certificate")
-	AddStringFlag(cmdCertificateCreate, doctl.ArgLeafCertificatePath, "", "", "path to a certificate leaf, required for custom certificate")
-	AddStringFlag(cmdCertificateCreate, doctl.ArgCertificateChainPath, "", "", "path to a certificate chain")
-	AddStringFlag(cmdCertificateCreate, doctl.ArgCertificateType, "", "", "certificate type, possible values: custom or lets_encrypt")
+	AddStringFlag(cmdCertificateCreate, dccncli.ArgCertificateName, "", "", "certificate name", requiredOpt())
+	AddStringSliceFlag(cmdCertificateCreate, dccncli.ArgCertificateDNSNames, "", []string{}, "comma-separated list of domain names, required for lets_encrypt certificate")
+	AddStringFlag(cmdCertificateCreate, dccncli.ArgPrivateKeyPath, "", "", "path to a private key for the certificate, required for custom certificate")
+	AddStringFlag(cmdCertificateCreate, dccncli.ArgLeafCertificatePath, "", "", "path to a certificate leaf, required for custom certificate")
+	AddStringFlag(cmdCertificateCreate, dccncli.ArgCertificateChainPath, "", "", "path to a certificate chain")
+	AddStringFlag(cmdCertificateCreate, dccncli.ArgCertificateType, "", "", "certificate type, possible values: custom or lets_encrypt")
 
 	CmdBuilder(cmd, RunCertificateList, "list", "list certificates", Writer, aliasOpt("ls"))
 
 	cmdCertificateDelete := CmdBuilder(cmd, RunCertificateDelete, "delete <id>", "delete certificate", Writer, aliasOpt("d", "rm"))
-	AddBoolFlag(cmdCertificateDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force certificate delete")
+	AddBoolFlag(cmdCertificateDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force certificate delete")
 
 	return cmd
 }
@@ -56,7 +56,7 @@ func Certificate() *Command {
 // RunCertificateGet retrieves an existing certificate by its identifier.
 func RunCertificateGet(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	cID := c.Args[0]
 
@@ -72,17 +72,17 @@ func RunCertificateGet(c *CmdConfig) error {
 
 // RunCertificateCreate creates a certificate.
 func RunCertificateCreate(c *CmdConfig) error {
-	name, err := c.Doit.GetString(c.NS, doctl.ArgCertificateName)
+	name, err := c.Ankr.GetString(c.NS, dccncli.ArgCertificateName)
 	if err != nil {
 		return err
 	}
 
-	domainList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgCertificateDNSNames)
+	domainList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgCertificateDNSNames)
 	if err != nil {
 		return err
 	}
 
-	cType, err := c.Doit.GetString(c.NS, doctl.ArgCertificateType)
+	cType, err := c.Ankr.GetString(c.NS, dccncli.ArgCertificateType)
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func RunCertificateCreate(c *CmdConfig) error {
 		Type:     cType,
 	}
 
-	pkPath, err := c.Doit.GetString(c.NS, doctl.ArgPrivateKeyPath)
+	pkPath, err := c.Ankr.GetString(c.NS, dccncli.ArgPrivateKeyPath)
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func RunCertificateCreate(c *CmdConfig) error {
 		r.PrivateKey = pc
 	}
 
-	lcPath, err := c.Doit.GetString(c.NS, doctl.ArgLeafCertificatePath)
+	lcPath, err := c.Ankr.GetString(c.NS, dccncli.ArgLeafCertificatePath)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func RunCertificateCreate(c *CmdConfig) error {
 		r.LeafCertificate = lc
 	}
 
-	ccPath, err := c.Doit.GetString(c.NS, doctl.ArgCertificateChainPath)
+	ccPath, err := c.Ankr.GetString(c.NS, dccncli.ArgCertificateChainPath)
 	if err != nil {
 		return err
 	}
@@ -160,11 +160,11 @@ func RunCertificateList(c *CmdConfig) error {
 // RunCertificateDelete deletes a certificate by its identifier.
 func RunCertificateDelete(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	cID := c.Args[0]
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}

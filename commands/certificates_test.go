@@ -128,26 +128,26 @@ func TestCertificatesCreate(t *testing.T) {
 
 				tm.certificates.On("Create", &test.certificate).Return(&testCertificate, nil)
 
-				config.Doit.Set(config.NS, doctl.ArgCertificateName, test.certName)
+				config.Ankr.Set(config.NS, dccncli.ArgCertificateName, test.certName)
 
 				if test.privateKeyPath != "" {
-					config.Doit.Set(config.NS, doctl.ArgPrivateKeyPath, test.privateKeyPath)
+					config.Ankr.Set(config.NS, dccncli.ArgPrivateKeyPath, test.privateKeyPath)
 				}
 
 				if test.certLeafPath != "" {
-					config.Doit.Set(config.NS, doctl.ArgLeafCertificatePath, test.certLeafPath)
+					config.Ankr.Set(config.NS, dccncli.ArgLeafCertificatePath, test.certLeafPath)
 				}
 
 				if test.certChainPath != "" {
-					config.Doit.Set(config.NS, doctl.ArgCertificateChainPath, test.certChainPath)
+					config.Ankr.Set(config.NS, dccncli.ArgCertificateChainPath, test.certChainPath)
 				}
 
 				if test.DNSNames != nil {
-					config.Doit.Set(config.NS, doctl.ArgCertificateDNSNames, test.DNSNames)
+					config.Ankr.Set(config.NS, dccncli.ArgCertificateDNSNames, test.DNSNames)
 				}
 
 				if test.certType != "" {
-					config.Doit.Set(config.NS, doctl.ArgCertificateType, test.certType)
+					config.Ankr.Set(config.NS, dccncli.ArgCertificateType, test.certType)
 				}
 
 				err := RunCertificateCreate(config)
@@ -172,7 +172,7 @@ func TestCertificateDelete(t *testing.T) {
 		tm.certificates.On("Delete", cID).Return(nil)
 
 		config.Args = append(config.Args, cID)
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunCertificateDelete(config)
 		assert.NoError(t, err)

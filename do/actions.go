@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -27,7 +27,7 @@ type Action struct {
 // Actions is a slice of Action.
 type Actions []Action
 
-// ActionsService is an interface for interacting with DigitalOcean's action api.
+// ActionsService is an interface for interacting with AnkrNetwork's action api.
 type ActionsService interface {
 	List() (Actions, error)
 	Get(int) (*Action, error)

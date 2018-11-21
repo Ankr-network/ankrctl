@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -39,11 +39,11 @@ func FloatingIPAction() *Command {
 		displayerType(&displayers.Action{}), docCategories("floatingip"))
 
 	CmdBuilder(cmd, RunFloatingIPActionsAssign,
-		"assign <floating-ip> <droplet-id>", "assign a floating IP to a droplet", Writer,
+		"assign <floating-ip> <task-id>", "assign a floating IP to a task", Writer,
 		displayerType(&displayers.Action{}), docCategories("floatingip"))
 
 	CmdBuilder(cmd, RunFloatingIPActionsUnassign,
-		"unassign <floating-ip>", "unassign a floating IP to a droplet", Writer,
+		"unassign <floating-ip>", "unassign a floating IP to a task", Writer,
 		displayerType(&displayers.Action{}), docCategories("floatingip"))
 
 	return cmd
@@ -52,7 +52,7 @@ func FloatingIPAction() *Command {
 // RunFloatingIPActionsGet retrieves an action for a floating IP.
 func RunFloatingIPActionsGet(c *CmdConfig) error {
 	if len(c.Args) != 2 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	ip := c.Args[0]
@@ -73,34 +73,34 @@ func RunFloatingIPActionsGet(c *CmdConfig) error {
 	return c.Display(item)
 }
 
-// RunFloatingIPActionsAssign assigns a floating IP to a droplet.
+// RunFloatingIPActionsAssign assigns a floating IP to a task.
 func RunFloatingIPActionsAssign(c *CmdConfig) error {
 	if len(c.Args) != 2 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	ip := c.Args[0]
 
 	fia := c.FloatingIPActions()
 
-	dropletID, err := strconv.Atoi(c.Args[1])
+	taskID, err := strconv.Atoi(c.Args[1])
 	if err != nil {
 		return err
 	}
 
-	a, err := fia.Assign(ip, dropletID)
+	a, err := fia.Assign(ip, taskID)
 	if err != nil {
-		checkErr(fmt.Errorf("could not assign IP to droplet: %v", err))
+		checkErr(fmt.Errorf("could not assign IP to task: %v", err))
 	}
 
 	item := &displayers.Action{Actions: do.Actions{*a}}
 	return c.Display(item)
 }
 
-// RunFloatingIPActionsUnassign unassigns a floating IP to a droplet.
+// RunFloatingIPActionsUnassign unassigns a floating IP to a task.
 func RunFloatingIPActionsUnassign(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	ip := c.Args[0]
@@ -109,7 +109,7 @@ func RunFloatingIPActionsUnassign(c *CmdConfig) error {
 
 	a, err := fia.Unassign(ip)
 	if err != nil {
-		checkErr(fmt.Errorf("could not unassign IP to droplet: %v", err))
+		checkErr(fmt.Errorf("could not unassign IP to task: %v", err))
 	}
 
 	item := &displayers.Action{Actions: do.Actions{*a}}

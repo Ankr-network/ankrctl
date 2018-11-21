@@ -72,8 +72,8 @@ func (_m *SnapshotsService) List() (do.Snapshots, error) {
 	return r0, r1
 }
 
-// ListDroplet provides a mock function with given fields:
-func (_m *SnapshotsService) ListDroplet() (do.Snapshots, error) {
+// ListTask provides a mock function with given fields:
+func (_m *SnapshotsService) ListTask() (do.Snapshots, error) {
 	ret := _m.Called()
 
 	var r0 do.Snapshots

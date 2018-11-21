@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -29,10 +29,10 @@ var (
 			Name: "mytag",
 			Resources: &godo.TaggedResources{
 				Count:         5,
-				LastTaggedURI: fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d", testDroplet.ID),
-				Droplets: &godo.TaggedDropletsResources{
+				LastTaggedURI: fmt.Sprintf("https://api.ankrnetwork.com/v2/tasks/%d", testTask.ID),
+				Tasks: &godo.TaggedTasksResources{
 					Count:      5,
-					LastTagged: testDroplet.Droplet,
+					LastTagged: testTask.Task,
 				},
 				Images: &godo.TaggedImagesResources{
 					Count: 0,
@@ -85,7 +85,7 @@ func TestTagDelete(t *testing.T) {
 		tm.tags.On("Delete", "my-tag").Return(nil)
 		config.Args = append(config.Args, "my-tag")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunCmdTagDelete(config)
 		assert.NoError(t, err)
@@ -98,7 +98,7 @@ func TestTagDeleteMultiple(t *testing.T) {
 		tm.tags.On("Delete", "my-tag-secondary").Return(nil)
 		config.Args = append(config.Args, "my-tag", "my-tag-secondary")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunCmdTagDelete(config)
 		assert.NoError(t, err)

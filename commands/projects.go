@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -37,20 +37,20 @@ func Projects() *Command {
 	CmdBuilder(cmd, RunProjectsGet, "get <id>", "get a project; use \"default\" as ID to get default project", Writer, aliasOpt("g"), displayerType(&displayers.Project{}), betaCmd())
 
 	cmdProjectsCreate := CmdBuilder(cmd, RunProjectsCreate, "create", "create project", Writer, aliasOpt("c"), displayerType(&displayers.Project{}), betaCmd())
-	AddStringFlag(cmdProjectsCreate, doctl.ArgProjectName, "", "", "project name", requiredOpt())
-	AddStringFlag(cmdProjectsCreate, doctl.ArgProjectPurpose, "", "", "project purpose", requiredOpt())
-	AddStringFlag(cmdProjectsCreate, doctl.ArgProjectDescription, "", "", "a description of your project")
-	AddStringFlag(cmdProjectsCreate, doctl.ArgProjectEnvironment, "", "", "the environment in which your project resides. Should be one of 'Development', 'Staging', 'Production'.")
+	AddStringFlag(cmdProjectsCreate, dccncli.ArgProjectName, "", "", "project name", requiredOpt())
+	AddStringFlag(cmdProjectsCreate, dccncli.ArgProjectPurpose, "", "", "project purpose", requiredOpt())
+	AddStringFlag(cmdProjectsCreate, dccncli.ArgProjectDescription, "", "", "a description of your project")
+	AddStringFlag(cmdProjectsCreate, dccncli.ArgProjectEnvironment, "", "", "the environment in which your project resides. Should be one of 'Development', 'Staging', 'Production'.")
 
 	cmdProjectsUpdate := CmdBuilder(cmd, RunProjectsUpdate, "update <id>", "update project; use \"default\" as ID to update the default project", Writer, aliasOpt("u"), displayerType(&displayers.Project{}), betaCmd())
-	AddStringFlag(cmdProjectsUpdate, doctl.ArgProjectName, "", "", "project name")
-	AddStringFlag(cmdProjectsUpdate, doctl.ArgProjectPurpose, "", "", "project purpose")
-	AddStringFlag(cmdProjectsUpdate, doctl.ArgProjectDescription, "", "", "a description of your project")
-	AddStringFlag(cmdProjectsUpdate, doctl.ArgProjectEnvironment, "", "", "the environment in which your project resides. Should be one of 'Development', 'Staging', 'Production'.")
-	AddBoolFlag(cmdProjectsUpdate, doctl.ArgProjectIsDefault, "", false, "set the specified project as your default project")
+	AddStringFlag(cmdProjectsUpdate, dccncli.ArgProjectName, "", "", "project name")
+	AddStringFlag(cmdProjectsUpdate, dccncli.ArgProjectPurpose, "", "", "project purpose")
+	AddStringFlag(cmdProjectsUpdate, dccncli.ArgProjectDescription, "", "", "a description of your project")
+	AddStringFlag(cmdProjectsUpdate, dccncli.ArgProjectEnvironment, "", "", "the environment in which your project resides. Should be one of 'Development', 'Staging', 'Production'.")
+	AddBoolFlag(cmdProjectsUpdate, dccncli.ArgProjectIsDefault, "", false, "set the specified project as your default project")
 
 	cmdProjectsDelete := CmdBuilder(cmd, RunProjectsDelete, "delete <id> [<id> ...]", "delete project", Writer, aliasOpt("d", "rm"), betaCmd())
-	AddBoolFlag(cmdProjectsDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force project delete")
+	AddBoolFlag(cmdProjectsDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force project delete")
 
 	cmd.AddCommand(ProjectResourcesCmd())
 
@@ -69,7 +69,7 @@ func ProjectResourcesCmd() *Command {
 	CmdBuilder(cmd, RunProjectResourcesGet, "get <urn>", "get a project resource by its URN", Writer, aliasOpt("g"), betaCmd())
 
 	cmdProjectResourcesAssign := CmdBuilder(cmd, RunProjectResourcesAssign, "assign <project-id> --resource=<urn> [--resource=<urn> ...]", "assign one or more resources to a project project", Writer, aliasOpt("a"), betaCmd())
-	AddStringSliceFlag(cmdProjectResourcesAssign, doctl.ArgProjectResource, "", []string{}, "resource URNs denoting resources to assign to the project")
+	AddStringSliceFlag(cmdProjectResourcesAssign, dccncli.ArgProjectResource, "", []string{}, "resource URNs denoting resources to assign to the project")
 
 	return cmd
 }
@@ -89,7 +89,7 @@ func RunProjectsList(c *CmdConfig) error {
 // as an identifier to retrieve your default project.
 func RunProjectsGet(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	id := c.Args[0]
 
@@ -120,7 +120,7 @@ func RunProjectsCreate(c *CmdConfig) error {
 
 func RunProjectsUpdate(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	id := c.Args[0]
 
@@ -140,10 +140,10 @@ func RunProjectsUpdate(c *CmdConfig) error {
 
 func RunProjectsDelete(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -168,7 +168,7 @@ func RunProjectsDelete(c *CmdConfig) error {
 
 func RunProjectResourcesList(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	id := c.Args[0]
 
@@ -183,19 +183,19 @@ func RunProjectResourcesList(c *CmdConfig) error {
 
 func RunProjectResourcesGet(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	urn := c.Args[0]
 
 	parts, isValid := validateURN(urn)
 	if !isValid {
-		return doctl.NewInvalidURNErr(urn)
+		return dccncli.NewInvalidURNErr(urn)
 	}
 
 	c.Args = []string{parts[2]}
 	switch parts[1] {
-	case "droplet":
-		return RunDropletGet(c)
+	case "task":
+		return RunTaskGet(c)
 	case "floatingip":
 		return RunFloatingIPGet(c)
 	case "loadbalancer":
@@ -211,11 +211,11 @@ func RunProjectResourcesGet(c *CmdConfig) error {
 
 func RunProjectResourcesAssign(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	projectUUID := c.Args[0]
 
-	urns, err := c.Doit.GetStringSlice(c.NS, doctl.ArgProjectResource)
+	urns, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgProjectResource)
 	if err != nil {
 		return err
 	}
@@ -251,25 +251,25 @@ func validateURN(urn string) ([]string, bool) {
 }
 
 func buildProjectsCreateRequestFromArgs(c *CmdConfig, r *godo.CreateProjectRequest) error {
-	name, err := c.Doit.GetString(c.NS, doctl.ArgProjectName)
+	name, err := c.Ankr.GetString(c.NS, dccncli.ArgProjectName)
 	if err != nil {
 		return err
 	}
 	r.Name = name
 
-	purpose, err := c.Doit.GetString(c.NS, doctl.ArgProjectPurpose)
+	purpose, err := c.Ankr.GetString(c.NS, dccncli.ArgProjectPurpose)
 	if err != nil {
 		return err
 	}
 	r.Purpose = purpose
 
-	description, err := c.Doit.GetString(c.NS, doctl.ArgProjectDescription)
+	description, err := c.Ankr.GetString(c.NS, dccncli.ArgProjectDescription)
 	if err != nil {
 		return err
 	}
 	r.Description = description
 
-	environment, err := c.Doit.GetString(c.NS, doctl.ArgProjectEnvironment)
+	environment, err := c.Ankr.GetString(c.NS, dccncli.ArgProjectEnvironment)
 	if err != nil {
 		return err
 	}
@@ -279,40 +279,40 @@ func buildProjectsCreateRequestFromArgs(c *CmdConfig, r *godo.CreateProjectReque
 }
 
 func buildProjectsUpdateRequestFromArgs(c *CmdConfig, r *godo.UpdateProjectRequest) error {
-	if c.Doit.IsSet(doctl.ArgProjectName) {
-		name, err := c.Doit.GetString(c.NS, doctl.ArgProjectName)
+	if c.Ankr.IsSet(dccncli.ArgProjectName) {
+		name, err := c.Ankr.GetString(c.NS, dccncli.ArgProjectName)
 		if err != nil {
 			return err
 		}
 		r.Name = name
 	}
 
-	if c.Doit.IsSet(doctl.ArgProjectPurpose) {
-		purpose, err := c.Doit.GetString(c.NS, doctl.ArgProjectPurpose)
+	if c.Ankr.IsSet(dccncli.ArgProjectPurpose) {
+		purpose, err := c.Ankr.GetString(c.NS, dccncli.ArgProjectPurpose)
 		if err != nil {
 			return err
 		}
 		r.Purpose = purpose
 	}
 
-	if c.Doit.IsSet(doctl.ArgProjectDescription) {
-		description, err := c.Doit.GetString(c.NS, doctl.ArgProjectDescription)
+	if c.Ankr.IsSet(dccncli.ArgProjectDescription) {
+		description, err := c.Ankr.GetString(c.NS, dccncli.ArgProjectDescription)
 		if err != nil {
 			return err
 		}
 		r.Description = description
 	}
 
-	if c.Doit.IsSet(doctl.ArgProjectEnvironment) {
-		environment, err := c.Doit.GetString(c.NS, doctl.ArgProjectEnvironment)
+	if c.Ankr.IsSet(dccncli.ArgProjectEnvironment) {
+		environment, err := c.Ankr.GetString(c.NS, dccncli.ArgProjectEnvironment)
 		if err != nil {
 			return err
 		}
 		r.Environment = environment
 	}
 
-	if c.Doit.IsSet(doctl.ArgProjectIsDefault) {
-		isDefault, err := c.Doit.GetBool(c.NS, doctl.ArgProjectIsDefault)
+	if c.Ankr.IsSet(dccncli.ArgProjectIsDefault) {
+		isDefault, err := c.Ankr.GetBool(c.NS, dccncli.ArgProjectIsDefault)
 		if err != nil {
 			return err
 		}

@@ -1,4 +1,4 @@
-FROM doctl_builder
+FROM dccncli_builder
 
 ENV CGO=0
 ENV OUT_D /out
@@ -24,4 +24,4 @@ RUN  apk update && \
 
 COPY --from=0 /out/* /app/
 
-ENTRYPOINT ["/app/doctl_linux_amd64"]
+ENTRYPOINT ["/app/dccncli_linux_amd64"]

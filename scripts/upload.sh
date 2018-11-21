@@ -12,12 +12,12 @@ fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OUTPUT_DIR="${DIR}/../builds/${ver}/release"
 
-for r in $(ls ${OUTPUT_DIR}/doctl-${ver}-*); do
+for r in $(ls ${OUTPUT_DIR}/dccncli-${ver}-*); do
 	name=$(basename $r)
 	echo "uploading $name"
 	github-release upload \
-		--user digitalocean \
-		--repo doctl \
+		--user ankrnetwork \
+		--repo dccncli \
 		--tag v${ver} \
 		--name $name \
 		--file $r

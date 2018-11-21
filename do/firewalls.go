@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -34,10 +34,10 @@ type FirewallsService interface {
 	Create(fr *godo.FirewallRequest) (*Firewall, error)
 	Update(fID string, fr *godo.FirewallRequest) (*Firewall, error)
 	List() (Firewalls, error)
-	ListByDroplet(dID int) (Firewalls, error)
+	ListByTask(dID int) (Firewalls, error)
 	Delete(fID string) error
-	AddDroplets(fID string, dIDs ...int) error
-	RemoveDroplets(fID string, dIDs ...int) error
+	AddTasks(fID string, dIDs ...int) error
+	RemoveTasks(fID string, dIDs ...int) error
 	AddTags(fID string, tags ...string) error
 	RemoveTags(fID string, tags ...string) error
 	AddRules(fID string, rr *godo.FirewallRulesRequest) error
@@ -100,9 +100,9 @@ func (fs *firewallsService) List() (Firewalls, error) {
 	return paginatedListHelper(listFn)
 }
 
-func (fs *firewallsService) ListByDroplet(dID int) (Firewalls, error) {
+func (fs *firewallsService) ListByTask(dID int) (Firewalls, error) {
 	listFn := func(opt *godo.ListOptions) ([]interface{}, *godo.Response, error) {
-		list, resp, err := fs.client.Firewalls.ListByDroplet(context.TODO(), dID, opt)
+		list, resp, err := fs.client.Firewalls.ListByTask(context.TODO(), dID, opt)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -123,13 +123,13 @@ func (fs *firewallsService) Delete(fID string) error {
 	return err
 }
 
-func (fs *firewallsService) AddDroplets(fID string, dIDs ...int) error {
-	_, err := fs.client.Firewalls.AddDroplets(context.TODO(), fID, dIDs...)
+func (fs *firewallsService) AddTasks(fID string, dIDs ...int) error {
+	_, err := fs.client.Firewalls.AddTasks(context.TODO(), fID, dIDs...)
 	return err
 }
 
-func (fs *firewallsService) RemoveDroplets(fID string, dIDs ...int) error {
-	_, err := fs.client.Firewalls.RemoveDroplets(context.TODO(), fID, dIDs...)
+func (fs *firewallsService) RemoveTasks(fID string, dIDs ...int) error {
+	_, err := fs.client.Firewalls.RemoveTasks(context.TODO(), fID, dIDs...)
 	return err
 }
 

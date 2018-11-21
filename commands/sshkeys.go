@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -46,19 +46,19 @@ func SSHKeys() *Command {
 
 	cmdSSHKeysCreate := CmdBuilder(cmd, RunKeyCreate, "create <key-name>", "create ssh key", Writer,
 		aliasOpt("c"), displayerType(&displayers.Key{}), docCategories("sshkeys"))
-	AddStringFlag(cmdSSHKeysCreate, doctl.ArgKeyPublicKey, "", "", "Key contents", requiredOpt())
+	AddStringFlag(cmdSSHKeysCreate, dccncli.ArgKeyPublicKey, "", "", "Key contents", requiredOpt())
 
 	cmdSSHKeysImport := CmdBuilder(cmd, RunKeyImport, "import <key-name>", "import ssh key", Writer,
 		aliasOpt("i"), displayerType(&displayers.Key{}), docCategories("sshkeys"))
-	AddStringFlag(cmdSSHKeysImport, doctl.ArgKeyPublicKeyFile, "", "", "Public key file", requiredOpt())
+	AddStringFlag(cmdSSHKeysImport, dccncli.ArgKeyPublicKeyFile, "", "", "Public key file", requiredOpt())
 
 	cmdRunKeyDelete := CmdBuilder(cmd, RunKeyDelete, "delete <key-id|key-fingerprint>", "delete ssh key", Writer,
 		aliasOpt("d"), docCategories("sshkeys"))
-	AddBoolFlag(cmdRunKeyDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force ssh key delete")
+	AddBoolFlag(cmdRunKeyDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force ssh key delete")
 
 	cmdSSHKeysUpdate := CmdBuilder(cmd, RunKeyUpdate, "update <key-id|key-fingerprint>", "update ssh key", Writer,
 		aliasOpt("u"), displayerType(&displayers.Key{}), docCategories("sshkeys"))
-	AddStringFlag(cmdSSHKeysUpdate, doctl.ArgKeyName, "", "", "Key name", requiredOpt())
+	AddStringFlag(cmdSSHKeysUpdate, dccncli.ArgKeyName, "", "", "Key name", requiredOpt())
 
 	return cmd
 }
@@ -81,7 +81,7 @@ func RunKeyGet(c *CmdConfig) error {
 	ks := c.Keys()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	rawKey := c.Args[0]
@@ -100,12 +100,12 @@ func RunKeyCreate(c *CmdConfig) error {
 	ks := c.Keys()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	name := c.Args[0]
 
-	publicKey, err := c.Doit.GetString(c.NS, doctl.ArgKeyPublicKey)
+	publicKey, err := c.Ankr.GetString(c.NS, dccncli.ArgKeyPublicKey)
 	if err != nil {
 		return err
 	}
@@ -129,10 +129,10 @@ func RunKeyImport(c *CmdConfig) error {
 	ks := c.Keys()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	keyPath, err := c.Doit.GetString(c.NS, doctl.ArgKeyPublicKeyFile)
+	keyPath, err := c.Ankr.GetString(c.NS, dccncli.ArgKeyPublicKeyFile)
 	if err != nil {
 		return err
 	}
@@ -172,10 +172,10 @@ func RunKeyDelete(c *CmdConfig) error {
 	ks := c.Keys()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return nil
 	}
@@ -194,12 +194,12 @@ func RunKeyUpdate(c *CmdConfig) error {
 	ks := c.Keys()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	rawKey := c.Args[0]
 
-	name, err := c.Doit.GetString(c.NS, doctl.ArgKeyName)
+	name, err := c.Ankr.GetString(c.NS, dccncli.ArgKeyName)
 	if err != nil {
 		return err
 	}

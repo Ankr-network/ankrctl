@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -40,9 +40,9 @@ func TestSSHComand(t *testing.T) {
 
 func TestSSH_ID(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		tm.droplets.On("Get", testDroplet.ID).Return(&testDroplet, nil)
+		tm.tasks.On("Get", testTask.ID).Return(&testTask, nil)
 
-		config.Args = append(config.Args, strconv.Itoa(testDroplet.ID))
+		config.Args = append(config.Args, strconv.Itoa(testTask.ID))
 
 		err := RunSSH(config)
 		assert.NoError(t, err)
@@ -56,25 +56,25 @@ func TestSSH_InvalidID(t *testing.T) {
 	})
 }
 
-func TestSSH_UnknownDroplet(t *testing.T) {
+func TestSSH_UnknownTask(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		tm.droplets.On("List").Return(testDropletList, nil)
+		tm.tasks.On("List").Return(testTaskList, nil)
 
 		config.Args = append(config.Args, "missing")
 
 		err := RunSSH(config)
-		assert.EqualError(t, err, "could not find droplet")
+		assert.EqualError(t, err, "could not find task")
 	})
 }
 
-func TestSSH_DropletWithNoPublic(t *testing.T) {
+func TestSSH_TaskWithNoPublic(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		tm.droplets.On("List").Return(testPrivateDropletList, nil)
+		tm.tasks.On("List").Return(testPrivateTaskList, nil)
 
-		config.Args = append(config.Args, testPrivateDroplet.Name)
+		config.Args = append(config.Args, testPrivateTask.Name)
 
 		err := RunSSH(config)
-		assert.EqualError(t, err, "could not find droplet address")
+		assert.EqualError(t, err, "could not find task address")
 	})
 }
 
@@ -83,16 +83,16 @@ func TestSSH_CustomPort(t *testing.T) {
 		rm := &mocks.Runner{}
 		rm.On("Run").Return(nil)
 
-		tc := config.Doit.(*TestConfig)
+		tc := config.Ankr.(*TestConfig)
 		tc.SSHFn = func(user, host, keyPath string, port int, opts ssh.Options) runner.Runner {
 			assert.Equal(t, 2222, port)
 			return rm
 		}
 
-		tm.droplets.On("List").Return(testDropletList, nil)
+		tm.tasks.On("List").Return(testTaskList, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgsSSHPort, "2222")
-		config.Args = append(config.Args, testDroplet.Name)
+		config.Ankr.Set(config.NS, dccncli.ArgsSSHPort, "2222")
+		config.Args = append(config.Args, testTask.Name)
 
 		err := RunSSH(config)
 		assert.NoError(t, err)
@@ -104,16 +104,16 @@ func TestSSH_CustomUser(t *testing.T) {
 		rm := &mocks.Runner{}
 		rm.On("Run").Return(nil)
 
-		tc := config.Doit.(*TestConfig)
+		tc := config.Ankr.(*TestConfig)
 		tc.SSHFn = func(user, host, keyPath string, port int, opts ssh.Options) runner.Runner {
 			assert.Equal(t, "foobar", user)
 			return rm
 		}
 
-		tm.droplets.On("List").Return(testDropletList, nil)
+		tm.tasks.On("List").Return(testTaskList, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgSSHUser, "foobar")
-		config.Args = append(config.Args, testDroplet.Name)
+		config.Ankr.Set(config.NS, dccncli.ArgSSHUser, "foobar")
+		config.Args = append(config.Args, testTask.Name)
 
 		err := RunSSH(config)
 		assert.NoError(t, err)
@@ -125,16 +125,16 @@ func TestSSH_AgentForwarding(t *testing.T) {
 		rm := &mocks.Runner{}
 		rm.On("Run").Return(nil)
 
-		tc := config.Doit.(*TestConfig)
+		tc := config.Ankr.(*TestConfig)
 		tc.SSHFn = func(user, host, keyPath string, port int, opts ssh.Options) runner.Runner {
-			assert.Equal(t, true, opts[doctl.ArgsSSHAgentForwarding])
+			assert.Equal(t, true, opts[dccncli.ArgsSSHAgentForwarding])
 			return rm
 		}
 
-		tm.droplets.On("List").Return(testDropletList, nil)
+		tm.tasks.On("List").Return(testTaskList, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgsSSHAgentForwarding, true)
-		config.Args = append(config.Args, testDroplet.Name)
+		config.Ankr.Set(config.NS, dccncli.ArgsSSHAgentForwarding, true)
+		config.Args = append(config.Args, testTask.Name)
 
 		err := RunSSH(config)
 		assert.NoError(t, err)
@@ -146,15 +146,15 @@ func TestSSH_CommandExecuting(t *testing.T) {
 		rm := &mocks.Runner{}
 		rm.On("Run").Return(nil)
 
-		tc := config.Doit.(*TestConfig)
+		tc := config.Ankr.(*TestConfig)
 		tc.SSHFn = func(user, host, keyPath string, port int, opts ssh.Options) runner.Runner {
-			assert.Equal(t, "uptime", opts[doctl.ArgSSHCommand])
+			assert.Equal(t, "uptime", opts[dccncli.ArgSSHCommand])
 			return rm
 		}
 
-		tm.droplets.On("List").Return(testDropletList, nil)
-		config.Doit.Set(config.NS, doctl.ArgSSHCommand, "uptime")
-		config.Args = append(config.Args, testDroplet.Name)
+		tm.tasks.On("List").Return(testTaskList, nil)
+		config.Ankr.Set(config.NS, dccncli.ArgSSHCommand, "uptime")
+		config.Args = append(config.Args, testTask.Name)
 
 		err := RunSSH(config)
 		assert.NoError(t, err)

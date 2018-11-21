@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -37,81 +37,81 @@ func SSH(parent *Command) *Command {
 
 	path := filepath.Join(usr.HomeDir, ".ssh", "id_rsa")
 
-	cmdSSH := CmdBuilder(parent, RunSSH, "ssh <droplet-id|host>", "ssh to droplet", Writer,
-		docCategories("droplet"))
-	AddStringFlag(cmdSSH, doctl.ArgSSHUser, "", "root", "ssh user")
-	AddStringFlag(cmdSSH, doctl.ArgsSSHKeyPath, "", path, "path to private ssh key")
-	AddIntFlag(cmdSSH, doctl.ArgsSSHPort, "", 22, "port sshd is running on")
-	AddBoolFlag(cmdSSH, doctl.ArgsSSHAgentForwarding, "", false, "enable ssh agent forwarding")
-	AddBoolFlag(cmdSSH, doctl.ArgsSSHPrivateIP, "", false, "ssh to private ip instead of public ip")
-	AddStringFlag(cmdSSH, doctl.ArgSSHCommand, "", "", "command to execute")
+	cmdSSH := CmdBuilder(parent, RunSSH, "ssh <task-id|host>", "ssh to task", Writer,
+		docCategories("task"))
+	AddStringFlag(cmdSSH, dccncli.ArgSSHUser, "", "root", "ssh user")
+	AddStringFlag(cmdSSH, dccncli.ArgsSSHKeyPath, "", path, "path to private ssh key")
+	AddIntFlag(cmdSSH, dccncli.ArgsSSHPort, "", 22, "port sshd is running on")
+	AddBoolFlag(cmdSSH, dccncli.ArgsSSHAgentForwarding, "", false, "enable ssh agent forwarding")
+	AddBoolFlag(cmdSSH, dccncli.ArgsSSHPrivateIP, "", false, "ssh to private ip instead of public ip")
+	AddStringFlag(cmdSSH, dccncli.ArgSSHCommand, "", "", "command to execute")
 
 	return cmdSSH
 }
 
-// RunSSH finds a droplet to ssh to given input parameters (name or id).
+// RunSSH finds a task to ssh to given input parameters (name or id).
 func RunSSH(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	dropletID := c.Args[0]
+	taskID := c.Args[0]
 
-	if dropletID == "" {
-		return doctl.NewMissingArgsErr(c.NS)
+	if taskID == "" {
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	user, err := c.Doit.GetString(c.NS, doctl.ArgSSHUser)
+	user, err := c.Ankr.GetString(c.NS, dccncli.ArgSSHUser)
 	if err != nil {
 		return err
 	}
 
-	keyPath, err := c.Doit.GetString(c.NS, doctl.ArgsSSHKeyPath)
+	keyPath, err := c.Ankr.GetString(c.NS, dccncli.ArgsSSHKeyPath)
 	if err != nil {
 		return err
 	}
 
-	port, err := c.Doit.GetInt(c.NS, doctl.ArgsSSHPort)
+	port, err := c.Ankr.GetInt(c.NS, dccncli.ArgsSSHPort)
 	if err != nil {
 		return err
 	}
 
 	var opts = make(ssh.Options)
-	opts[doctl.ArgsSSHAgentForwarding], err = c.Doit.GetBool(c.NS, doctl.ArgsSSHAgentForwarding)
+	opts[dccncli.ArgsSSHAgentForwarding], err = c.Ankr.GetBool(c.NS, dccncli.ArgsSSHAgentForwarding)
 	if err != nil {
 		return err
 	}
 
-	opts[doctl.ArgSSHCommand], err = c.Doit.GetString(c.NS, doctl.ArgSSHCommand)
+	opts[dccncli.ArgSSHCommand], err = c.Ankr.GetString(c.NS, dccncli.ArgSSHCommand)
 	if err != nil {
 		return nil
 	}
 
-	privateIPChoice, err := c.Doit.GetBool(c.NS, doctl.ArgsSSHPrivateIP)
+	privateIPChoice, err := c.Ankr.GetBool(c.NS, dccncli.ArgsSSHPrivateIP)
 	if err != nil {
 		return err
 	}
 
-	var droplet *do.Droplet
+	var task *do.Task
 
-	ds := c.Droplets()
-	if id, err := strconv.Atoi(dropletID); err == nil {
-		// dropletID is an integer
+	ds := c.Tasks()
+	if id, err := strconv.Atoi(taskID); err == nil {
+		// taskID is an integer
 
-		doDroplet, err := ds.Get(id)
+		doTask, err := ds.Get(id)
 		if err != nil {
 			return err
 		}
 
-		droplet = doDroplet
+		task = doTask
 	} else {
-		// dropletID is a string
-		droplets, err := ds.List()
+		// taskID is a string
+		tasks, err := ds.List()
 		if err != nil {
 			return err
 		}
 
-		shi := extractHostInfo(dropletID)
+		shi := extractHostInfo(taskID)
 
 		if shi.user != "" {
 			user = shi.user
@@ -121,42 +121,42 @@ func RunSSH(c *CmdConfig) error {
 			port = i
 		}
 
-		for _, d := range droplets {
+		for _, d := range tasks {
 			if d.Name == shi.host {
-				droplet = &d
+				task = &d
 				break
 			}
 			if strconv.Itoa(d.ID) == shi.host {
-				droplet = &d
+				task = &d
 				break
 			}
 		}
 
-		if droplet == nil {
-			return errors.New("could not find droplet")
+		if task == nil {
+			return errors.New("could not find task")
 		}
 
 	}
 
 	if user == "" {
-		user = defaultSSHUser(droplet)
+		user = defaultSSHUser(task)
 	}
 
-	ip, err := privateIPElsePub(droplet, privateIPChoice)
+	ip, err := privateIPElsePub(task, privateIPChoice)
 	if err != nil {
 		return err
 	}
 
 	if ip == "" {
-		return errors.New("could not find droplet address")
+		return errors.New("could not find task address")
 	}
 
-	runner := c.Doit.SSH(user, ip, keyPath, port, opts)
+	runner := c.Ankr.SSH(user, ip, keyPath, port, opts)
 	return runner.Run()
 }
 
-func defaultSSHUser(droplet *do.Droplet) string {
-	slug := strings.ToLower(droplet.Image.Slug)
+func defaultSSHUser(task *do.Task) string {
+	slug := strings.ToLower(task.Image.Slug)
 	if strings.Contains(slug, "coreos") {
 		return "core"
 	}
@@ -184,9 +184,9 @@ func extractHostInfo(in string) sshHostInfo {
 	}
 }
 
-func privateIPElsePub(droplet *do.Droplet, choice bool) (string, error) {
+func privateIPElsePub(task *do.Task, choice bool) (string, error) {
 	if choice {
-		return droplet.PrivateIPv4()
+		return task.PrivateIPv4()
 	}
-	return droplet.PublicIPv4()
+	return task.PublicIPv4()
 }

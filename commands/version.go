@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -28,26 +28,26 @@ func Version() *Command {
 			Use:   "version",
 			Short: "show the current version",
 			Run: func(cmd *cobra.Command, args []string) {
-				if doctl.Build != "" {
-					doctl.DoitVersion.Build = doctl.Build
+				if dccncli.Build != "" {
+					dccncli.AnkrVersion.Build = dccncli.Build
 				}
-				if doctl.Major != "" {
-					i, _ := strconv.Atoi(doctl.Major)
-					doctl.DoitVersion.Major = i
+				if dccncli.Major != "" {
+					i, _ := strconv.Atoi(dccncli.Major)
+					dccncli.AnkrVersion.Major = i
 				}
-				if doctl.Minor != "" {
-					i, _ := strconv.Atoi(doctl.Minor)
-					doctl.DoitVersion.Minor = i
+				if dccncli.Minor != "" {
+					i, _ := strconv.Atoi(dccncli.Minor)
+					dccncli.AnkrVersion.Minor = i
 				}
-				if doctl.Patch != "" {
-					i, _ := strconv.Atoi(doctl.Patch)
-					doctl.DoitVersion.Patch = i
+				if dccncli.Patch != "" {
+					i, _ := strconv.Atoi(dccncli.Patch)
+					dccncli.AnkrVersion.Patch = i
 				}
-				if doctl.Label != "" {
-					doctl.DoitVersion.Label = doctl.Label
+				if dccncli.Label != "" {
+					dccncli.AnkrVersion.Label = dccncli.Label
 				}
 
-				fmt.Println(doctl.DoitVersion.Complete(&doctl.GithubLatestVersioner{}))
+				fmt.Println(dccncli.AnkrVersion.Complete(&dccncli.GithubLatestVersioner{}))
 			},
 		},
 	}

@@ -13,13 +13,13 @@ type FloatingIPActionsService struct {
 	mock.Mock
 }
 
-// Assign provides a mock function with given fields: ip, dropletID
-func (_m *FloatingIPActionsService) Assign(ip string, dropletID int) (*do.Action, error) {
-	ret := _m.Called(ip, dropletID)
+// Assign provides a mock function with given fields: ip, taskID
+func (_m *FloatingIPActionsService) Assign(ip string, taskID int) (*do.Action, error) {
+	ret := _m.Called(ip, taskID)
 
 	var r0 *do.Action
 	if rf, ok := ret.Get(0).(func(string, int) *do.Action); ok {
-		r0 = rf(ip, dropletID)
+		r0 = rf(ip, taskID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*do.Action)
@@ -28,7 +28,7 @@ func (_m *FloatingIPActionsService) Assign(ip string, dropletID int) (*do.Action
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string, int) error); ok {
-		r1 = rf(ip, dropletID)
+		r1 = rf(ip, taskID)
 	} else {
 		r1 = ret.Error(1)
 	}

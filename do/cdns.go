@@ -11,7 +11,7 @@ type CDN struct {
 	*godo.CDN
 }
 
-// CDNsService is an interface for interacting with DigitalOcean's CDN api.
+// CDNsService is an interface for interacting with AnkrNetwork's CDN api.
 type CDNsService interface {
 	List() ([]CDN, error)
 	Get(string) (*CDN, error)

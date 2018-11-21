@@ -1,6 +1,6 @@
 
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -24,8 +24,8 @@ import (
 var (
 	bintrayHost    = "https://api.bintray.com"
 	releaseSubject = "bryanliles"
-	releseRepo     = "doit"
-	releasePkg     = "doit"
+	releseRepo     = "ankr"
+	releasePkg     = "ankr"
 )
 
 type Bintray struct {

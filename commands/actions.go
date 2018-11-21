@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -41,16 +41,16 @@ func Actions() *Command {
 
 	cmdActionList := CmdBuilder(cmd, RunCmdActionList, "list", "list actions", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Action{}), docCategories("action"))
-	AddStringFlag(cmdActionList, doctl.ArgActionResourceType, "", "", "Action resource type")
-	AddStringFlag(cmdActionList, doctl.ArgActionRegion, "", "", "Action region")
-	AddStringFlag(cmdActionList, doctl.ArgActionAfter, "", "", "Action completed after in RFC3339 format")
-	AddStringFlag(cmdActionList, doctl.ArgActionBefore, "", "", "Action completed before in RFC3339 format")
-	AddStringFlag(cmdActionList, doctl.ArgActionStatus, "", "", "Action status")
-	AddStringFlag(cmdActionList, doctl.ArgActionType, "", "", "Action type")
+	AddStringFlag(cmdActionList, dccncli.ArgActionResourceType, "", "", "Action resource type")
+	AddStringFlag(cmdActionList, dccncli.ArgActionRegion, "", "", "Action region")
+	AddStringFlag(cmdActionList, dccncli.ArgActionAfter, "", "", "Action completed after in RFC3339 format")
+	AddStringFlag(cmdActionList, dccncli.ArgActionBefore, "", "", "Action completed before in RFC3339 format")
+	AddStringFlag(cmdActionList, dccncli.ArgActionStatus, "", "", "Action status")
+	AddStringFlag(cmdActionList, dccncli.ArgActionType, "", "", "Action type")
 
 	cmdActionWait := CmdBuilder(cmd, RunCmdActionWait, "wait <action-id>", "wait for action to complete", Writer,
 		aliasOpt("w"), displayerType(&displayers.Action{}), docCategories("action"))
-	AddIntFlag(cmdActionWait, doctl.ArgPollTime, "", 5, "Re-poll time in seconds")
+	AddIntFlag(cmdActionWait, dccncli.ArgPollTime, "", 5, "Re-poll time in seconds")
 
 	return cmd
 }
@@ -86,28 +86,28 @@ func (a actionsByCompletedAt) Less(i, j int) bool {
 }
 
 func filterActionList(c *CmdConfig, in do.Actions) (do.Actions, error) {
-	resourceType, err := c.Doit.GetString(c.NS, doctl.ArgActionResourceType)
+	resourceType, err := c.Ankr.GetString(c.NS, dccncli.ArgActionResourceType)
 	if err != nil {
 		return nil, err
 	}
 
-	region, err := c.Doit.GetString(c.NS, doctl.ArgActionRegion)
+	region, err := c.Ankr.GetString(c.NS, dccncli.ArgActionRegion)
 	if err != nil {
 		return nil, err
 	}
 
-	status, err := c.Doit.GetString(c.NS, doctl.ArgActionStatus)
+	status, err := c.Ankr.GetString(c.NS, dccncli.ArgActionStatus)
 	if err != nil {
 		return nil, err
 	}
 
-	actionType, err := c.Doit.GetString(c.NS, doctl.ArgActionType)
+	actionType, err := c.Ankr.GetString(c.NS, dccncli.ArgActionType)
 	if err != nil {
 		return nil, err
 	}
 
 	var before, after time.Time
-	beforeStr, err := c.Doit.GetString(c.NS, doctl.ArgActionBefore)
+	beforeStr, err := c.Ankr.GetString(c.NS, dccncli.ArgActionBefore)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func filterActionList(c *CmdConfig, in do.Actions) (do.Actions, error) {
 		}
 	}
 
-	afterStr, err := c.Doit.GetString(c.NS, doctl.ArgActionAfter)
+	afterStr, err := c.Ankr.GetString(c.NS, dccncli.ArgActionAfter)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +177,7 @@ func isZeroTime(t time.Time) bool {
 // RunCmdActionGet runs action get.
 func RunCmdActionGet(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	id, err := strconv.Atoi(c.Args[0])
@@ -197,7 +197,7 @@ func RunCmdActionGet(c *CmdConfig) error {
 // RunCmdActionWait waits for an action to complete or error.
 func RunCmdActionWait(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	id, err := strconv.Atoi(c.Args[0])
@@ -205,7 +205,7 @@ func RunCmdActionWait(c *CmdConfig) error {
 		return err
 	}
 
-	pollTime, err := c.Doit.GetInt(c.NS, doctl.ArgPollTime)
+	pollTime, err := c.Ankr.GetInt(c.NS, dccncli.ArgPollTime)
 	if err != nil {
 		return err
 	}

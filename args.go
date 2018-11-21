@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package doctl
+package dccncli
 
 const (
 	// ArgAccessToken is the access token to be used for the operations
@@ -32,12 +32,12 @@ const (
 	ArgActionStatus = "status"
 	// ArgActionType is an action type argument.
 	ArgActionType = "action-type"
-	// ArgCommandWait is a wait for a droplet to be created argument.
+	// ArgCommandWait is a wait for a task to be created argument.
 	ArgCommandWait = "wait"
-	// ArgDropletID is a droplet id argument.
-	ArgDropletID = "droplet-id"
-	// ArgDropletIDs is a list of droplet IDs.
-	ArgDropletIDs = "droplet-ids"
+	// ArgTaskID is a task id argument.
+	ArgTaskID = "task-id"
+	// ArgTaskIDs is a list of task IDs.
+	ArgTaskIDs = "task-ids"
 	// ArgKernelID is a ekrnel id argument.
 	ArgKernelID = "kernel-id"
 	// ArgImage is an image argument.
@@ -50,8 +50,8 @@ const (
 	ArgImageSlug = "image-slug"
 	// ArgIPAddress is an IP address argument.
 	ArgIPAddress = "ip-address"
-	// ArgDropletName is a droplet name argument.
-	ArgDropletName = "droplet-name"
+	// ArgTaskName is a task name argument.
+	ArgTaskName = "task-name"
 	// ArgResizeDisk is a resize disk argument.
 	ArgResizeDisk = "resize-disk"
 	// ArgSnapshotName is a snapshot name arugment.

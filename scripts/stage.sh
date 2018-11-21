@@ -17,7 +17,7 @@ if [[ -n "$label" ]]; then
   ver="${ver}-${label}"
 fi
 
-RELEASE_PACKAGE=github.com/Ankr-network/dccn-cli/cmd/doctl
+RELEASE_PACKAGE=github.com/Ankr-network/dccn-cli/cmd/dccncli
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OUTPUT_DIR="${DIR}/../builds/${ver}"
 STAGE_DIR=$OUTPUT_DIR/stage
@@ -25,10 +25,10 @@ RELEASE_DIR=$OUTPUT_DIR/release
 
 mkdir -p $OUTPUT_DIR/stage $OUTPUT_DIR/release
 
-rm -f $STAGE_DIR/doctl $STAGE_DIR/doctl.exe
+rm -f $STAGE_DIR/dccncli $STAGE_DIR/dccncli.exe
 
 if [[ -z $SKIPBUILD ]]; then
-  echo "building doctl"
+  echo "building dccncli"
   baseFlag="-X github.com/Ankr-network/dccn-cli"
   ldflags="${baseFlag}.Build=$(git rev-parse --short HEAD)"
   ldflags="${ldflags} $baseFlag.Major=${major} $baseFlag.Minor=${minor} $baseFlag.Patch=${patch} $baseFlag.Label=release"
@@ -40,7 +40,7 @@ if [[ -z $SKIPBUILD ]]; then
     --dest $OUTPUT_DIR/stage \
     --targets='windows/*,darwin/amd64,linux/amd64,linux/386' \
     -ldflags "$ldflags" \
-    -out doctl-${ver} $RELEASE_PACKAGE
+    -out dccncli-${ver} $RELEASE_PACKAGE
 fi
 
 cd $RELEASE_DIR

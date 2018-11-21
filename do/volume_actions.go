@@ -6,7 +6,7 @@ import (
 	"github.com/Ankr-network/godo"
 )
 
-// VolumeActionsService is an interface for interacting with DigitalOcean's volume-action api.
+// VolumeActionsService is an interface for interacting with AnkrNetwork's volume-action api.
 type VolumeActionsService interface {
 	Attach(string, int) (*Action, error)
 	Detach(string, int) (*Action, error)
@@ -37,14 +37,14 @@ func (vas *volumeActionsService) handleActionResponse(a *godo.Action, err error)
 	return &Action{Action: a}, nil
 }
 
-func (vas *volumeActionsService) Attach(volumeID string, dropletID int) (*Action, error) {
-	a, _, err := vas.client.StorageActions.Attach(context.TODO(), volumeID, dropletID)
+func (vas *volumeActionsService) Attach(volumeID string, taskID int) (*Action, error) {
+	a, _, err := vas.client.StorageActions.Attach(context.TODO(), volumeID, taskID)
 	return vas.handleActionResponse(a, err)
 
 }
 
-func (vas *volumeActionsService) Detach(volumeID string, dropletID int) (*Action, error) {
-	a, _, err := vas.client.StorageActions.DetachByDropletID(context.TODO(), volumeID, dropletID)
+func (vas *volumeActionsService) Detach(volumeID string, taskID int) (*Action, error) {
+	a, _, err := vas.client.StorageActions.DetachByTaskID(context.TODO(), volumeID, taskID)
 	return vas.handleActionResponse(a, err)
 
 }

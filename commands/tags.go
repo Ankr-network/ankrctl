@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -46,7 +46,7 @@ func Tags() *Command {
 
 	cmdRunTagDelete := CmdBuilder(cmd, RunCmdTagDelete, "delete <tag-name> [tag-name ...]", "delete tag", Writer,
 		docCategories("tag"))
-	AddBoolFlag(cmdRunTagDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force tag delete")
+	AddBoolFlag(cmdRunTagDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force tag delete")
 
 	return cmd
 }
@@ -54,7 +54,7 @@ func Tags() *Command {
 // RunCmdTagCreate runs tag create.
 func RunCmdTagCreate(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	name := c.Args[0]
@@ -72,7 +72,7 @@ func RunCmdTagCreate(c *CmdConfig) error {
 // RunCmdTagGet runs tag get.
 func RunCmdTagGet(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	name := c.Args[0]
@@ -99,10 +99,10 @@ func RunCmdTagList(c *CmdConfig) error {
 // RunCmdTagDelete runs tag delete.
 func RunCmdTagDelete(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}

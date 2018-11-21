@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -32,7 +32,7 @@ func performVolumeAction(c *CmdConfig, fn volumeActionFn) error {
 		return err
 	}
 
-	wait, err := c.Doit.GetBool(c.NS, doctl.ArgCommandWait)
+	wait, err := c.Ankr.GetBool(c.NS, dccncli.ArgCommandWait)
 	if err != nil {
 		return err
 	}
@@ -59,56 +59,56 @@ func VolumeAction() *Command {
 		},
 	}
 
-	CmdBuilder(cmd, RunVolumeAttach, "attach <volume-id> <droplet-id>", "attach a volume", Writer,
+	CmdBuilder(cmd, RunVolumeAttach, "attach <volume-id> <task-id>", "attach a volume", Writer,
 		aliasOpt("a"))
 
-	CmdBuilder(cmd, RunVolumeDetach, "detach <volume-id> <droplet-id>", "detach a volume", Writer,
+	CmdBuilder(cmd, RunVolumeDetach, "detach <volume-id> <task-id>", "detach a volume", Writer,
 		aliasOpt("d"))
 
-	CmdBuilder(cmd, RunVolumeDetach, "detach-by-droplet-id <volume-id> <droplet-id>", "detach a volume (deprecated - use detach instead)",
+	CmdBuilder(cmd, RunVolumeDetach, "detach-by-task-id <volume-id> <task-id>", "detach a volume (deprecated - use detach instead)",
 		Writer)
 
 	cmdRunVolumeResize := CmdBuilder(cmd, RunVolumeResize, "resize <volume-id>", "resize a volume", Writer,
 		aliasOpt("r"))
-	AddIntFlag(cmdRunVolumeResize, doctl.ArgSizeSlug, "", 0, "New size",
+	AddIntFlag(cmdRunVolumeResize, dccncli.ArgSizeSlug, "", 0, "New size",
 		requiredOpt())
-	AddStringFlag(cmdRunVolumeResize, doctl.ArgRegionSlug, "", "", "Volume region",
+	AddStringFlag(cmdRunVolumeResize, dccncli.ArgRegionSlug, "", "", "Volume region",
 		requiredOpt())
 
 	return cmd
 
 }
 
-// RunVolumeAttach attaches a volume to a droplet.
+// RunVolumeAttach attaches a volume to a task.
 func RunVolumeAttach(c *CmdConfig) error {
 	fn := func(das do.VolumeActionsService) (*do.Action, error) {
 		if len(c.Args) != 2 {
-			return nil, doctl.NewMissingArgsErr(c.NS)
+			return nil, dccncli.NewMissingArgsErr(c.NS)
 		}
 		volumeID := c.Args[0]
-		dropletID, err := strconv.Atoi(c.Args[1])
+		taskID, err := strconv.Atoi(c.Args[1])
 		if err != nil {
 			return nil, err
 
 		}
-		a, err := das.Attach(volumeID, dropletID)
+		a, err := das.Attach(volumeID, taskID)
 		return a, err
 	}
 	return performVolumeAction(c, fn)
 }
 
-// RunVolumeDetachByDropletID detaches a volume by droplet ID
+// RunVolumeDetachByTaskID detaches a volume by task ID
 func RunVolumeDetach(c *CmdConfig) error {
 	fn := func(das do.VolumeActionsService) (*do.Action, error) {
 		if len(c.Args) != 2 {
-			return nil, doctl.NewMissingArgsErr(c.NS)
+			return nil, dccncli.NewMissingArgsErr(c.NS)
 		}
 		volumeID := c.Args[0]
-		dropletID, err := strconv.Atoi(c.Args[1])
+		taskID, err := strconv.Atoi(c.Args[1])
 		if err != nil {
 			return nil, err
 		}
-		a, err := das.Detach(volumeID, dropletID)
+		a, err := das.Detach(volumeID, taskID)
 		return a, err
 	}
 	return performVolumeAction(c, fn)
@@ -118,17 +118,17 @@ func RunVolumeDetach(c *CmdConfig) error {
 func RunVolumeResize(c *CmdConfig) error {
 	fn := func(das do.VolumeActionsService) (*do.Action, error) {
 		if len(c.Args) != 1 {
-			return nil, doctl.NewMissingArgsErr(c.NS)
+			return nil, dccncli.NewMissingArgsErr(c.NS)
 		}
 
 		volumeID := c.Args[0]
 
-		size, err := c.Doit.GetInt(c.NS, doctl.ArgSizeSlug)
+		size, err := c.Ankr.GetInt(c.NS, dccncli.ArgSizeSlug)
 		if err != nil {
 			return nil, err
 		}
 
-		region, err := c.Doit.GetString(c.NS, doctl.ArgRegionSlug)
+		region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
 		if err != nil {
 			return nil, err
 		}

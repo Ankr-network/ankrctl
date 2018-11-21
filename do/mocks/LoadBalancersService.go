@@ -13,8 +13,8 @@ type LoadBalancersService struct {
 	mock.Mock
 }
 
-// AddDroplets provides a mock function with given fields: lbID, dIDs
-func (_m *LoadBalancersService) AddDroplets(lbID string, dIDs ...int) error {
+// AddTasks provides a mock function with given fields: lbID, dIDs
+func (_m *LoadBalancersService) AddTasks(lbID string, dIDs ...int) error {
 	_va := make([]interface{}, len(dIDs))
 	for _i := range dIDs {
 		_va[_i] = dIDs[_i]
@@ -138,8 +138,8 @@ func (_m *LoadBalancersService) List() (do.LoadBalancers, error) {
 	return r0, r1
 }
 
-// RemoveDroplets provides a mock function with given fields: lbID, dIDs
-func (_m *LoadBalancersService) RemoveDroplets(lbID string, dIDs ...int) error {
+// RemoveTasks provides a mock function with given fields: lbID, dIDs
+func (_m *LoadBalancersService) RemoveTasks(lbID string, dIDs ...int) error {
 	_va := make([]interface{}, len(dIDs))
 	for _i := range dIDs {
 		_va[_i] = dIDs[_i]

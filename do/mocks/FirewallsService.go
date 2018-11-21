@@ -13,8 +13,8 @@ type FirewallsService struct {
 	mock.Mock
 }
 
-// AddDroplets provides a mock function with given fields: fID, dIDs
-func (_m *FirewallsService) AddDroplets(fID string, dIDs ...int) error {
+// AddTasks provides a mock function with given fields: fID, dIDs
+func (_m *FirewallsService) AddTasks(fID string, dIDs ...int) error {
 	_va := make([]interface{}, len(dIDs))
 	for _i := range dIDs {
 		_va[_i] = dIDs[_i]
@@ -152,8 +152,8 @@ func (_m *FirewallsService) List() (do.Firewalls, error) {
 	return r0, r1
 }
 
-// ListByDroplet provides a mock function with given fields: dID
-func (_m *FirewallsService) ListByDroplet(dID int) (do.Firewalls, error) {
+// ListByTask provides a mock function with given fields: dID
+func (_m *FirewallsService) ListByTask(dID int) (do.Firewalls, error) {
 	ret := _m.Called(dID)
 
 	var r0 do.Firewalls
@@ -175,8 +175,8 @@ func (_m *FirewallsService) ListByDroplet(dID int) (do.Firewalls, error) {
 	return r0, r1
 }
 
-// RemoveDroplets provides a mock function with given fields: fID, dIDs
-func (_m *FirewallsService) RemoveDroplets(fID string, dIDs ...int) error {
+// RemoveTasks provides a mock function with given fields: fID, dIDs
+func (_m *FirewallsService) RemoveTasks(fID string, dIDs ...int) error {
 	_va := make([]interface{}, len(dIDs))
 	for _i := range dIDs {
 		_va[_i] = dIDs[_i]

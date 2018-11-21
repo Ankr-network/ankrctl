@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -72,7 +72,7 @@ func TestSnapshotListRegion(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		tm.snapshots.On("List").Return(testSnapshotList, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "dev0")
+		config.Ankr.Set(config.NS, dccncli.ArgRegionSlug, "dev0")
 
 		err := RunSnapshotList(config)
 		assert.NoError(t, err)
@@ -107,7 +107,7 @@ func TestSnapshotDelete(t *testing.T) {
 		tm.snapshots.On("Delete", testSnapshot.ID).Return(nil)
 
 		config.Args = append(config.Args, testSnapshot.ID)
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunSnapshotDelete(config)
 		assert.NoError(t, err)

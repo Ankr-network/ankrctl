@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -74,7 +74,7 @@ func TestKeysCreate(t *testing.T) {
 
 		config.Args = append(config.Args, "the key")
 
-		config.Doit.Set(config.NS, doctl.ArgKeyPublicKey, "fingerprint")
+		config.Ankr.Set(config.NS, dccncli.ArgKeyPublicKey, "fingerprint")
 
 		err := RunKeyCreate(config)
 		assert.NoError(t, err)
@@ -87,7 +87,7 @@ func TestKeysDeleteByID(t *testing.T) {
 
 		config.Args = append(config.Args, "1")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunKeyDelete(config)
 		assert.NoError(t, err)
@@ -100,7 +100,7 @@ func TestKeysDeleteByFingerprint(t *testing.T) {
 
 		config.Args = append(config.Args, "fingerprint")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunKeyDelete(config)
 		assert.NoError(t, err)
@@ -115,7 +115,7 @@ func TestKeysUpdateByID(t *testing.T) {
 
 		config.Args = append(config.Args, "1")
 
-		config.Doit.Set(config.NS, doctl.ArgKeyName, "the key")
+		config.Ankr.Set(config.NS, dccncli.ArgKeyName, "the key")
 
 		err := RunKeyUpdate(config)
 		assert.NoError(t, err)
@@ -130,7 +130,7 @@ func TestKeysUpdateByFingerprint(t *testing.T) {
 
 		config.Args = append(config.Args, "fingerprint")
 
-		config.Doit.Set(config.NS, doctl.ArgKeyName, "the key")
+		config.Ankr.Set(config.NS, dccncli.ArgKeyName, "the key")
 
 		err := RunKeyUpdate(config)
 		assert.NoError(t, err)
@@ -151,7 +151,7 @@ func TestSSHPublicKeyImportWithName(t *testing.T) {
 
 		config.Args = append(config.Args, "custom")
 
-		config.Doit.Set(config.NS, doctl.ArgKeyPublicKeyFile, path)
+		config.Ankr.Set(config.NS, dccncli.ArgKeyPublicKeyFile, path)
 
 		err := RunKeyImport(config)
 		assert.NoError(t, err)

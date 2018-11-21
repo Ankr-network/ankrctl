@@ -1,4 +1,4 @@
-# Contributing to doctl
+# Contributing to dccncli
 
 **First:** if you're unsure or afraid of _anything_, just ask
 or submit the issue or pull request anyways. You won't be yelled at for
@@ -22,14 +22,14 @@ it raises the chances we can quickly merge or address your contributions.
   of the *entire* generated crash log for us to look at. Double check
   no sensitive items were in the log.
 
-* Respond as promptly as possible to any questions made by the _doctl_
+* Respond as promptly as possible to any questions made by the _dccncli_
   team to your issue. Stale issues will be closed.
 
 ### Issue Lifecycle
 
 1. The issue is reported.
 
-2. The issue is verified and categorized by a _doctl_ collaborator.
+2. The issue is verified and categorized by a _dccncli_ collaborator.
    Categorization is done via labels. For example, bugs are marked as "bugs".
 
 3. Unless it is critical, the issue is left for a period of time (sometimes
@@ -43,10 +43,10 @@ it raises the chances we can quickly merge or address your contributions.
    the issue tracker clean. The issue is still indexed and available for
    future viewers, or can be re-opened if necessary.
 
-## Setting up Go to work on doctl
+## Setting up Go to work on dccncli
 
 If you have never worked with Go before, you will have to complete the
-following steps in order to be able to compile and test doctl.
+following steps in order to be able to compile and test dccncli.
 
 1. Install Go. Make sure the Go version is at least Go 1.6.
    On Mac OS X, you can `brew install go` to install the latest stable version.
@@ -59,7 +59,7 @@ following steps in order to be able to compile and test doctl.
     export PATH=$PATH:$GOPATH/bin
     ```
 
-1. Make your changes to the doctl source, being sure to run the basic
+1. Make your changes to the dccncli source, being sure to run the basic
    tests.
 
 1. If everything works well and the tests pass, run `go fmt` on your code
@@ -72,14 +72,14 @@ following steps in order to be able to compile and test doctl.
 When you upgrade `godo` you have to re-generate the mocks using [mockery](https://github.com/vektra/mockery),
 so first install mockery in your `GOPATH` then run the `script/regenmocks.sh` script to produce them.
 
-### Releasing `doctl`
+### Releasing `dccncli`
 
 First, make sure the [CHANGELOG](https://github.com/Ankr-network/dccn-cli/blob/master/CHANGELOG.md)
 contains all changes for the version you're going to release.
 
 #### Setup
 
-To release `doctl`, you need to install:
+To release `dccncli`, you need to install:
 
 * [xgo](https://github.com/karalabe/xgo)
 * [github-release](https://github.com/aktau/github-release)
@@ -87,11 +87,11 @@ To release `doctl`, you need to install:
 And make them available in your `PATH`. You can use `go get -u` for both of them and add your
 `$GOPATH/bin` to your `PATH` so your scripts will find them.
 
-You will also need a valid `GITHUB_TOKEN` environment variable with access to the `digitalocean/doctl` repo.
+You will also need a valid `GITHUB_TOKEN` environment variable with access to the `ankrnetwork/dccncli` repo.
 
 #### Scripts
 
-To build `doctl` for all its platforms, run `scripts/stage.sh major minor patch` 
+To build `dccncli` for all its platforms, run `scripts/stage.sh major minor patch` 
 (e.g. `scripts/stage.sh 1 5 0`). This will place all files and their checksums 
 in `builds/major.minor.patch/release`.
 
@@ -104,4 +104,4 @@ description to contain all changelog entries for this specific release.
 Also don't forget to update:
 - Dockerfile
 - snapcraft
-- [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/doctl.rb)
+- [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/dccncli.rb)

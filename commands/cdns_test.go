@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -26,13 +26,13 @@ import (
 
 var (
 	cdnID     = uuid.New()
-	cdnOrigin = "my-spaces.nyc3.digitaloceanspaces.com"
+	cdnOrigin = "my-spaces.nyc3.ankrnetworkspaces.com"
 
 	testCDN = do.CDN{
 		CDN: &godo.CDN{
 			ID:        cdnID,
 			Origin:    cdnOrigin,
-			Endpoint:  "my-spaces.nyc3.cdn.digitaloceanspaces.com",
+			Endpoint:  "my-spaces.nyc3.cdn.ankrnetworkspaces.com",
 			TTL:       3600,
 			CreatedAt: time.Now(),
 		},
@@ -42,7 +42,7 @@ var (
 		CDN: &godo.CDN{
 			ID:        cdnID,
 			Origin:    cdnOrigin,
-			Endpoint:  "my-spaces.nyc3.cdn.digitaloceanspaces.com",
+			Endpoint:  "my-spaces.nyc3.cdn.ankrnetworkspaces.com",
 			TTL:       60,
 			CreatedAt: time.Now(),
 		},
@@ -95,7 +95,7 @@ func TestCDNsCreate(t *testing.T) {
 		tm.cdns.On("Create", cdncr).Return(&testCDN, nil)
 
 		config.Args = append(config.Args, cdnOrigin)
-		config.Doit.Set(config.NS, doctl.ArgCDNTTL, 3600)
+		config.Ankr.Set(config.NS, dccncli.ArgCDNTTL, 3600)
 
 		err := RunCDNCreate(config)
 		assert.NoError(t, err)
@@ -112,7 +112,7 @@ func TestCDNsCreate_RequiredArguments(t *testing.T) {
 func TestCDNsCreate_ZeroFail(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		config.Args = append(config.Args, cdnOrigin)
-		config.Doit.Set(config.NS, doctl.ArgCDNTTL, 0)
+		config.Ankr.Set(config.NS, dccncli.ArgCDNTTL, 0)
 
 		err := RunCDNCreate(config)
 		assert.Error(t, err)
@@ -127,7 +127,7 @@ func TestCDNsUpdate(t *testing.T) {
 		tm.cdns.On("UpdateTTL", cdnID, cdnur).Return(&updatedCDN, nil)
 
 		config.Args = append(config.Args, cdnID)
-		config.Doit.Set(config.NS, doctl.ArgCDNTTL, 60)
+		config.Ankr.Set(config.NS, dccncli.ArgCDNTTL, 60)
 
 		err := RunCDNUpdateTTL(config)
 		assert.NoError(t, err)
@@ -137,7 +137,7 @@ func TestCDNsUpdate(t *testing.T) {
 func TestCDNsUpdate_ZeroFail(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		config.Args = append(config.Args, cdnID)
-		config.Doit.Set(config.NS, doctl.ArgCDNTTL, 0)
+		config.Ankr.Set(config.NS, dccncli.ArgCDNTTL, 0)
 
 		err := RunCDNUpdateTTL(config)
 		assert.Error(t, err)
@@ -149,7 +149,7 @@ func TestCDNsDelete(t *testing.T) {
 		tm.cdns.On("Delete", cdnID).Return(nil)
 
 		config.Args = append(config.Args, cdnID)
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunCDNDelete(config)
 		assert.NoError(t, err)
@@ -169,7 +169,7 @@ func TestCDNsFlushCache(t *testing.T) {
 		tm.cdns.On("FlushCache", cdnID, flushReq).Return(nil)
 
 		config.Args = append(config.Args, cdnID)
-		config.Doit.Set(config.NS, doctl.ArgCDNFiles, []string{"*"})
+		config.Ankr.Set(config.NS, dccncli.ArgCDNFiles, []string{"*"})
 
 		err := RunCDNFlushCache(config)
 		assert.NoError(t, err)

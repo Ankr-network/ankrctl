@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -88,12 +88,12 @@ func Test_filterActions(t *testing.T) {
 
 	for _, c := range cases {
 		withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-			config.Doit.Set(config.NS, doctl.ArgActionResourceType, c.resourceType)
-			config.Doit.Set(config.NS, doctl.ArgActionRegion, c.region)
-			config.Doit.Set(config.NS, doctl.ArgActionAfter, c.after)
-			config.Doit.Set(config.NS, doctl.ArgActionBefore, c.before)
-			config.Doit.Set(config.NS, doctl.ArgActionStatus, c.status)
-			config.Doit.Set(config.NS, doctl.ArgActionType, c.actionType)
+			config.Ankr.Set(config.NS, dccncli.ArgActionResourceType, c.resourceType)
+			config.Ankr.Set(config.NS, dccncli.ArgActionRegion, c.region)
+			config.Ankr.Set(config.NS, dccncli.ArgActionAfter, c.after)
+			config.Ankr.Set(config.NS, dccncli.ArgActionBefore, c.before)
+			config.Ankr.Set(config.NS, dccncli.ArgActionStatus, c.status)
+			config.Ankr.Set(config.NS, dccncli.ArgActionType, c.actionType)
 
 			newActions, err := filterActionList(config, actions)
 			assert.NoError(t, err)

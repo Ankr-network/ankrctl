@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -98,9 +98,9 @@ func TestVolumeCreate(t *testing.T) {
 
 		config.Args = append(config.Args, "test-volume")
 
-		config.Doit.Set(config.NS, doctl.ArgVolumeRegion, "atlantis")
-		config.Doit.Set(config.NS, doctl.ArgVolumeSize, "100GiB")
-		config.Doit.Set(config.NS, doctl.ArgVolumeDesc, "test description")
+		config.Ankr.Set(config.NS, dccncli.ArgVolumeRegion, "atlantis")
+		config.Ankr.Set(config.NS, dccncli.ArgVolumeSize, "100GiB")
+		config.Ankr.Set(config.NS, dccncli.ArgVolumeDesc, "test description")
 
 		err := RunVolumeCreate(config)
 		assert.NoError(t, err)
@@ -113,7 +113,7 @@ func TestVolumesDelete(t *testing.T) {
 
 		config.Args = append(config.Args, "test-volume")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunVolumeDelete(config)
 		assert.NoError(t, err)
@@ -130,8 +130,8 @@ func TestVolumesSnapshot(t *testing.T) {
 		tm.volumes.On("CreateSnapshot", &tcr).Return(nil, nil)
 
 		config.Args = append(config.Args, testVolume.ID)
-		config.Doit.Set(config.NS, doctl.ArgSnapshotName, "test-volume-snapshot")
-		config.Doit.Set(config.NS, doctl.ArgSnapshotDesc, "test description")
+		config.Ankr.Set(config.NS, dccncli.ArgSnapshotName, "test-volume-snapshot")
+		config.Ankr.Set(config.NS, dccncli.ArgSnapshotDesc, "test description")
 
 		err := RunVolumeSnapshot(config)
 		assert.NoError(t, err)

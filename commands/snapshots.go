@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -38,15 +38,15 @@ func Snapshot() *Command {
 
 	cmdRunSnapshotList := CmdBuilder(cmd, RunSnapshotList, "list [glob]", "list snapshots", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Snapshot{}), docCategories("snapshot"))
-	AddStringFlag(cmdRunSnapshotList, doctl.ArgResourceType, "", "", "Resource type")
-	AddStringFlag(cmdRunSnapshotList, doctl.ArgRegionSlug, "", "", "Snapshot region")
+	AddStringFlag(cmdRunSnapshotList, dccncli.ArgResourceType, "", "", "Resource type")
+	AddStringFlag(cmdRunSnapshotList, dccncli.ArgRegionSlug, "", "", "Snapshot region")
 
 	CmdBuilder(cmd, RunSnapshotGet, "get <snapshot-id> [snapshot-id ...]", "get snapshot", Writer,
-		aliasOpt("g"), displayerType(&displayers.Droplet{}), docCategories("snapshot"))
+		aliasOpt("g"), displayerType(&displayers.Task{}), docCategories("snapshot"))
 
 	cmdRunSnapshotDelete := CmdBuilder(cmd, RunSnapshotDelete, "delete <snapshot-id> [snapshot-id ...]", "delete snapshot", Writer,
-		aliasOpt("d"), displayerType(&displayers.Droplet{}), docCategories("snapshot"))
-	AddBoolFlag(cmdRunSnapshotDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force snapshot delete")
+		aliasOpt("d"), displayerType(&displayers.Task{}), docCategories("snapshot"))
+	AddBoolFlag(cmdRunSnapshotDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force snapshot delete")
 
 	return cmd
 }
@@ -56,12 +56,12 @@ func RunSnapshotList(c *CmdConfig) error {
 	var err error
 	ss := c.Snapshots()
 
-	restype, err := c.Doit.GetString(c.NS, doctl.ArgResourceType)
+	restype, err := c.Ankr.GetString(c.NS, dccncli.ArgResourceType)
 	if err != nil {
 		return err
 	}
 
-	region, err := c.Doit.GetString(c.NS, doctl.ArgRegionSlug)
+	region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
 	if err != nil {
 		return err
 	}
@@ -79,8 +79,8 @@ func RunSnapshotList(c *CmdConfig) error {
 	var matchedList []do.Snapshot
 	list := []do.Snapshot{}
 
-	if restype == "droplet" {
-		list, err = ss.ListDroplet()
+	if restype == "task" {
+		list, err = ss.ListTask()
 		if err != nil {
 			return err
 		}
@@ -135,7 +135,7 @@ func RunSnapshotList(c *CmdConfig) error {
 // RunSnapshotGet returns a snapshot
 func RunSnapshotGet(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	ss := c.Snapshots()
@@ -157,10 +157,10 @@ func RunSnapshotGet(c *CmdConfig) error {
 // RunSnapshotDelete destroys snapshot(s) by id
 func RunSnapshotDelete(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}

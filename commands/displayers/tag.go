@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -30,13 +30,13 @@ func (t *Tag) JSON(out io.Writer) error {
 }
 
 func (t *Tag) Cols() []string {
-	return []string{"Name", "DropletCount"}
+	return []string{"Name", "TaskCount"}
 }
 
 func (t *Tag) ColMap() map[string]string {
 	return map[string]string{
 		"Name":         "Name",
-		"DropletCount": "Droplet Count",
+		"TaskCount": "Task Count",
 	}
 }
 
@@ -44,10 +44,10 @@ func (t *Tag) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 
 	for _, x := range t.Tags {
-		dropletCount := x.Resources.Droplets.Count
+		taskCount := x.Resources.Tasks.Count
 		o := map[string]interface{}{
 			"Name":         x.Name,
-			"DropletCount": dropletCount,
+			"TaskCount": taskCount,
 		}
 		out = append(out, o)
 	}

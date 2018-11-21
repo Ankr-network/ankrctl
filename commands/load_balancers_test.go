@@ -29,7 +29,7 @@ var (
 func TestLoadBalancerCommand(t *testing.T) {
 	cmd := LoadBalancer()
 	assert.NotNil(t, cmd)
-	assertCommandNames(t, cmd, "get", "list", "create", "update", "delete", "add-droplets", "remove-droplets", "add-forwarding-rules", "remove-forwarding-rules")
+	assertCommandNames(t, cmd, "get", "list", "create", "update", "delete", "add-tasks", "remove-tasks", "add-forwarding-rules", "remove-forwarding-rules")
 }
 
 func TestLoadBalancerGet(t *testing.T) {
@@ -60,9 +60,9 @@ func TestLoadBalancerList(t *testing.T) {
 	})
 }
 
-func TestLoadBalancerCreateWithInvalidDropletIDsArgs(t *testing.T) {
+func TestLoadBalancerCreateWithInvalidTaskIDsArgs(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		config.Doit.Set(config.NS, doctl.ArgDropletIDs, []string{"bogus"})
+		config.Ankr.Set(config.NS, dccncli.ArgTaskIDs, []string{"bogus"})
 
 		err := RunLoadBalancerCreate(config)
 		assert.Error(t, err)
@@ -71,7 +71,7 @@ func TestLoadBalancerCreateWithInvalidDropletIDsArgs(t *testing.T) {
 
 func TestLoadBalancerCreateWithMalformedForwardingRulesArgs(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		config.Doit.Set(config.NS, doctl.ArgForwardingRules, "something,something")
+		config.Ankr.Set(config.NS, dccncli.ArgForwardingRules, "something,something")
 
 		err := RunLoadBalancerCreate(config)
 		assert.Error(t, err)
@@ -83,7 +83,7 @@ func TestLoadBalancerCreate(t *testing.T) {
 		r := godo.LoadBalancerRequest{
 			Name:       "lb-name",
 			Region:     "nyc1",
-			DropletIDs: []int{1, 2},
+			TaskIDs: []int{1, 2},
 			StickySessions: &godo.StickySessions{
 				Type: "none",
 			},
@@ -107,12 +107,12 @@ func TestLoadBalancerCreate(t *testing.T) {
 		}
 		tm.loadBalancers.On("Create", &r).Return(&testLoadBalancer, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "nyc1")
-		config.Doit.Set(config.NS, doctl.ArgLoadBalancerName, "lb-name")
-		config.Doit.Set(config.NS, doctl.ArgDropletIDs, []string{"1", "2"})
-		config.Doit.Set(config.NS, doctl.ArgStickySessions, "type:none")
-		config.Doit.Set(config.NS, doctl.ArgHealthCheck, "protocol:http,port:80,check_interval_seconds:4,response_timeout_seconds:23,healthy_threshold:5,unhealthy_threshold:10")
-		config.Doit.Set(config.NS, doctl.ArgForwardingRules, "entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306,tls_passthrough:true")
+		config.Ankr.Set(config.NS, dccncli.ArgRegionSlug, "nyc1")
+		config.Ankr.Set(config.NS, dccncli.ArgLoadBalancerName, "lb-name")
+		config.Ankr.Set(config.NS, dccncli.ArgTaskIDs, []string{"1", "2"})
+		config.Ankr.Set(config.NS, dccncli.ArgStickySessions, "type:none")
+		config.Ankr.Set(config.NS, dccncli.ArgHealthCheck, "protocol:http,port:80,check_interval_seconds:4,response_timeout_seconds:23,healthy_threshold:5,unhealthy_threshold:10")
+		config.Ankr.Set(config.NS, dccncli.ArgForwardingRules, "entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306,tls_passthrough:true")
 
 		err := RunLoadBalancerCreate(config)
 		assert.NoError(t, err)
@@ -125,7 +125,7 @@ func TestLoadBalancerUpdate(t *testing.T) {
 		r := godo.LoadBalancerRequest{
 			Name:       "lb-name",
 			Region:     "nyc1",
-			DropletIDs: []int{1, 2},
+			TaskIDs: []int{1, 2},
 			StickySessions: &godo.StickySessions{
 				Type:             "cookies",
 				CookieName:       "DO-LB",
@@ -152,12 +152,12 @@ func TestLoadBalancerUpdate(t *testing.T) {
 		tm.loadBalancers.On("Update", lbID, &r).Return(&testLoadBalancer, nil)
 
 		config.Args = append(config.Args, lbID)
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "nyc1")
-		config.Doit.Set(config.NS, doctl.ArgLoadBalancerName, "lb-name")
-		config.Doit.Set(config.NS, doctl.ArgDropletIDs, []string{"1", "2"})
-		config.Doit.Set(config.NS, doctl.ArgStickySessions, "type:cookies,cookie_name:DO-LB,cookie_ttl_seconds:5")
-		config.Doit.Set(config.NS, doctl.ArgHealthCheck, "protocol:http,port:80,check_interval_seconds:4,response_timeout_seconds:23,healthy_threshold:5,unhealthy_threshold:10")
-		config.Doit.Set(config.NS, doctl.ArgForwardingRules, "entry_protocol:http,entry_port:80,target_protocol:http,target_port:80")
+		config.Ankr.Set(config.NS, dccncli.ArgRegionSlug, "nyc1")
+		config.Ankr.Set(config.NS, dccncli.ArgLoadBalancerName, "lb-name")
+		config.Ankr.Set(config.NS, dccncli.ArgTaskIDs, []string{"1", "2"})
+		config.Ankr.Set(config.NS, dccncli.ArgStickySessions, "type:cookies,cookie_name:DO-LB,cookie_ttl_seconds:5")
+		config.Ankr.Set(config.NS, dccncli.ArgHealthCheck, "protocol:http,port:80,check_interval_seconds:4,response_timeout_seconds:23,healthy_threshold:5,unhealthy_threshold:10")
+		config.Ankr.Set(config.NS, dccncli.ArgForwardingRules, "entry_protocol:http,entry_port:80,target_protocol:http,target_port:80")
 
 		err := RunLoadBalancerUpdate(config)
 		assert.NoError(t, err)
@@ -177,7 +177,7 @@ func TestLoadBalancerDelete(t *testing.T) {
 		tm.loadBalancers.On("Delete", lbID).Return(nil)
 
 		config.Args = append(config.Args, lbID)
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunLoadBalancerDelete(config)
 		assert.NoError(t, err)
@@ -191,42 +191,42 @@ func TestLoadBalancerDeleteNoID(t *testing.T) {
 	})
 }
 
-func TestLoadBalancerAddDroplets(t *testing.T) {
+func TestLoadBalancerAddTasks(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		lbID := "cde2c0d6-41e3-479e-ba60-ad971227232c"
-		tm.loadBalancers.On("AddDroplets", lbID, 1, 23).Return(nil)
+		tm.loadBalancers.On("AddTasks", lbID, 1, 23).Return(nil)
 
 		config.Args = append(config.Args, lbID)
-		config.Doit.Set(config.NS, doctl.ArgDropletIDs, []string{"1", "23"})
+		config.Ankr.Set(config.NS, dccncli.ArgTaskIDs, []string{"1", "23"})
 
-		err := RunLoadBalancerAddDroplets(config)
+		err := RunLoadBalancerAddTasks(config)
 		assert.NoError(t, err)
 	})
 }
 
-func TestLoadBalancerAddDropletsNoID(t *testing.T) {
+func TestLoadBalancerAddTasksNoID(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		err := RunLoadBalancerAddDroplets(config)
+		err := RunLoadBalancerAddTasks(config)
 		assert.Error(t, err)
 	})
 }
 
-func TestLoadBalancerRemoveDroplets(t *testing.T) {
+func TestLoadBalancerRemoveTasks(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		lbID := "cde2c0d6-41e3-479e-ba60-ad971227232c"
-		tm.loadBalancers.On("RemoveDroplets", lbID, 321).Return(nil)
+		tm.loadBalancers.On("RemoveTasks", lbID, 321).Return(nil)
 
 		config.Args = append(config.Args, lbID)
-		config.Doit.Set(config.NS, doctl.ArgDropletIDs, []string{"321"})
+		config.Ankr.Set(config.NS, dccncli.ArgTaskIDs, []string{"321"})
 
-		err := RunLoadBalancerRemoveDroplets(config)
+		err := RunLoadBalancerRemoveTasks(config)
 		assert.NoError(t, err)
 	})
 }
 
-func TestLoadBalancerRemoveDropletsNoID(t *testing.T) {
+func TestLoadBalancerRemoveTasksNoID(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		err := RunLoadBalancerRemoveDroplets(config)
+		err := RunLoadBalancerRemoveTasks(config)
 		assert.Error(t, err)
 	})
 }
@@ -243,7 +243,7 @@ func TestLoadBalancerAddForwardingRules(t *testing.T) {
 		tm.loadBalancers.On("AddForwardingRules", lbID, forwardingRule).Return(nil)
 
 		config.Args = append(config.Args, lbID)
-		config.Doit.Set(config.NS, doctl.ArgForwardingRules, "entry_protocol:http,entry_port:80,target_protocol:http,target_port:80")
+		config.Ankr.Set(config.NS, dccncli.ArgForwardingRules, "entry_protocol:http,entry_port:80,target_protocol:http,target_port:80")
 
 		err := RunLoadBalancerAddForwardingRules(config)
 		assert.NoError(t, err)
@@ -278,7 +278,7 @@ func TestLoadBalancerRemoveForwardingRules(t *testing.T) {
 		tm.loadBalancers.On("RemoveForwardingRules", lbID, forwardingRules[0], forwardingRules[1] ).Return(nil)
 
 		config.Args = append(config.Args, lbID)
-		config.Doit.Set(config.NS, doctl.ArgForwardingRules, "entry_protocol:http,entry_port:80,target_protocol:http,target_port:80 entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306,tls_passthrough:true")
+		config.Ankr.Set(config.NS, dccncli.ArgForwardingRules, "entry_protocol:http,entry_port:80,target_protocol:http,target_port:80 entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306,tls_passthrough:true")
 
 		err := RunLoadBalancerRemoveForwardingRules(config)
 		assert.NoError(t, err)

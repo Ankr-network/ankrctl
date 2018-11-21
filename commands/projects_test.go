@@ -24,7 +24,7 @@ var (
 
 	testProjectResourcesList = do.ProjectResources{
 		{
-			ProjectResource: &godo.ProjectResource{URN: "do:droplet:1234"},
+			ProjectResource: &godo.ProjectResource{URN: "do:task:1234"},
 		},
 		{
 			ProjectResource: &godo.ProjectResource{URN: "do:floatingip:1.2.3.4"},
@@ -32,7 +32,7 @@ var (
 	}
 	testProjectResourcesListSingle = do.ProjectResources{
 		{
-			ProjectResource: &godo.ProjectResource{URN: "do:droplet:1234"},
+			ProjectResource: &godo.ProjectResource{URN: "do:task:1234"},
 		},
 	}
 )
@@ -74,10 +74,10 @@ func TestProjectsCreate(t *testing.T) {
 		}
 		tm.projects.On("Create", projectCreateRequest).Return(&testProject, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgProjectName, "project name")
-		config.Doit.Set(config.NS, doctl.ArgProjectDescription, "project description")
-		config.Doit.Set(config.NS, doctl.ArgProjectPurpose, "personal use")
-		config.Doit.Set(config.NS, doctl.ArgProjectEnvironment, "Staging")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectName, "project name")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectDescription, "project description")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectPurpose, "personal use")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectEnvironment, "Staging")
 
 		err := RunProjectsCreate(config)
 		assert.NoError(t, err)
@@ -96,20 +96,20 @@ func TestProjectsUpdateAllAttributes(t *testing.T) {
 		}
 		tm.projects.On("Update", projectUUID, updateReq).Return(&testProject, nil)
 
-		config.Doit.(*TestConfig).IsSetMap = map[string]bool{
-			doctl.ArgProjectName:        true,
-			doctl.ArgProjectDescription: true,
-			doctl.ArgProjectPurpose:     true,
-			doctl.ArgProjectEnvironment: true,
-			doctl.ArgProjectIsDefault:   true,
+		config.Ankr.(*TestConfig).IsSetMap = map[string]bool{
+			dccncli.ArgProjectName:        true,
+			dccncli.ArgProjectDescription: true,
+			dccncli.ArgProjectPurpose:     true,
+			dccncli.ArgProjectEnvironment: true,
+			dccncli.ArgProjectIsDefault:   true,
 		}
 
 		config.Args = append(config.Args, projectUUID)
-		config.Doit.Set(config.NS, doctl.ArgProjectName, "project name")
-		config.Doit.Set(config.NS, doctl.ArgProjectDescription, "project description")
-		config.Doit.Set(config.NS, doctl.ArgProjectPurpose, "project purpose")
-		config.Doit.Set(config.NS, doctl.ArgProjectEnvironment, "Production")
-		config.Doit.Set(config.NS, doctl.ArgProjectIsDefault, false)
+		config.Ankr.Set(config.NS, dccncli.ArgProjectName, "project name")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectDescription, "project description")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectPurpose, "project purpose")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectEnvironment, "Production")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectIsDefault, false)
 
 		err := RunProjectsUpdate(config)
 		assert.NoError(t, err)
@@ -128,17 +128,17 @@ func TestProjectsUpdateSomeAttributes(t *testing.T) {
 		}
 		tm.projects.On("Update", projectUUID, updateReq).Return(&testProject, nil)
 
-		config.Doit.(*TestConfig).IsSetMap = map[string]bool{
-			doctl.ArgProjectName:        true,
-			doctl.ArgProjectDescription: true,
-			doctl.ArgProjectPurpose:     false,
-			doctl.ArgProjectEnvironment: false,
-			doctl.ArgProjectIsDefault:   false,
+		config.Ankr.(*TestConfig).IsSetMap = map[string]bool{
+			dccncli.ArgProjectName:        true,
+			dccncli.ArgProjectDescription: true,
+			dccncli.ArgProjectPurpose:     false,
+			dccncli.ArgProjectEnvironment: false,
+			dccncli.ArgProjectIsDefault:   false,
 		}
 
 		config.Args = append(config.Args, projectUUID)
-		config.Doit.Set(config.NS, doctl.ArgProjectName, "project name")
-		config.Doit.Set(config.NS, doctl.ArgProjectDescription, "project description")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectName, "project name")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectDescription, "project description")
 
 		err := RunProjectsUpdate(config)
 		assert.NoError(t, err)
@@ -157,17 +157,17 @@ func TestProjectsUpdateOneAttribute(t *testing.T) {
 		}
 		tm.projects.On("Update", projectUUID, updateReq).Return(&testProject, nil)
 
-		config.Doit.(*TestConfig).IsSetMap = map[string]bool{
-			doctl.ArgProjectName:        true,
-			doctl.ArgProjectDescription: false,
-			doctl.ArgProjectPurpose:     false,
-			doctl.ArgProjectEnvironment: false,
-			doctl.ArgProjectIsDefault:   false,
+		config.Ankr.(*TestConfig).IsSetMap = map[string]bool{
+			dccncli.ArgProjectName:        true,
+			dccncli.ArgProjectDescription: false,
+			dccncli.ArgProjectPurpose:     false,
+			dccncli.ArgProjectEnvironment: false,
+			dccncli.ArgProjectIsDefault:   false,
 		}
 
 		config.Args = append(config.Args, projectUUID)
-		config.Doit.Set(config.NS, doctl.ArgProjectName, "project name")
-		config.Doit.Set(config.NS, doctl.ArgProjectDescription, "project description")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectName, "project name")
+		config.Ankr.Set(config.NS, dccncli.ArgProjectDescription, "project description")
 
 		err := RunProjectsUpdate(config)
 		assert.NoError(t, err)
@@ -180,7 +180,7 @@ func TestProjectsDelete(t *testing.T) {
 		tm.projects.On("Delete", projectUUID).Return(nil)
 
 		config.Args = append(config.Args, projectUUID)
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		err := RunProjectsDelete(config)
 		assert.NoError(t, err)
@@ -206,9 +206,9 @@ func TestProjectResourcesList(t *testing.T) {
 
 func TestProjectResourcesGetWithValidURN(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		tm.droplets.On("Get", 1234).Return(&testDroplet, nil)
+		tm.tasks.On("Get", 1234).Return(&testTask, nil)
 
-		config.Args = append(config.Args, "do:droplet:1234")
+		config.Args = append(config.Args, "do:task:1234")
 		err := RunProjectResourcesGet(config)
 		assert.NoError(t, err)
 	})
@@ -226,11 +226,11 @@ func TestProjectResourcesGetWithInvalidURN(t *testing.T) {
 func TestProjectResourcesAssignOneResource(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		projectUUID := "ab06e011-6dd1-4034-9293-201f71aba299"
-		urn := "do:droplet:1234"
+		urn := "do:task:1234"
 		tm.projects.On("AssignResources", projectUUID, []string{urn}).Return(testProjectResourcesListSingle, nil)
 
 		config.Args = append(config.Args, projectUUID)
-		config.Doit.Set(config.NS, doctl.ArgProjectResource, []string{urn})
+		config.Ankr.Set(config.NS, dccncli.ArgProjectResource, []string{urn})
 
 		err := RunProjectResourcesAssign(config)
 		assert.NoError(t, err)
@@ -240,12 +240,12 @@ func TestProjectResourcesAssignOneResource(t *testing.T) {
 func TestProjectResourcesAssignMultipleResources(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
 		projectUUID := "ab06e011-6dd1-4034-9293-201f71aba299"
-		urn := "do:droplet:1234"
+		urn := "do:task:1234"
 		otherURN := "do:floatingip:1.2.3.4"
 		tm.projects.On("AssignResources", projectUUID, []string{urn, otherURN}).Return(testProjectResourcesList, nil)
 
 		config.Args = append(config.Args, projectUUID)
-		config.Doit.Set(config.NS, doctl.ArgProjectResource, []string{urn, otherURN})
+		config.Ankr.Set(config.NS, dccncli.ArgProjectResource, []string{urn, otherURN})
 
 		err := RunProjectResourcesAssign(config)
 		assert.NoError(t, err)

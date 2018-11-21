@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -27,7 +27,7 @@ completion is used to output completion code for bash and zsh shells.
 Before using completion features, you have to source completion code
 from your .profile or .bashrc/.zshrc file. This is done by adding
 following line to one of above files:
-	source <(doctl completion SHELL)
+	source <(dccncli completion SHELL)
 
 Bash users can as well save it to the file and copy it to:
 	/etc/bash_completion.d/
@@ -45,7 +45,7 @@ Once installed, you must load bash_completion by adding following
 line to your .profile or .bashrc/.zshrc:
 	source $(brew --prefix)/etc/bash_completion	
 `
-	doctlLicense = `# Copyright 2018 The Doctl Authors All rights reserved.
+	dccncliLicense = `# Copyright 2018 The Dccncli Authors All rights reserved.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -81,12 +81,12 @@ func Completion() *Command {
 func RunCompletionBash(c *CmdConfig) error {
 	var buf bytes.Buffer
 
-	_, err := buf.Write([]byte(doctlLicense))
+	_, err := buf.Write([]byte(dccncliLicense))
 	if err != nil {
 		return fmt.Errorf("error while generating bash completion: %v", err)
 	}
 
-	err = DoitCmd.GenBashCompletion(&buf)
+	err = AnkrCmd.GenBashCompletion(&buf)
 	if err != nil {
 		return fmt.Errorf("error while generating bash completion: %v", err)
 	}
@@ -103,7 +103,7 @@ func RunCompletionZsh(c *CmdConfig) error {
 	// zshInit represents intialization code needed to convert bash completion
 	// code to zsh completion.
 	zshInit := `
-__doctl_bash_source() {
+__dccncli_bash_source() {
 	alias shopt=':'
 	alias _expand=_bash_expand
 	alias _complete=_bash_comp
@@ -113,7 +113,7 @@ __doctl_bash_source() {
 	source "$@"
 }
 
-__doctl_type() {
+__dccncli_type() {
 	# -t is not supported by zsh
 	if [ "$1" == "-t" ]; then
 		shift
@@ -122,7 +122,7 @@ __doctl_type() {
 		# "compopt +-o nospace" is used in the code to toggle trailing
 		# spaces. We don't support that, but leave trailing spaces on
 		# all the time
-		if [ "$1" = "__doctl_compopt" ]; then
+		if [ "$1" = "__dccncli_compopt" ]; then
 			echo builtin
 			return 0
 		fi
@@ -130,7 +130,7 @@ __doctl_type() {
 	type "$@"
 }
 
-__doctl_compgen() {
+__dccncli_compgen() {
 	local completions w
 	completions=( $(compgen "$@") ) || return $?
 
@@ -149,11 +149,11 @@ __doctl_compgen() {
 	done
 }
 
-__doctl_compopt() {
+__dccncli_compopt() {
 	true # don't do anything. Not supported by bashcompinit in zsh
 }
 
-__doctl_declare() {
+__dccncli_declare() {
 	if [ "$1" == "-F" ]; then
 		whence -w "$@"
 	else
@@ -161,7 +161,7 @@ __doctl_declare() {
 	fi
 }
 
-__doctl_ltrim_colon_completions()
+__dccncli_ltrim_colon_completions()
 {
 	if [[ "$1" == *:* && "$COMP_WORDBREAKS" == *:* ]]; then
 		# Remove colon-word prefix from COMPREPLY items
@@ -173,14 +173,14 @@ __doctl_ltrim_colon_completions()
 	fi
 }
 
-__doctl_get_comp_words_by_ref() {
+__dccncli_get_comp_words_by_ref() {
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[${COMP_CWORD}-1]}"
 	words=("${COMP_WORDS[@]}")
 	cword=("${COMP_CWORD[@]}")
 }
 
-__doctl_filedir() {
+__dccncli_filedir() {
 	local RET OLD_IFS w qw
 
 	__debug "_filedir $@ cur=$cur"
@@ -207,7 +207,7 @@ __doctl_filedir() {
 			continue
 		fi
 		if eval "[[ \"\${w}\" = *.$1 || -d \"\${w}\" ]]"; then
-			qw="$(__doctl_quote "${w}")"
+			qw="$(__dccncli_quote "${w}")"
 			if [ -d "${w}" ]; then
 				COMPREPLY+=("${qw}/")
 			else
@@ -217,7 +217,7 @@ __doctl_filedir() {
 	done
 }
 
-__doctl_quote() {
+__dccncli_quote() {
     if [[ $1 == \'* || $1 == \"* ]]; then
         # Leave out first character
         printf %q "${1:1}"
@@ -237,19 +237,19 @@ if sed --help 2>&1 | grep -q GNU; then
 	RWORD='\>'
 fi
 
-__doctl_convert_bash_to_zsh() {
+__dccncli_convert_bash_to_zsh() {
 	sed \
 	-e 's/declare -F/whence -w/' \
 	-e 's/local \([a-zA-Z0-9_]*\)=/local \1; \1=/' \
 	-e 's/flags+=("\(--.*\)=")/flags+=("\1"); two_word_flags+=("\1")/' \
 	-e 's/must_have_one_flag+=("\(--.*\)=")/must_have_one_flag+=("\1")/' \
-	-e "s/${LWORD}_filedir${RWORD}/__doctl_filedir/g" \
-	-e "s/${LWORD}_get_comp_words_by_ref${RWORD}/__doctl_get_comp_words_by_ref/g" \
-	-e "s/${LWORD}__ltrim_colon_completions${RWORD}/__doctl_ltrim_colon_completions/g" \
-	-e "s/${LWORD}compgen${RWORD}/__doctl_compgen/g" \
-	-e "s/${LWORD}compopt${RWORD}/__doctl_compopt/g" \
-	-e "s/${LWORD}declare${RWORD}/__doctl_declare/g" \
-	-e "s/\\\$(type${RWORD}/\$(__doctl_type/g" \
+	-e "s/${LWORD}_filedir${RWORD}/__dccncli_filedir/g" \
+	-e "s/${LWORD}_get_comp_words_by_ref${RWORD}/__dccncli_get_comp_words_by_ref/g" \
+	-e "s/${LWORD}__ltrim_colon_completions${RWORD}/__dccncli_ltrim_colon_completions/g" \
+	-e "s/${LWORD}compgen${RWORD}/__dccncli_compgen/g" \
+	-e "s/${LWORD}compopt${RWORD}/__dccncli_compopt/g" \
+	-e "s/${LWORD}declare${RWORD}/__dccncli_declare/g" \
+	-e "s/\\\$(type${RWORD}/\$(__dccncli_type/g" \
 	<<'BASH_COMPLETION_EOF'
 `
 
@@ -259,17 +259,17 @@ __doctl_convert_bash_to_zsh() {
 BASH_COMPLETION_EOF
 }
 
-__doctl_bash_source <(__doctl_convert_bash_to_zsh)
+__dccncli_bash_source <(__dccncli_convert_bash_to_zsh)
 	`
 
-	_, err := buf.Write([]byte(doctlLicense))
+	_, err := buf.Write([]byte(dccncliLicense))
 	if err != nil {
 		return fmt.Errorf("error while generating zsh completion: %v", err)
 	}
 
 	_, err = buf.Write([]byte(zshInit))
 
-	err = DoitCmd.GenBashCompletion(&buf)
+	err = AnkrCmd.GenBashCompletion(&buf)
 	if err != nil {
 		return fmt.Errorf("error wheil generating zsh completion: %v", err)
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -34,8 +34,8 @@ type LoadBalancersService interface {
 	Create(lbr *godo.LoadBalancerRequest) (*LoadBalancer, error)
 	Update(lbID string, lbr *godo.LoadBalancerRequest) (*LoadBalancer, error)
 	Delete(lbID string) error
-	AddDroplets(lbID string, dIDs ...int) error
-	RemoveDroplets(lbID string, dIDs ...int) error
+	AddTasks(lbID string, dIDs ...int) error
+	RemoveTasks(lbID string, dIDs ...int) error
 	AddForwardingRules(lbID string, rules ...godo.ForwardingRule) error
 	RemoveForwardingRules(lbID string, rules ...godo.ForwardingRule) error
 }
@@ -114,13 +114,13 @@ func (lbs *loadBalancersService) Delete(lbID string) error {
 	return err
 }
 
-func (lbs *loadBalancersService) AddDroplets(lbID string, dIDs ...int) error {
-	_, err := lbs.client.LoadBalancers.AddDroplets(context.TODO(), lbID, dIDs...)
+func (lbs *loadBalancersService) AddTasks(lbID string, dIDs ...int) error {
+	_, err := lbs.client.LoadBalancers.AddTasks(context.TODO(), lbID, dIDs...)
 	return err
 }
 
-func (lbs *loadBalancersService) RemoveDroplets(lbID string, dIDs ...int) error {
-	_, err := lbs.client.LoadBalancers.RemoveDroplets(context.TODO(), lbID, dIDs...)
+func (lbs *loadBalancersService) RemoveTasks(lbID string, dIDs ...int) error {
+	_, err := lbs.client.LoadBalancers.RemoveTasks(context.TODO(), lbID, dIDs...)
 	return err
 }
 

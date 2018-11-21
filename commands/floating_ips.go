@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -39,22 +39,22 @@ func FloatingIP() *Command {
 
 	cmdFloatingIPCreate := CmdBuilder(cmd, RunFloatingIPCreate, "create", "create a floating IP", Writer,
 		aliasOpt("c"), displayerType(&displayers.FloatingIP{}), docCategories("floatingip"))
-	AddStringFlag(cmdFloatingIPCreate, doctl.ArgRegionSlug, "", "",
+	AddStringFlag(cmdFloatingIPCreate, dccncli.ArgRegionSlug, "", "",
 		fmt.Sprintf("Region where to create the floating IP. (mutually exclusive with %s)",
-			doctl.ArgDropletID))
-	AddIntFlag(cmdFloatingIPCreate, doctl.ArgDropletID, "", 0,
-		fmt.Sprintf("ID of the droplet to assign the IP to. (mutually exclusive with %s)",
-			doctl.ArgRegionSlug))
+			dccncli.ArgTaskID))
+	AddIntFlag(cmdFloatingIPCreate, dccncli.ArgTaskID, "", 0,
+		fmt.Sprintf("ID of the task to assign the IP to. (mutually exclusive with %s)",
+			dccncli.ArgRegionSlug))
 
 	CmdBuilder(cmd, RunFloatingIPGet, "get <floating-ip>", "get the details of a floating IP", Writer,
 		aliasOpt("g"), displayerType(&displayers.FloatingIP{}), docCategories("floatingip"))
 
 	cmdRunFloatingIPDelete := CmdBuilder(cmd, RunFloatingIPDelete, "delete <floating-ip>", "delete a floating IP address", Writer, aliasOpt("d"))
-	AddBoolFlag(cmdRunFloatingIPDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force floating IP delete")
+	AddBoolFlag(cmdRunFloatingIPDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force floating IP delete")
 
 	cmdFloatingIPList := CmdBuilder(cmd, RunFloatingIPList, "list", "list all floating IP addresses", Writer,
 		aliasOpt("ls"), displayerType(&displayers.FloatingIP{}), docCategories("floatingip"))
-	AddStringFlag(cmdFloatingIPList, doctl.ArgRegionSlug, "", "", "Floating IP region")
+	AddStringFlag(cmdFloatingIPList, dccncli.ArgRegionSlug, "", "", "Floating IP region")
 
 	return cmd
 }
@@ -64,20 +64,20 @@ func RunFloatingIPCreate(c *CmdConfig) error {
 	fis := c.FloatingIPs()
 
 	// ignore errors since we don't know which one is valid
-	region, _ := c.Doit.GetString(c.NS, doctl.ArgRegionSlug)
-	dropletID, _ := c.Doit.GetInt(c.NS, doctl.ArgDropletID)
+	region, _ := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
+	taskID, _ := c.Ankr.GetInt(c.NS, dccncli.ArgTaskID)
 
-	if region == "" && dropletID == 0 {
-		return doctl.NewMissingArgsErr("region and droplet id can't both be blank")
+	if region == "" && taskID == 0 {
+		return dccncli.NewMissingArgsErr("region and task id can't both be blank")
 	}
 
-	if region != "" && dropletID != 0 {
-		return fmt.Errorf("specify region or droplet id when creating a floating ip")
+	if region != "" && taskID != 0 {
+		return fmt.Errorf("specify region or task id when creating a floating ip")
 	}
 
 	req := &godo.FloatingIPCreateRequest{
 		Region:    region,
-		DropletID: dropletID,
+		TaskID: taskID,
 	}
 
 	ip, err := fis.Create(req)
@@ -95,7 +95,7 @@ func RunFloatingIPGet(c *CmdConfig) error {
 	fis := c.FloatingIPs()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	ip := c.Args[0]
@@ -118,10 +118,10 @@ func RunFloatingIPDelete(c *CmdConfig) error {
 	fis := c.FloatingIPs()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func RunFloatingIPDelete(c *CmdConfig) error {
 func RunFloatingIPList(c *CmdConfig) error {
 	fis := c.FloatingIPs()
 
-	region, err := c.Doit.GetString(c.NS, doctl.ArgRegionSlug)
+	region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
 	if err != nil {
 		return err
 	}

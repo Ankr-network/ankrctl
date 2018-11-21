@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -39,7 +39,7 @@ func Domain() *Command {
 
 	cmdDomainCreate := CmdBuilder(cmd, RunDomainCreate, "create <domain>", "create domain", Writer,
 		aliasOpt("c"), displayerType(&displayers.Domain{}), docCategories("domain"))
-	AddStringFlag(cmdDomainCreate, doctl.ArgIPAddress, "", "", "IP address", requiredOpt())
+	AddStringFlag(cmdDomainCreate, dccncli.ArgIPAddress, "", "", "IP address", requiredOpt())
 
 	CmdBuilder(cmd, RunDomainList, "list", "list domains", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Domain{}), docCategories("domain"))
@@ -48,7 +48,7 @@ func Domain() *Command {
 		aliasOpt("g"), displayerType(&displayers.Domain{}), docCategories("domain"))
 
 	cmdRunDomainDelete := CmdBuilder(cmd, RunDomainDelete, "delete <domain>", "delete domain", Writer, aliasOpt("g"))
-	AddBoolFlag(cmdRunDomainDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force domain delete")
+	AddBoolFlag(cmdRunDomainDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force domain delete")
 
 	cmdRecord := &Command{
 		Command: &cobra.Command{
@@ -64,32 +64,32 @@ func Domain() *Command {
 
 	cmdRecordCreate := CmdBuilder(cmdRecord, RunRecordCreate, "create <domain>", "create record", Writer,
 		aliasOpt("c"), displayerType(&displayers.DomainRecord{}), docCategories("domain"))
-	AddStringFlag(cmdRecordCreate, doctl.ArgRecordType, "", "", "Record type")
-	AddStringFlag(cmdRecordCreate, doctl.ArgRecordName, "", "", "Record name")
-	AddStringFlag(cmdRecordCreate, doctl.ArgRecordData, "", "", "Record data")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordPriority, "", 0, "Record priority")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordPort, "", 0, "Record port")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordTTL, "", 1800, "Record TTL")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordWeight, "", 0, "Record weight")
-	AddIntFlag(cmdRecordCreate, doctl.ArgRecordFlags, "", 0, "Record flags")
-	AddStringFlag(cmdRecordCreate, doctl.ArgRecordTag, "", "", "Record tag")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgRecordType, "", "", "Record type")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgRecordName, "", "", "Record name")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgRecordData, "", "", "Record data")
+	AddIntFlag(cmdRecordCreate, dccncli.ArgRecordPriority, "", 0, "Record priority")
+	AddIntFlag(cmdRecordCreate, dccncli.ArgRecordPort, "", 0, "Record port")
+	AddIntFlag(cmdRecordCreate, dccncli.ArgRecordTTL, "", 1800, "Record TTL")
+	AddIntFlag(cmdRecordCreate, dccncli.ArgRecordWeight, "", 0, "Record weight")
+	AddIntFlag(cmdRecordCreate, dccncli.ArgRecordFlags, "", 0, "Record flags")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgRecordTag, "", "", "Record tag")
 
 	cmdRunRecordDelete := CmdBuilder(cmdRecord, RunRecordDelete, "delete <domain> <record id...>", "delete record", Writer,
 		aliasOpt("d"), docCategories("domain"))
-	AddBoolFlag(cmdRunRecordDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force record delete")
+	AddBoolFlag(cmdRunRecordDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force record delete")
 
 	cmdRecordUpdate := CmdBuilder(cmdRecord, RunRecordUpdate, "update <domain>", "update record", Writer,
 		aliasOpt("u"), displayerType(&displayers.DomainRecord{}), docCategories("domain"))
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordID, "", 0, "Record ID")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRecordType, "", "", "Record type")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRecordName, "", "", "Record name")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRecordData, "", "", "Record data")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordPriority, "", 0, "Record priority")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordPort, "", 0, "Record port")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordTTL, "", 1800, "Record TTL")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordWeight, "", 0, "Record weight")
-	AddIntFlag(cmdRecordUpdate, doctl.ArgRecordFlags, "", 0, "Record flags")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRecordTag, "", "", "Record tag")
+	AddIntFlag(cmdRecordUpdate, dccncli.ArgRecordID, "", 0, "Record ID")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgRecordType, "", "", "Record type")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgRecordName, "", "", "Record name")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgRecordData, "", "", "Record data")
+	AddIntFlag(cmdRecordUpdate, dccncli.ArgRecordPriority, "", 0, "Record priority")
+	AddIntFlag(cmdRecordUpdate, dccncli.ArgRecordPort, "", 0, "Record port")
+	AddIntFlag(cmdRecordUpdate, dccncli.ArgRecordTTL, "", 1800, "Record TTL")
+	AddIntFlag(cmdRecordUpdate, dccncli.ArgRecordWeight, "", 0, "Record weight")
+	AddIntFlag(cmdRecordUpdate, dccncli.ArgRecordFlags, "", 0, "Record flags")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgRecordTag, "", "", "Record tag")
 
 	return cmd
 }
@@ -97,13 +97,13 @@ func Domain() *Command {
 // RunDomainCreate runs domain create.
 func RunDomainCreate(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	domainName := c.Args[0]
 
 	ds := c.Domains()
 
-	ipAddress, err := c.Doit.GetString(c.NS, "ip-address")
+	ipAddress, err := c.Ankr.GetString(c.NS, "ip-address")
 	if err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func RunDomainList(c *CmdConfig) error {
 // RunDomainGet retrieves a domain by name.
 func RunDomainGet(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	id := c.Args[0]
 
@@ -160,11 +160,11 @@ func RunDomainGet(c *CmdConfig) error {
 // RunDomainDelete deletes a domain by name.
 func RunDomainDelete(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	name := c.Args[0]
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -188,7 +188,7 @@ func RunDomainDelete(c *CmdConfig) error {
 // RunRecordList list records for a domain.
 func RunRecordList(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	name := c.Args[0]
 
@@ -211,53 +211,53 @@ func RunRecordList(c *CmdConfig) error {
 // RunRecordCreate creates a domain record.
 func RunRecordCreate(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	name := c.Args[0]
 
 	ds := c.Domains()
 
-	rType, err := c.Doit.GetString(c.NS, doctl.ArgRecordType)
+	rType, err := c.Ankr.GetString(c.NS, dccncli.ArgRecordType)
 	if err != nil {
 		return err
 	}
 
-	rName, err := c.Doit.GetString(c.NS, doctl.ArgRecordName)
+	rName, err := c.Ankr.GetString(c.NS, dccncli.ArgRecordName)
 	if err != nil {
 		return err
 	}
 
-	rData, err := c.Doit.GetString(c.NS, doctl.ArgRecordData)
+	rData, err := c.Ankr.GetString(c.NS, dccncli.ArgRecordData)
 	if err != nil {
 		return err
 	}
 
-	rPriority, err := c.Doit.GetInt(c.NS, doctl.ArgRecordPriority)
+	rPriority, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordPriority)
 	if err != nil {
 		return err
 	}
 
-	rPort, err := c.Doit.GetInt(c.NS, doctl.ArgRecordPort)
+	rPort, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordPort)
 	if err != nil {
 		return err
 	}
 
-	rTTL, err := c.Doit.GetInt(c.NS, doctl.ArgRecordTTL)
+	rTTL, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordTTL)
 	if err != nil {
 		return err
 	}
 
-	rWeight, err := c.Doit.GetInt(c.NS, doctl.ArgRecordWeight)
+	rWeight, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordWeight)
 	if err != nil {
 		return err
 	}
 
-	rFlags, err := c.Doit.GetInt(c.NS, doctl.ArgRecordFlags)
+	rFlags, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordFlags)
 	if err != nil {
 		return err
 	}
 
-	rTag, err := c.Doit.GetString(c.NS, doctl.ArgRecordTag)
+	rTag, err := c.Ankr.GetString(c.NS, dccncli.ArgRecordTag)
 	if err != nil {
 		return err
 	}
@@ -291,10 +291,10 @@ func RunRecordCreate(c *CmdConfig) error {
 // RunRecordDelete deletes a domain record.
 func RunRecordDelete(c *CmdConfig) error {
 	if len(c.Args) < 2 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -302,7 +302,7 @@ func RunRecordDelete(c *CmdConfig) error {
 	if force || AskForConfirm("delete record(s)") == nil {
 		domainName, ids := c.Args[0], c.Args[1:]
 		if len(ids) < 1 {
-			return doctl.NewMissingArgsErr(c.NS)
+			return dccncli.NewMissingArgsErr(c.NS)
 		}
 
 		ds := c.Domains()
@@ -329,58 +329,58 @@ func RunRecordDelete(c *CmdConfig) error {
 // RunRecordUpdate updates a domain record.
 func RunRecordUpdate(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	domainName := c.Args[0]
 
 	ds := c.Domains()
 
-	recordID, err := c.Doit.GetInt(c.NS, doctl.ArgRecordID)
+	recordID, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordID)
 	if err != nil {
 		return err
 	}
 
-	rType, err := c.Doit.GetString(c.NS, doctl.ArgRecordType)
+	rType, err := c.Ankr.GetString(c.NS, dccncli.ArgRecordType)
 	if err != nil {
 		return err
 	}
 
-	rName, err := c.Doit.GetString(c.NS, doctl.ArgRecordName)
+	rName, err := c.Ankr.GetString(c.NS, dccncli.ArgRecordName)
 	if err != nil {
 		return err
 	}
 
-	rData, err := c.Doit.GetString(c.NS, doctl.ArgRecordData)
+	rData, err := c.Ankr.GetString(c.NS, dccncli.ArgRecordData)
 	if err != nil {
 		return err
 	}
 
-	rPriority, err := c.Doit.GetInt(c.NS, doctl.ArgRecordPriority)
+	rPriority, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordPriority)
 	if err != nil {
 		return err
 	}
 
-	rPort, err := c.Doit.GetInt(c.NS, doctl.ArgRecordPort)
+	rPort, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordPort)
 	if err != nil {
 		return err
 	}
 
-	rTTL, err := c.Doit.GetInt(c.NS, doctl.ArgRecordTTL)
+	rTTL, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordTTL)
 	if err != nil {
 		return err
 	}
 
-	rWeight, err := c.Doit.GetInt(c.NS, doctl.ArgRecordWeight)
+	rWeight, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordWeight)
 	if err != nil {
 		return err
 	}
 
-	rFlags, err := c.Doit.GetInt(c.NS, doctl.ArgRecordFlags)
+	rFlags, err := c.Ankr.GetInt(c.NS, dccncli.ArgRecordFlags)
 	if err != nil {
 		return err
 	}
 
-	rTag, err := c.Doit.GetString(c.NS, doctl.ArgRecordTag)
+	rTag, err := c.Ankr.GetString(c.NS, dccncli.ArgRecordTag)
 	if err != nil {
 		return err
 	}

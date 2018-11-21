@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -37,29 +37,29 @@ func Volume() *Command {
 
 	cmdRunVolumeList := CmdBuilder(cmd, RunVolumeList, "list", "list volume", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Volume{}))
-	AddStringFlag(cmdRunVolumeList, doctl.ArgRegionSlug, "", "", "Volume region")
+	AddStringFlag(cmdRunVolumeList, dccncli.ArgRegionSlug, "", "", "Volume region")
 
 	cmdVolumeCreate := CmdBuilder(cmd, RunVolumeCreate, "create <volume-name>", "create a volume", Writer,
 		aliasOpt("c"), displayerType(&displayers.Volume{}))
-	AddStringFlag(cmdVolumeCreate, doctl.ArgVolumeSize, "", "4TiB", "Volume size",
+	AddStringFlag(cmdVolumeCreate, dccncli.ArgVolumeSize, "", "4TiB", "Volume size",
 		requiredOpt())
-	AddStringFlag(cmdVolumeCreate, doctl.ArgVolumeDesc, "", "", "Volume description")
-	AddStringFlag(cmdVolumeCreate, doctl.ArgVolumeRegion, "", "", "Volume region",
+	AddStringFlag(cmdVolumeCreate, dccncli.ArgVolumeDesc, "", "", "Volume description")
+	AddStringFlag(cmdVolumeCreate, dccncli.ArgVolumeRegion, "", "", "Volume region",
 		requiredOpt())
-	AddStringFlag(cmdVolumeCreate, doctl.ArgVolumeFilesystemType, "", "", "Volume filesystem type (ext4 or xfs)")
-	AddStringFlag(cmdVolumeCreate, doctl.ArgVolumeFilesystemLabel, "", "", "Volume filesystem label")
+	AddStringFlag(cmdVolumeCreate, dccncli.ArgVolumeFilesystemType, "", "", "Volume filesystem type (ext4 or xfs)")
+	AddStringFlag(cmdVolumeCreate, dccncli.ArgVolumeFilesystemLabel, "", "", "Volume filesystem label")
 
 	cmdRunVolumeDelete := CmdBuilder(cmd, RunVolumeDelete, "delete <volume-id>", "delete a volume", Writer,
 		aliasOpt("rm"))
-	AddBoolFlag(cmdRunVolumeDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force volume delete")
+	AddBoolFlag(cmdRunVolumeDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force volume delete")
 
 	CmdBuilder(cmd, RunVolumeGet, "get <volume-id>", "get a volume", Writer, aliasOpt("g"),
 		displayerType(&displayers.Volume{}))
 
 	cmdRunVolumeSnapshot := CmdBuilder(cmd, RunVolumeSnapshot, "snapshot <volume-id>", "create a volume snapshot", Writer,
 		aliasOpt("s"), displayerType(&displayers.Volume{}))
-	AddStringFlag(cmdRunVolumeSnapshot, doctl.ArgSnapshotName, "", "", "Snapshot name", requiredOpt())
-	AddStringFlag(cmdRunVolumeSnapshot, doctl.ArgSnapshotDesc, "", "", "Snapshot description")
+	AddStringFlag(cmdRunVolumeSnapshot, dccncli.ArgSnapshotName, "", "", "Snapshot name", requiredOpt())
+	AddStringFlag(cmdRunVolumeSnapshot, dccncli.ArgSnapshotDesc, "", "", "Snapshot description")
 
 	return cmd
 
@@ -70,7 +70,7 @@ func RunVolumeList(c *CmdConfig) error {
 
 	al := c.Volumes()
 
-	region, err := c.Doit.GetString(c.NS, doctl.ArgRegionSlug)
+	region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
 	if err != nil {
 		return nil
 	}
@@ -123,12 +123,12 @@ func RunVolumeList(c *CmdConfig) error {
 // RunVolumeCreate creates a volume.
 func RunVolumeCreate(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	name := c.Args[0]
 
-	sizeStr, err := c.Doit.GetString(c.NS, doctl.ArgVolumeSize)
+	sizeStr, err := c.Ankr.GetString(c.NS, dccncli.ArgVolumeSize)
 	if err != nil {
 		return err
 	}
@@ -137,22 +137,22 @@ func RunVolumeCreate(c *CmdConfig) error {
 		return err
 	}
 
-	desc, err := c.Doit.GetString(c.NS, doctl.ArgVolumeDesc)
+	desc, err := c.Ankr.GetString(c.NS, dccncli.ArgVolumeDesc)
 	if err != nil {
 		return err
 	}
 
-	region, err := c.Doit.GetString(c.NS, doctl.ArgVolumeRegion)
+	region, err := c.Ankr.GetString(c.NS, dccncli.ArgVolumeRegion)
 	if err != nil {
 		return err
 
 	}
 
-	fsType, err := c.Doit.GetString(c.NS, doctl.ArgVolumeFilesystemType)
+	fsType, err := c.Ankr.GetString(c.NS, dccncli.ArgVolumeFilesystemType)
 	if err != nil {
 		return err
 	}
-	fsLabel, err := c.Doit.GetString(c.NS, doctl.ArgVolumeFilesystemLabel)
+	fsLabel, err := c.Ankr.GetString(c.NS, dccncli.ArgVolumeFilesystemLabel)
 	if err != nil {
 		return err
 	}
@@ -180,11 +180,11 @@ func RunVolumeCreate(c *CmdConfig) error {
 // RunVolumeDelete deletes a volume.
 func RunVolumeDelete(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -199,7 +199,7 @@ func RunVolumeDelete(c *CmdConfig) error {
 // RunVolumeGet gets a volume.
 func RunVolumeGet(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 
 	}
 	id := c.Args[0]
@@ -216,17 +216,17 @@ func RunVolumeGet(c *CmdConfig) error {
 func RunVolumeSnapshot(c *CmdConfig) error {
 	var err error
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	id := c.Args[0]
 
-	name, err := c.Doit.GetString(c.NS, doctl.ArgSnapshotName)
+	name, err := c.Ankr.GetString(c.NS, dccncli.ArgSnapshotName)
 	if err != nil {
 		return err
 	}
 
-	desc, err := c.Doit.GetString(c.NS, doctl.ArgSnapshotDesc)
+	desc, err := c.Ankr.GetString(c.NS, dccncli.ArgSnapshotDesc)
 	if err != nil {
 		return nil
 	}

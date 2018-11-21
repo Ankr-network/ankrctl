@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -34,7 +34,7 @@ func (a *Volume) JSON(out io.Writer) error {
 
 func (a *Volume) Cols() []string {
 	return []string{
-		"ID", "Name", "Size", "Region", "Filesystem Type", "Filesystem Label", "Droplet IDs",
+		"ID", "Name", "Size", "Region", "Filesystem Type", "Filesystem Label", "Task IDs",
 	}
 }
 
@@ -46,7 +46,7 @@ func (a *Volume) ColMap() map[string]string {
 		"Region":           "Region",
 		"Filesystem Type":  "Filesystem Type",
 		"Filesystem Label": "Filesystem Label",
-		"Droplet IDs":      "Droplet IDs",
+		"Task IDs":      "Task IDs",
 	}
 
 }
@@ -62,9 +62,9 @@ func (a *Volume) KV() []map[string]interface{} {
 			"Filesystem Type":  volume.FilesystemType,
 			"Filesystem Label": volume.FilesystemLabel,
 		}
-		m["DropletIDs"] = ""
-		if len(volume.DropletIDs) != 0 {
-			m["DropletIDs"] = fmt.Sprintf("%v", volume.DropletIDs)
+		m["TaskIDs"] = ""
+		if len(volume.TaskIDs) != 0 {
+			m["TaskIDs"] = fmt.Sprintf("%v", volume.TaskIDs)
 		}
 		out = append(out, m)
 

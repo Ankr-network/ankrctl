@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -41,7 +41,7 @@ func (lb *LoadBalancer) Cols() []string {
 		"Algorithm",
 		"Region",
 		"Tag",
-		"DropletIDs",
+		"TaskIDs",
 		"RedirectHttpToHttps",
 		"StickySessions",
 		"HealthCheck",
@@ -59,7 +59,7 @@ func (lb *LoadBalancer) ColMap() map[string]string {
 		"Algorithm":           "Algorithm",
 		"Region":              "Region",
 		"Tag":                 "Tag",
-		"DropletIDs":          "Droplet IDs",
+		"TaskIDs":          "Task IDs",
 		"RedirectHttpToHttps": "SSL",
 		"StickySessions":      "Sticky Sessions",
 		"HealthCheck":         "Health Check",
@@ -85,7 +85,7 @@ func (lb *LoadBalancer) KV() []map[string]interface{} {
 			"Algorithm":           l.Algorithm,
 			"Region":              l.Region.Slug,
 			"Tag":                 l.Tag,
-			"DropletIDs":          fmt.Sprintf(strings.Trim(strings.Replace(fmt.Sprint(l.DropletIDs), " ", ",", -1), "[]")),
+			"TaskIDs":          fmt.Sprintf(strings.Trim(strings.Replace(fmt.Sprint(l.TaskIDs), " ", ",", -1), "[]")),
 			"RedirectHttpToHttps": l.RedirectHttpToHttps,
 			"StickySessions":      prettyPrintStruct(l.StickySessions),
 			"HealthCheck":         prettyPrintStruct(l.HealthCheck),

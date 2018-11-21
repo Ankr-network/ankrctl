@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -40,43 +40,43 @@ func LoadBalancer() *Command {
 	CmdBuilder(cmd, RunLoadBalancerGet, "get <id>", "get load balancer", Writer, aliasOpt("g"))
 
 	cmdRecordCreate := CmdBuilder(cmd, RunLoadBalancerCreate, "create", "create load balancer", Writer, aliasOpt("c"))
-	AddStringFlag(cmdRecordCreate, doctl.ArgLoadBalancerName, "", "", "load balancer name", requiredOpt())
-	AddStringFlag(cmdRecordCreate, doctl.ArgRegionSlug, "", "", "load balancer region location, example value: nyc1", requiredOpt())
-	AddStringFlag(cmdRecordCreate, doctl.ArgLoadBalancerAlgorithm, "", "round_robin", "load balancing algorithm, possible values: round_robin or least_connections")
-	AddBoolFlag(cmdRecordCreate, doctl.ArgRedirectHttpToHttps, "", false, "flag to redirect HTTP requests to the load balancer on port 80 to HTTPS on port 443")
-	AddStringFlag(cmdRecordCreate, doctl.ArgTagName, "", "", "droplet tag name")
-	AddStringSliceFlag(cmdRecordCreate, doctl.ArgDropletIDs, "", []string{}, "comma-separated list of droplet IDs, example value: 12,33")
-	AddStringFlag(cmdRecordCreate, doctl.ArgStickySessions, "", "", "comma-separated key:value list, example value: type:cookies,cookie_name:DO-LB,cookie_ttl_seconds:5")
-	AddStringFlag(cmdRecordCreate, doctl.ArgHealthCheck, "", "", "comma-separated key:value list, example value: protocol:http,port:80,path:/index.html,check_interval_seconds:10,response_timeout_seconds:5,healthy_threshold:5,unhealthy_threshold:3")
-	AddStringFlag(cmdRecordCreate, doctl.ArgForwardingRules, "", "", "comma-separated key:value list, example value: entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgLoadBalancerName, "", "", "load balancer name", requiredOpt())
+	AddStringFlag(cmdRecordCreate, dccncli.ArgRegionSlug, "", "", "load balancer region location, example value: nyc1", requiredOpt())
+	AddStringFlag(cmdRecordCreate, dccncli.ArgLoadBalancerAlgorithm, "", "round_robin", "load balancing algorithm, possible values: round_robin or least_connections")
+	AddBoolFlag(cmdRecordCreate, dccncli.ArgRedirectHttpToHttps, "", false, "flag to redirect HTTP requests to the load balancer on port 80 to HTTPS on port 443")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgTagName, "", "", "task tag name")
+	AddStringSliceFlag(cmdRecordCreate, dccncli.ArgTaskIDs, "", []string{}, "comma-separated list of task IDs, example value: 12,33")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgStickySessions, "", "", "comma-separated key:value list, example value: type:cookies,cookie_name:DO-LB,cookie_ttl_seconds:5")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgHealthCheck, "", "", "comma-separated key:value list, example value: protocol:http,port:80,path:/index.html,check_interval_seconds:10,response_timeout_seconds:5,healthy_threshold:5,unhealthy_threshold:3")
+	AddStringFlag(cmdRecordCreate, dccncli.ArgForwardingRules, "", "", "comma-separated key:value list, example value: entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306, use quoted string of space-separated values for multiple rules")
 
 	cmdRecordUpdate := CmdBuilder(cmd, RunLoadBalancerUpdate, "update <id>", "update load balancer", Writer, aliasOpt("u"))
-	AddStringFlag(cmdRecordUpdate, doctl.ArgLoadBalancerName, "", "", "load balancer name", requiredOpt())
-	AddStringFlag(cmdRecordUpdate, doctl.ArgRegionSlug, "", "", "load balancer region location, example value: nyc1", requiredOpt())
-	AddStringFlag(cmdRecordUpdate, doctl.ArgLoadBalancerAlgorithm, "", "round_robin", "load balancing algorithm, possible values: round_robin or least_connections")
-	AddBoolFlag(cmdRecordUpdate, doctl.ArgRedirectHttpToHttps, "", false, "flag to redirect HTTP requests to the load balancer on port 80 to HTTPS on port 443")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgTagName, "", "", "droplet tag name")
-	AddStringSliceFlag(cmdRecordUpdate, doctl.ArgDropletIDs, "", []string{}, "comma-separated list of droplet IDs, example value: 12,33")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgStickySessions, "", "", "comma-separated key:value list, example value, example value: type:cookies,cookie_name:DO-LB,cookie_ttl_seconds:5")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgHealthCheck, "", "", "comma-separated key:value list, example value: protocol:http,port:80,path:/index.html,check_interval_seconds:10,response_timeout_seconds:5,healthy_threshold:5,unhealthy_threshold:3")
-	AddStringFlag(cmdRecordUpdate, doctl.ArgForwardingRules, "", "", "comma-separated key:value list, example value: entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgLoadBalancerName, "", "", "load balancer name", requiredOpt())
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgRegionSlug, "", "", "load balancer region location, example value: nyc1", requiredOpt())
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgLoadBalancerAlgorithm, "", "round_robin", "load balancing algorithm, possible values: round_robin or least_connections")
+	AddBoolFlag(cmdRecordUpdate, dccncli.ArgRedirectHttpToHttps, "", false, "flag to redirect HTTP requests to the load balancer on port 80 to HTTPS on port 443")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgTagName, "", "", "task tag name")
+	AddStringSliceFlag(cmdRecordUpdate, dccncli.ArgTaskIDs, "", []string{}, "comma-separated list of task IDs, example value: 12,33")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgStickySessions, "", "", "comma-separated key:value list, example value, example value: type:cookies,cookie_name:DO-LB,cookie_ttl_seconds:5")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgHealthCheck, "", "", "comma-separated key:value list, example value: protocol:http,port:80,path:/index.html,check_interval_seconds:10,response_timeout_seconds:5,healthy_threshold:5,unhealthy_threshold:3")
+	AddStringFlag(cmdRecordUpdate, dccncli.ArgForwardingRules, "", "", "comma-separated key:value list, example value: entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306, use quoted string of space-separated values for multiple rules")
 
 	CmdBuilder(cmd, RunLoadBalancerList, "list", "list load balancers", Writer, aliasOpt("ls"))
 
 	cmdRunRecordDelete := CmdBuilder(cmd, RunLoadBalancerDelete, "delete <id>", "delete load balancer", Writer, aliasOpt("d", "rm"))
-	AddBoolFlag(cmdRunRecordDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force load balancer delete")
+	AddBoolFlag(cmdRunRecordDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force load balancer delete")
 
-	cmdAddDroplets := CmdBuilder(cmd, RunLoadBalancerAddDroplets, "add-droplets <id>", "add droplets to the load balancer", Writer)
-	AddStringSliceFlag(cmdAddDroplets, doctl.ArgDropletIDs, "", []string{}, "comma-separated list of droplet IDs, example valus: 12,33")
+	cmdAddTasks := CmdBuilder(cmd, RunLoadBalancerAddTasks, "add-tasks <id>", "add tasks to the load balancer", Writer)
+	AddStringSliceFlag(cmdAddTasks, dccncli.ArgTaskIDs, "", []string{}, "comma-separated list of task IDs, example valus: 12,33")
 
-	cmdRemoveDroplets := CmdBuilder(cmd, RunLoadBalancerRemoveDroplets, "remove-droplets <id>", "remove droplets from the load balancer", Writer)
-	AddStringSliceFlag(cmdRemoveDroplets, doctl.ArgDropletIDs, "", []string{}, "comma-separated list of droplet IDs, example value: 12,33")
+	cmdRemoveTasks := CmdBuilder(cmd, RunLoadBalancerRemoveTasks, "remove-tasks <id>", "remove tasks from the load balancer", Writer)
+	AddStringSliceFlag(cmdRemoveTasks, dccncli.ArgTaskIDs, "", []string{}, "comma-separated list of task IDs, example value: 12,33")
 
 	cmdAddForwardingRules := CmdBuilder(cmd, RunLoadBalancerAddForwardingRules, "add-forwarding-rules <id>", "add forwarding rules to the load balancer", Writer)
-	AddStringFlag(cmdAddForwardingRules, doctl.ArgForwardingRules, "", "", "comma-separated key:value list, example value: entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdAddForwardingRules, dccncli.ArgForwardingRules, "", "", "comma-separated key:value list, example value: entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306, use quoted string of space-separated values for multiple rules")
 
 	cmdRemoveForwardingRules := CmdBuilder(cmd, RunLoadBalancerRemoveForwardingRules, "remove-forwarding-rules <id>", "remove forwarding rules from the load balancer", Writer)
-	AddStringFlag(cmdRemoveForwardingRules, doctl.ArgForwardingRules, "", "", "comma-separated key:value list, example value: entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306, use quoted string of space-separated values for multiple rules")
+	AddStringFlag(cmdRemoveForwardingRules, dccncli.ArgForwardingRules, "", "", "comma-separated key:value list, example value: entry_protocol:tcp,entry_port:3306,target_protocol:tcp,target_port:3306, use quoted string of space-separated values for multiple rules")
 
 	return cmd
 }
@@ -84,7 +84,7 @@ func LoadBalancer() *Command {
 // RunLoadBalancerGet retrieves an existing load balancer by its identifier.
 func RunLoadBalancerGet(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	id := c.Args[0]
 
@@ -130,7 +130,7 @@ func RunLoadBalancerCreate(c *CmdConfig) error {
 // RunLoadBalancerUpdate updates an existing load balancer with new configuration.
 func RunLoadBalancerUpdate(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	lbID := c.Args[0]
 
@@ -152,11 +152,11 @@ func RunLoadBalancerUpdate(c *CmdConfig) error {
 // RunLoadBalancerDelete deletes a load balancer by its identifier.
 func RunLoadBalancerDelete(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	lbID := c.Args[0]
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -173,54 +173,54 @@ func RunLoadBalancerDelete(c *CmdConfig) error {
 	return nil
 }
 
-// RunLoadBalancerAddDroplets adds droplets to a load balancer.
-func RunLoadBalancerAddDroplets(c *CmdConfig) error {
+// RunLoadBalancerAddTasks adds tasks to a load balancer.
+func RunLoadBalancerAddTasks(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	lbID := c.Args[0]
 
-	dropletIDsList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgDropletIDs)
+	taskIDsList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTaskIDs)
 	if err != nil {
 		return err
 	}
 
-	dropletIDs, err := extractDropletIDs(dropletIDsList)
+	taskIDs, err := extractTaskIDs(taskIDsList)
 	if err != nil {
 		return err
 	}
 
-	return c.LoadBalancers().AddDroplets(lbID, dropletIDs...)
+	return c.LoadBalancers().AddTasks(lbID, taskIDs...)
 }
 
-// RunLoadBalancerRemoveDroplets removes droplets from a load balancer.
-func RunLoadBalancerRemoveDroplets(c *CmdConfig) error {
+// RunLoadBalancerRemoveTasks removes tasks from a load balancer.
+func RunLoadBalancerRemoveTasks(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	lbID := c.Args[0]
 
-	dropletIDsList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgDropletIDs)
+	taskIDsList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTaskIDs)
 	if err != nil {
 		return err
 	}
 
-	dropletIDs, err := extractDropletIDs(dropletIDsList)
+	taskIDs, err := extractTaskIDs(taskIDsList)
 	if err != nil {
 		return err
 	}
 
-	return c.LoadBalancers().RemoveDroplets(lbID, dropletIDs...)
+	return c.LoadBalancers().RemoveTasks(lbID, taskIDs...)
 }
 
 // RunLoadBalancerAddForwardingRules adds forwarding rules to a load balancer.
 func RunLoadBalancerAddForwardingRules(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	lbID := c.Args[0]
 
-	fra, err := c.Doit.GetString(c.NS, doctl.ArgForwardingRules)
+	fra, err := c.Ankr.GetString(c.NS, dccncli.ArgForwardingRules)
 	if err != nil {
 		return err
 	}
@@ -236,11 +236,11 @@ func RunLoadBalancerAddForwardingRules(c *CmdConfig) error {
 // RunLoadBalancerRemoveForwardingRules removes forwarding rules from a load balancer.
 func RunLoadBalancerRemoveForwardingRules(c *CmdConfig) error {
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 	lbID := c.Args[0]
 
-	fra, err := c.Doit.GetString(c.NS, doctl.ArgForwardingRules)
+	fra, err := c.Ankr.GetString(c.NS, dccncli.ArgForwardingRules)
 	if err != nil {
 		return err
 	}
@@ -318,48 +318,48 @@ func fillStructFromStringSliceArgs(obj interface{}, s string) error {
 }
 
 func buildRequestFromArgs(c *CmdConfig, r *godo.LoadBalancerRequest) error {
-	name, err := c.Doit.GetString(c.NS, doctl.ArgLoadBalancerName)
+	name, err := c.Ankr.GetString(c.NS, dccncli.ArgLoadBalancerName)
 	if err != nil {
 		return err
 	}
 	r.Name = name
 
-	region, err := c.Doit.GetString(c.NS, doctl.ArgRegionSlug)
+	region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
 	if err != nil {
 		return err
 	}
 	r.Region = region
 
-	algorithm, err := c.Doit.GetString(c.NS, doctl.ArgLoadBalancerAlgorithm)
+	algorithm, err := c.Ankr.GetString(c.NS, dccncli.ArgLoadBalancerAlgorithm)
 	if err != nil {
 		return err
 	}
 	r.Algorithm = algorithm
 
-	tag, err := c.Doit.GetString(c.NS, doctl.ArgTagName)
+	tag, err := c.Ankr.GetString(c.NS, dccncli.ArgTagName)
 	if err != nil {
 		return err
 	}
 	r.Tag = tag
 
-	redirectHttpToHttps, err := c.Doit.GetBool(c.NS, doctl.ArgRedirectHttpToHttps)
+	redirectHttpToHttps, err := c.Ankr.GetBool(c.NS, dccncli.ArgRedirectHttpToHttps)
 	if err != nil {
 		return err
 	}
 	r.RedirectHttpToHttps = redirectHttpToHttps
 
-	dropletIDsList, err := c.Doit.GetStringSlice(c.NS, doctl.ArgDropletIDs)
+	taskIDsList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTaskIDs)
 	if err != nil {
 		return err
 	}
 
-	dropletIDs, err := extractDropletIDs(dropletIDsList)
+	taskIDs, err := extractTaskIDs(taskIDsList)
 	if err != nil {
 		return err
 	}
-	r.DropletIDs = dropletIDs
+	r.TaskIDs = taskIDs
 
-	ssa, err := c.Doit.GetString(c.NS, doctl.ArgStickySessions)
+	ssa, err := c.Ankr.GetString(c.NS, dccncli.ArgStickySessions)
 	if err != nil {
 		return err
 	}
@@ -370,7 +370,7 @@ func buildRequestFromArgs(c *CmdConfig, r *godo.LoadBalancerRequest) error {
 	}
 	r.StickySessions = stickySession
 
-	hca, err := c.Doit.GetString(c.NS, doctl.ArgHealthCheck)
+	hca, err := c.Ankr.GetString(c.NS, dccncli.ArgHealthCheck)
 	if err != nil {
 		return err
 	}
@@ -381,7 +381,7 @@ func buildRequestFromArgs(c *CmdConfig, r *godo.LoadBalancerRequest) error {
 	}
 	r.HealthCheck = healthCheck
 
-	fra, err := c.Doit.GetString(c.NS, doctl.ArgForwardingRules)
+	fra, err := c.Ankr.GetString(c.NS, dccncli.ArgForwardingRules)
 	if err != nil {
 		return err
 	}

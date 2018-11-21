@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -37,13 +37,13 @@ func ImageAction() *Command {
 	cmdImageActionsGet := CmdBuilder(cmd, RunImageActionsGet,
 		"get <image-id>", "get image action", Writer,
 		displayerType(&displayers.Action{}), docCategories("image"))
-	AddIntFlag(cmdImageActionsGet, doctl.ArgActionID, "", 0, "action id", requiredOpt())
+	AddIntFlag(cmdImageActionsGet, dccncli.ArgActionID, "", 0, "action id", requiredOpt())
 
 	cmdImageActionsTransfer := CmdBuilder(cmd, RunImageActionsTransfer,
 		"transfer <image-id>", "transfer image", Writer,
 		displayerType(&displayers.Action{}), docCategories("image"))
-	AddStringFlag(cmdImageActionsTransfer, doctl.ArgRegionSlug, "", "", "region", requiredOpt())
-	AddBoolFlag(cmdImageActionsTransfer, doctl.ArgCommandWait, "", false, "Wait for action to complete")
+	AddStringFlag(cmdImageActionsTransfer, dccncli.ArgRegionSlug, "", "", "region", requiredOpt())
+	AddBoolFlag(cmdImageActionsTransfer, dccncli.ArgCommandWait, "", false, "Wait for action to complete")
 
 	return cmd
 }
@@ -53,7 +53,7 @@ func RunImageActionsGet(c *CmdConfig) error {
 	ias := c.ImageActions()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	imageID, err := strconv.Atoi(c.Args[0])
@@ -61,7 +61,7 @@ func RunImageActionsGet(c *CmdConfig) error {
 		return err
 	}
 
-	actionID, err := c.Doit.GetInt(c.NS, doctl.ArgActionID)
+	actionID, err := c.Ankr.GetInt(c.NS, dccncli.ArgActionID)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func RunImageActionsTransfer(c *CmdConfig) error {
 	ias := c.ImageActions()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	id, err := strconv.Atoi(c.Args[0])
@@ -88,7 +88,7 @@ func RunImageActionsTransfer(c *CmdConfig) error {
 		return err
 	}
 
-	region, err := c.Doit.GetString(c.NS, doctl.ArgRegionSlug)
+	region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func RunImageActionsTransfer(c *CmdConfig) error {
 		checkErr(fmt.Errorf("could not transfer image: %v", err))
 	}
 
-	wait, err := c.Doit.GetBool(c.NS, doctl.ArgCommandWait)
+	wait, err := c.Ankr.GetBool(c.NS, dccncli.ArgCommandWait)
 	if err != nil {
 		return err
 	}

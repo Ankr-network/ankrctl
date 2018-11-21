@@ -1,7 +1,7 @@
 .goxc.local.json
 .DS_Store
 builds
-doit
+ankr
 .vscode
 project.json
 .cover

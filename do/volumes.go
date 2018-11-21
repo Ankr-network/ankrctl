@@ -11,7 +11,7 @@ type Volume struct {
 	*godo.Volume
 }
 
-// VolumesService is an interface for interacting with DigitalOcean's volume api.
+// VolumesService is an interface for interacting with AnkrNetwork's volume api.
 type VolumesService interface {
 	List() ([]Volume, error)
 	CreateVolume(*godo.VolumeCreateRequest) (*Volume, error)

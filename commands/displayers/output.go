@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -73,13 +73,13 @@ type Displayable interface {
 
 type Displayer struct {
 	NS     string
-	Config doctl.Config
+	Config dccncli.Config
 	Item   Displayable
 	Out    io.Writer
 }
 
 func (d *Displayer) Display() error {
-	output, err := doctl.DoitConfig.GetString(doctl.NSRoot, "output")
+	output, err := dccncli.AnkrConfig.GetString(dccncli.NSRoot, "output")
 	if err != nil {
 		return nil
 	}

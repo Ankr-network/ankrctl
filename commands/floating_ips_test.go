@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -45,12 +45,12 @@ func TestFloatingIPsGet(t *testing.T) {
 	})
 }
 
-func TestFloatingIPsCreate_Droplet(t *testing.T) {
+func TestFloatingIPsCreate_Task(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		ficr := &godo.FloatingIPCreateRequest{DropletID: 1}
+		ficr := &godo.FloatingIPCreateRequest{TaskID: 1}
 		tm.floatingIPs.On("Create", ficr).Return(&testFloatingIP, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgDropletID, 1)
+		config.Ankr.Set(config.NS, dccncli.ArgTaskID, 1)
 
 		err := RunFloatingIPCreate(config)
 		assert.NoError(t, err)
@@ -62,7 +62,7 @@ func TestFloatingIPsCreate_Region(t *testing.T) {
 		ficr := &godo.FloatingIPCreateRequest{Region: "dev0"}
 		tm.floatingIPs.On("Create", ficr).Return(&testFloatingIP, nil)
 
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "dev0")
+		config.Ankr.Set(config.NS, dccncli.ArgRegionSlug, "dev0")
 
 		err := RunFloatingIPCreate(config)
 		assert.NoError(t, err)
@@ -78,8 +78,8 @@ func TestFloatingIPsCreate_fail_with_no_args(t *testing.T) {
 
 func TestFloatingIPsCreate_fail_with_both_args(t *testing.T) {
 	withTestClient(t, func(config *CmdConfig, tm *tcMocks) {
-		config.Doit.Set(config.NS, doctl.ArgDropletID, 1)
-		config.Doit.Set(config.NS, doctl.ArgRegionSlug, "dev0")
+		config.Ankr.Set(config.NS, dccncli.ArgTaskID, 1)
+		config.Ankr.Set(config.NS, dccncli.ArgRegionSlug, "dev0")
 
 		err := RunFloatingIPCreate(config)
 		assert.Error(t, err)
@@ -92,7 +92,7 @@ func TestFloatingIPsDelete(t *testing.T) {
 
 		config.Args = append(config.Args, "127.0.0.1")
 
-		config.Doit.Set(config.NS, doctl.ArgForce, true)
+		config.Ankr.Set(config.NS, dccncli.ArgForce, true)
 
 		RunFloatingIPDelete(config)
 	})

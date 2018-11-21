@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -30,15 +30,15 @@ import (
 )
 
 var (
-	testDroplet = do.Droplet{
-		Droplet: &godo.Droplet{
+	testTask = do.Task{
+		Task: &godo.Task{
 			ID: 1,
 			Image: &godo.Image{
 				ID:           1,
 				Name:         "an-image",
 				Distribution: "DOOS",
 			},
-			Name: "a-droplet",
+			Name: "a-task",
 			Networks: &godo.Networks{
 				V4: []godo.NetworkV4{
 					{IPAddress: "8.8.8.8", Type: "public"},
@@ -52,15 +52,15 @@ var (
 		},
 	}
 
-	anotherTestDroplet = do.Droplet{
-		Droplet: &godo.Droplet{
+	anotherTestTask = do.Task{
+		Task: &godo.Task{
 			ID: 3,
 			Image: &godo.Image{
 				ID:           1,
 				Name:         "an-image",
 				Distribution: "DOOS",
 			},
-			Name: "another-droplet",
+			Name: "another-task",
 			Networks: &godo.Networks{
 				V4: []godo.NetworkV4{
 					{IPAddress: "8.8.8.9", Type: "public"},
@@ -74,15 +74,15 @@ var (
 		},
 	}
 
-	testPrivateDroplet = do.Droplet{
-		Droplet: &godo.Droplet{
+	testPrivateTask = do.Task{
+		Task: &godo.Task{
 			ID: 1,
 			Image: &godo.Image{
 				ID:           1,
 				Name:         "an-image",
 				Distribution: "DOOS",
 			},
-			Name: "a-droplet",
+			Name: "a-task",
 			Networks: &godo.Networks{
 				V4: []godo.NetworkV4{
 					{IPAddress: "172.16.1.2", Type: "private"},
@@ -95,14 +95,14 @@ var (
 		},
 	}
 
-	testDropletList        = do.Droplets{testDroplet, anotherTestDroplet}
-	testPrivateDropletList = do.Droplets{testPrivateDroplet}
+	testTaskList        = do.Tasks{testTask, anotherTestTask}
+	testPrivateTaskList = do.Tasks{testPrivateTask}
 	testKernel             = do.Kernel{Kernel: &godo.Kernel{ID: 1}}
 	testKernelList         = do.Kernels{testKernel}
 	testFloatingIP         = do.FloatingIP{
 		FloatingIP: &godo.FloatingIP{
-			Droplet: testDroplet.Droplet,
-			Region:  testDroplet.Region,
+			Task: testTask.Task,
+			Region:  testTask.Region,
 			IP:      "127.0.0.1",
 		},
 	}
@@ -151,8 +151,8 @@ type tcMocks struct {
 	imageActions      domocks.ImageActionsService
 	floatingIPs       domocks.FloatingIPsService
 	floatingIPActions domocks.FloatingIPActionsService
-	droplets          domocks.DropletsService
-	dropletActions    domocks.DropletActionsService
+	tasks          domocks.TasksService
+	taskActions    domocks.TaskActionsService
 	domains           domocks.DomainsService
 	volumes           domocks.VolumesService
 	volumeActions     domocks.VolumeActionsService
@@ -168,26 +168,26 @@ type tcMocks struct {
 }
 
 func withTestClient(t *testing.T, tFn testFn) {
-	ogConfig := doctl.DoitConfig
+	ogConfig := dccncli.AnkrConfig
 	defer func() {
-		doctl.DoitConfig = ogConfig
+		dccncli.AnkrConfig = ogConfig
 	}()
 
 	cfg := NewTestConfig()
-	doctl.DoitConfig = cfg
+	dccncli.AnkrConfig = cfg
 
 	tm := &tcMocks{}
 
 	config := &CmdConfig{
 		NS:   "test",
-		Doit: cfg,
+		Ankr: cfg,
 		Out:  ioutil.Discard,
 
 		// can stub this out, since the return is dictated by the mocks.
 		initServices: func(c *CmdConfig) error { return nil },
 
 		getContextAccessToken: func() string {
-			return viper.GetString(doctl.ArgAccessToken)
+			return viper.GetString(dccncli.ArgAccessToken)
 		},
 
 		setContextAccessToken: func(token string) {},
@@ -199,8 +199,8 @@ func withTestClient(t *testing.T, tFn testFn) {
 		ImageActions:      func() do.ImageActionsService { return &tm.imageActions },
 		FloatingIPs:       func() do.FloatingIPsService { return &tm.floatingIPs },
 		FloatingIPActions: func() do.FloatingIPActionsService { return &tm.floatingIPActions },
-		Droplets:          func() do.DropletsService { return &tm.droplets },
-		DropletActions:    func() do.DropletActionsService { return &tm.dropletActions },
+		Tasks:          func() do.TasksService { return &tm.tasks },
+		TaskActions:    func() do.TaskActionsService { return &tm.taskActions },
 		Domains:           func() do.DomainsService { return &tm.domains },
 		Actions:           func() do.ActionsService { return &tm.actions },
 		Account:           func() do.AccountService { return &tm.account },
@@ -221,8 +221,8 @@ func withTestClient(t *testing.T, tFn testFn) {
 	assert.True(t, tm.actions.AssertExpectations(t))
 	assert.True(t, tm.certificates.AssertExpectations(t))
 	assert.True(t, tm.domains.AssertExpectations(t))
-	assert.True(t, tm.dropletActions.AssertExpectations(t))
-	assert.True(t, tm.droplets.AssertExpectations(t))
+	assert.True(t, tm.taskActions.AssertExpectations(t))
+	assert.True(t, tm.tasks.AssertExpectations(t))
 	assert.True(t, tm.floatingIPActions.AssertExpectations(t))
 	assert.True(t, tm.floatingIPs.AssertExpectations(t))
 	assert.True(t, tm.imageActions.AssertExpectations(t))
@@ -246,19 +246,19 @@ type TestConfig struct {
 	IsSetMap map[string]bool
 }
 
-var _ doctl.Config = &TestConfig{}
+var _ dccncli.Config = &TestConfig{}
 
 func NewTestConfig() *TestConfig {
 	return &TestConfig{
 		SSHFn: func(u, h, kp string, p int, opts ssh.Options) runner.Runner {
-			return &doctl.MockRunner{}
+			return &dccncli.MockRunner{}
 		},
 		v:        viper.New(),
 		IsSetMap: make(map[string]bool),
 	}
 }
 
-var _ doctl.Config = &TestConfig{}
+var _ dccncli.Config = &TestConfig{}
 
 func (c *TestConfig) GetGodoClient(trace bool, accessToken string) (*godo.Client, error) {
 	return &godo.Client{}, nil

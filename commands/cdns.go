@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -39,22 +39,22 @@ func CDN() *Command {
 
 	cmdCDNCreate := CmdBuilder(cmd, RunCDNCreate, "create <cdn-origin>", "create a cdn", Writer,
 		aliasOpt("c"), displayerType(&displayers.CDN{}))
-	AddIntFlag(cmdCDNCreate, doctl.ArgCDNTTL, "", 3600, "CDN ttl")
+	AddIntFlag(cmdCDNCreate, dccncli.ArgCDNTTL, "", 3600, "CDN ttl")
 
 	cmdRunCDNDelete := CmdBuilder(cmd, RunCDNDelete, "delete <cdn-id>", "delete a cdn", Writer,
 		aliasOpt("rm"))
-	AddBoolFlag(cmdRunCDNDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force cdn delete")
+	AddBoolFlag(cmdRunCDNDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force cdn delete")
 
 	CmdBuilder(cmd, RunCDNGet, "get <cdn-id>", "get a cdn", Writer, aliasOpt("g"),
 		displayerType(&displayers.CDN{}))
 
 	cmdCDNUpdate := CmdBuilder(cmd, RunCDNUpdateTTL, "update <cdn-id>", "update a cdn", Writer,
 		aliasOpt("u"), displayerType(&displayers.CDN{}))
-	AddIntFlag(cmdCDNUpdate, doctl.ArgCDNTTL, "", 3600, "cdn ttl")
+	AddIntFlag(cmdCDNUpdate, dccncli.ArgCDNTTL, "", 3600, "cdn ttl")
 
 	cmdCDNFlushCache := CmdBuilder(cmd, RunCDNFlushCache, "flush <cdn-id>", "flush cdn cache", Writer,
 		aliasOpt("fc"))
-	AddStringSliceFlag(cmdCDNFlushCache, doctl.ArgCDNFiles, "", []string{"*"}, "cdn files")
+	AddStringSliceFlag(cmdCDNFlushCache, dccncli.ArgCDNFiles, "", []string{"*"}, "cdn files")
 
 	return cmd
 }
@@ -72,7 +72,7 @@ func RunCDNList(c *CmdConfig) error {
 // RunCDNGet returns an individual CDN.
 func RunCDNGet(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	id := c.Args[0]
@@ -87,12 +87,12 @@ func RunCDNGet(c *CmdConfig) error {
 // RunCDNCreate creates a cdn.
 func RunCDNCreate(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	origin := c.Args[0]
 
-	ttl, err := c.Doit.GetInt(c.NS, doctl.ArgCDNTTL)
+	ttl, err := c.Ankr.GetInt(c.NS, dccncli.ArgCDNTTL)
 	if err != nil {
 		return err
 	}
@@ -116,14 +116,14 @@ func RunCDNCreate(c *CmdConfig) error {
 // RunCDNUpdateTTL updates an individual cdn ttl
 func RunCDNUpdateTTL(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	id := c.Args[0]
 
 	cs := c.CDNs()
 
-	ttl, err := c.Doit.GetInt(c.NS, doctl.ArgCDNTTL)
+	ttl, err := c.Ankr.GetInt(c.NS, dccncli.ArgCDNTTL)
 	if err != nil {
 		return err
 	}
@@ -144,10 +144,10 @@ func RunCDNUpdateTTL(c *CmdConfig) error {
 // RunCDNDelete deletes a cdn.
 func RunCDNDelete(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -163,12 +163,12 @@ func RunCDNDelete(c *CmdConfig) error {
 // RunCDNFlushCache flushes the cache of an individual cdn
 func RunCDNFlushCache(c *CmdConfig) error {
 	if len(c.Args) == 0 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	id := c.Args[0]
 
-	files, err := c.Doit.GetStringSlice(c.NS, doctl.ArgCDNFiles)
+	files, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgCDNFiles)
 	if err != nil {
 		return err
 	}

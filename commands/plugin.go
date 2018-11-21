@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -119,7 +119,7 @@ func searchPlugins() ([]displayers.PlugDesc, error) {
 	var plugs []displayers.PlugDesc
 
 	for _, p := range paths {
-		matches, err := filepath.Glob(filepath.Join(p, "doit-provider-*"))
+		matches, err := filepath.Glob(filepath.Join(p, "ankr-provider-*"))
 		if err != nil {
 			return nil, err
 		}
@@ -135,5 +135,5 @@ func searchPlugins() ([]displayers.PlugDesc, error) {
 
 func pluginName(p string) string {
 	base := filepath.Base(p)
-	return strings.TrimPrefix(base, "doit-provider-")
+	return strings.TrimPrefix(base, "ankr-provider-")
 }

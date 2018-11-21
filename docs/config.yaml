@@ -6,7 +6,7 @@ theme: "buoy"
 indexes:
   category: "categories"
 baseurl: "http://bryanl.github.io/doit/"
-title: "doit - DigitalOcean Interactive Tool"
+title: "doit - AnkrNetwork Interactive Tool"
 canonifyurls: true
 SectionPagesMenu: "main"
 ...

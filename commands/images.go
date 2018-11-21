@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -38,33 +38,33 @@ func Images() *Command {
 
 	cmdImagesList := CmdBuilder(cmd, RunImagesList, "list", "list images", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Image{}), docCategories("image"))
-	AddBoolFlag(cmdImagesList, doctl.ArgImagePublic, "", false, "List public images")
+	AddBoolFlag(cmdImagesList, dccncli.ArgImagePublic, "", false, "List public images")
 
 	cmdImagesListDistribution := CmdBuilder(cmd, RunImagesListDistribution,
 		"list-distribution", "list distribution images", Writer,
 		displayerType(&displayers.Image{}), docCategories("image"))
-	AddBoolFlag(cmdImagesListDistribution, doctl.ArgImagePublic, "", true, "List public images")
+	AddBoolFlag(cmdImagesListDistribution, dccncli.ArgImagePublic, "", true, "List public images")
 
 	cmdImagesListApplication := CmdBuilder(cmd, RunImagesListApplication,
 		"list-application", "list application images", Writer,
 		displayerType(&displayers.Image{}), docCategories("image"))
-	AddBoolFlag(cmdImagesListApplication, doctl.ArgImagePublic, "", true, "List public images")
+	AddBoolFlag(cmdImagesListApplication, dccncli.ArgImagePublic, "", true, "List public images")
 
 	cmdImagesListUser := CmdBuilder(cmd, RunImagesListUser,
 		"list-user", "list user images", Writer,
 		displayerType(&displayers.Image{}), docCategories("image"))
-	AddBoolFlag(cmdImagesListUser, doctl.ArgImagePublic, "", false, "List public images")
+	AddBoolFlag(cmdImagesListUser, dccncli.ArgImagePublic, "", false, "List public images")
 
 	CmdBuilder(cmd, RunImagesGet, "get <image-id|image-slug>", "Get image", Writer,
 		displayerType(&displayers.Image{}), docCategories("image"))
 
 	cmdImagesUpdate := CmdBuilder(cmd, RunImagesUpdate, "update <image-id>", "Update image", Writer,
 		displayerType(&displayers.Image{}), docCategories("image"))
-	AddStringFlag(cmdImagesUpdate, doctl.ArgImageName, "", "", "Image name", requiredOpt())
+	AddStringFlag(cmdImagesUpdate, dccncli.ArgImageName, "", "", "Image name", requiredOpt())
 
 	cmdRunImagesDelete := CmdBuilder(cmd, RunImagesDelete, "delete <image-id>", "Delete image", Writer,
 		docCategories("image"))
-	AddBoolFlag(cmdRunImagesDelete, doctl.ArgForce, doctl.ArgShortForce, false, "Force image delete")
+	AddBoolFlag(cmdRunImagesDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force image delete")
 
 	return cmd
 }
@@ -73,7 +73,7 @@ func Images() *Command {
 func RunImagesList(c *CmdConfig) error {
 	is := c.Images()
 
-	public, err := c.Doit.GetBool(c.NS, doctl.ArgImagePublic)
+	public, err := c.Ankr.GetBool(c.NS, dccncli.ArgImagePublic)
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func RunImagesList(c *CmdConfig) error {
 func RunImagesListDistribution(c *CmdConfig) error {
 	is := c.Images()
 
-	public, err := c.Doit.GetBool(c.NS, doctl.ArgImagePublic)
+	public, err := c.Ankr.GetBool(c.NS, dccncli.ArgImagePublic)
 	if err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func RunImagesListDistribution(c *CmdConfig) error {
 func RunImagesListApplication(c *CmdConfig) error {
 	is := c.Images()
 
-	public, err := c.Doit.GetBool(c.NS, doctl.ArgImagePublic)
+	public, err := c.Ankr.GetBool(c.NS, dccncli.ArgImagePublic)
 	if err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func RunImagesListApplication(c *CmdConfig) error {
 func RunImagesListUser(c *CmdConfig) error {
 	is := c.Images()
 
-	public, err := c.Doit.GetBool(c.NS, doctl.ArgImagePublic)
+	public, err := c.Ankr.GetBool(c.NS, dccncli.ArgImagePublic)
 	if err != nil {
 		return err
 	}
@@ -147,7 +147,7 @@ func RunImagesGet(c *CmdConfig) error {
 	is := c.Images()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	rawID := c.Args[0]
@@ -178,7 +178,7 @@ func RunImagesUpdate(c *CmdConfig) error {
 	is := c.Images()
 
 	if len(c.Args) != 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	id, err := strconv.Atoi(c.Args[0])
@@ -186,7 +186,7 @@ func RunImagesUpdate(c *CmdConfig) error {
 		return err
 	}
 
-	name, err := c.Doit.GetString(c.NS, doctl.ArgImageName)
+	name, err := c.Ankr.GetString(c.NS, dccncli.ArgImageName)
 
 	req := &godo.ImageUpdateRequest{
 		Name: name,
@@ -206,10 +206,10 @@ func RunImagesDelete(c *CmdConfig) error {
 	is := c.Images()
 
 	if len(c.Args) < 1 {
-		return doctl.NewMissingArgsErr(c.NS)
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
-	force, err := c.Doit.GetBool(c.NS, doctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}

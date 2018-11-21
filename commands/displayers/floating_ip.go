@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -32,13 +32,13 @@ func (fi *FloatingIP) JSON(out io.Writer) error {
 
 func (fi *FloatingIP) Cols() []string {
 	return []string{
-		"IP", "Region", "DropletID", "DropletName",
+		"IP", "Region", "TaskID", "TaskName",
 	}
 }
 
 func (fi *FloatingIP) ColMap() map[string]string {
 	return map[string]string{
-		"IP": "IP", "Region": "Region", "DropletID": "Droplet ID", "DropletName": "Droplet Name",
+		"IP": "IP", "Region": "Region", "TaskID": "Task ID", "TaskName": "Task Name",
 	}
 }
 
@@ -46,15 +46,15 @@ func (fi *FloatingIP) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 
 	for _, f := range fi.FloatingIPs {
-		var dropletID, dropletName string
-		if f.Droplet != nil {
-			dropletID = fmt.Sprintf("%d", f.Droplet.ID)
-			dropletName = f.Droplet.Name
+		var taskID, taskName string
+		if f.Task != nil {
+			taskID = fmt.Sprintf("%d", f.Task.ID)
+			taskName = f.Task.Name
 		}
 
 		o := map[string]interface{}{
 			"IP": f.IP, "Region": f.Region.Slug,
-			"DropletID": dropletID, "DropletName": dropletName,
+			"TaskID": taskID, "TaskName": taskName,
 		}
 
 		out = append(out, o)

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -20,9 +20,9 @@ import (
 )
 
 // FloatingIPActionsService is an interface for interacting with
-// DigitalOcean's floating ip action api.
+// AnkrNetwork's floating ip action api.
 type FloatingIPActionsService interface {
-	Assign(ip string, dropletID int) (*Action, error)
+	Assign(ip string, taskID int) (*Action, error)
 	Unassign(ip string) (*Action, error)
 	Get(ip string, actionID int) (*Action, error)
 	List(ip string, opt *godo.ListOptions) ([]Action, error)
@@ -41,8 +41,8 @@ func NewFloatingIPActionsService(godoClient *godo.Client) FloatingIPActionsServi
 	}
 }
 
-func (fia *floatingIPActionsService) Assign(ip string, dropletID int) (*Action, error) {
-	a, _, err := fia.client.FloatingIPActions.Assign(context.TODO(), ip, dropletID)
+func (fia *floatingIPActionsService) Assign(ip string, taskID int) (*Action, error) {
+	a, _, err := fia.client.FloatingIPActions.Assign(context.TODO(), ip, taskID)
 	if err != nil {
 		return nil, err
 	}

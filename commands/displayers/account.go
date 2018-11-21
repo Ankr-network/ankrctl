@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -31,13 +31,13 @@ func (a *Account) JSON(out io.Writer) error {
 
 func (a *Account) Cols() []string {
 	return []string{
-		"Email", "DropletLimit", "EmailVerified", "UUID", "Status",
+		"Email", "TaskLimit", "EmailVerified", "UUID", "Status",
 	}
 }
 
 func (a *Account) ColMap() map[string]string {
 	return map[string]string{
-		"Email": "Email", "DropletLimit": "Droplet Limit", "EmailVerified": "Email Verified",
+		"Email": "Email", "TaskLimit": "Task Limit", "EmailVerified": "Email Verified",
 		"UUID": "UUID", "Status": "Status",
 	}
 }
@@ -45,7 +45,7 @@ func (a *Account) ColMap() map[string]string {
 func (a *Account) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	x := map[string]interface{}{
-		"Email": a.Email, "DropletLimit": a.DropletLimit,
+		"Email": a.Email, "TaskLimit": a.TaskLimit,
 		"EmailVerified": a.EmailVerified, "UUID": a.UUID,
 		"Status": a.Status,
 	}
