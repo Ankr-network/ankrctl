@@ -333,19 +333,19 @@ type CmdConfig struct {
 	FloatingIPs       func() do.FloatingIPsService
 	FloatingIPActions func() do.FloatingIPActionsService
 	//DCCN-CLI task
-	Tasks          func() do.TasksService
-	TaskActions    func() do.TaskActionsService
-	Domains           func() do.DomainsService
-	Actions           func() do.ActionsService
-	Account           func() do.AccountService
-	Tags              func() do.TagsService
-	Volumes           func() do.VolumesService
-	VolumeActions     func() do.VolumeActionsService
-	Snapshots         func() do.SnapshotsService
-	Certificates      func() do.CertificatesService
-	Firewalls         func() do.FirewallsService
-	CDNs              func() do.CDNsService
-	Projects          func() do.ProjectsService
+	Tasks         func() do.TasksService
+	TaskActions   func() do.TaskActionsService
+	Domains       func() do.DomainsService
+	Actions       func() do.ActionsService
+	Account       func() do.AccountService
+	Tags          func() do.TagsService
+	Volumes       func() do.VolumesService
+	VolumeActions func() do.VolumeActionsService
+	Snapshots     func() do.SnapshotsService
+	Certificates  func() do.CertificatesService
+	Firewalls     func() do.FirewallsService
+	CDNs          func() do.CDNsService
+	//Projects          func() do.ProjectsService
 }
 
 // NewCmdConfig creates an instance of a CmdConfig.
@@ -384,7 +384,7 @@ func NewCmdConfig(ns string, dc dccncli.Config, out io.Writer, args []string, in
 			c.LoadBalancers = func() do.LoadBalancersService { return do.NewLoadBalancersService(godoClient) }
 			c.Firewalls = func() do.FirewallsService { return do.NewFirewallsService(godoClient) }
 			c.CDNs = func() do.CDNsService { return do.NewCDNsService(godoClient) }
-			c.Projects = func() do.ProjectsService { return do.NewProjectsService(godoClient) }
+			//c.Projects = func() do.ProjectsService { return do.NewProjectsService(godoClient) }
 
 			return nil
 		},

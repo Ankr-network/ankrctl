@@ -17,12 +17,12 @@ import (
 	//"fmt"
 	"io"
 	//"strings"
-
-	"github.com/Ankr-network/dccn-cli/do"
+	pb "github.com/Ankr-network/dccn-hub/protocol"
 )
 
 type Task struct {
-	Tasks do.Tasks
+	//Tasks do.Tasks
+	Tasks []pb.TaskInfo
 }
 
 var _ Displayable = &Task{}
@@ -33,14 +33,14 @@ func (d *Task) JSON(out io.Writer) error {
 
 func (d *Task) Cols() []string {
 	cols := []string{
-		"ID", "Taskname", "Uptime", "Creationdate", "Status",
+		"Taskid", "Taskname", "Uptime", "Creationdate", "Status",
 	}
 	return cols
 }
 
 func (d *Task) ColMap() map[string]string {
 	return map[string]string{
-		"ID":"ID", "Taskname": "Taskname", "Uptime": "Uptime", 
+		"Taskid": "Taskid", "Taskname": "Taskname", "Uptime": "Uptime",
 		"Creationdate": "Creationdate", "Status": "Status",
 	}
 }
@@ -49,7 +49,7 @@ func (d *Task) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	for _, d := range d.Tasks {
 		m := map[string]interface{}{
-			"ID": d.ID,"Taskname": d.Taskname, "Uptime": d.Uptime, 
+			"Taskid": d.Taskid, "Taskname": d.Taskname, "Uptime": d.Uptime,
 			"Creationdate": d.Creationdate, "Status": d.Status,
 		}
 		out = append(out, m)

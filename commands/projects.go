@@ -13,6 +13,7 @@ limitations under the License.
 
 package commands
 
+/*
 import (
 	"fmt"
 	"strings"
@@ -321,3 +322,4 @@ func buildProjectsUpdateRequestFromArgs(c *CmdConfig, r *godo.UpdateProjectReque
 
 	return nil
 }
+*/

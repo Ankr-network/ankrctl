@@ -16,11 +16,12 @@ package commands
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
-	"text/template"
+	"time"
 
 	"github.com/Ankr-network/dccn-cli"
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
@@ -29,6 +30,15 @@ import (
 	"github.com/gobwas/glob"
 	"github.com/pborman/uuid"
 	"github.com/spf13/cobra"
+
+	"context"
+
+	pb "github.com/Ankr-network/dccn-hub/protocol"
+	"google.golang.org/grpc"
+)
+
+const (
+	address = ":50051"
 )
 
 // Task creates the task command.
@@ -56,7 +66,7 @@ func Task() *Command {
 	//AddStringSliceFlag(cmdTaskCreate, dccncli.ArgSSHKeys, "", []string{}, "SSH Keys or fingerprints")
 	//AddStringFlag(cmdTaskCreate, dccncli.ArgUserData, "", "", "User data")
 	//AddStringFlag(cmdTaskCreate, dccncli.ArgUserDataFile, "", "", "User data file")
-	AddBoolFlag(cmdTaskCreate, dccncli.ArgCommandWait, "", false, "Wait for task to be created")
+	//AddBoolFlag(cmdTaskCreate, dccncli.ArgCommandWait, "", false, "Wait for task to be created")
 	AddStringFlag(cmdTaskCreate, dccncli.ArgRegionSlug, "", "", "Task region",
 		requiredOpt())
 	AddStringFlag(cmdTaskCreate, dccncli.ArgZoneSlug, "", "", "Task zone",
@@ -158,100 +168,141 @@ func RunTaskCreate(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
-	
+
 	zone, err := c.Ankr.GetString(c.NS, dccncli.ArgZoneSlug)
 	if err != nil {
 		return err
 	}
+	/*
+			size, err := c.Ankr.GetString(c.NS, dccncli.ArgSizeSlug)
+			if err != nil {
+				return err
+			}
+			size = "s-1vcpu-3gb"
+			backups, err := c.Ankr.GetBool(c.NS, dccncli.ArgBackups)
+			if err != nil {
+				return err
+			}
 
-	size, err := c.Ankr.GetString(c.NS, dccncli.ArgSizeSlug)
+			ipv6, err := c.Ankr.GetBool(c.NS, dccncli.ArgIPv6)
+			if err != nil {
+				return err
+			}
+
+			privateNetworking, err := c.Ankr.GetBool(c.NS, dccncli.ArgPrivateNetworking)
+			if err != nil {
+				return err
+			}
+
+			monitoring, err := c.Ankr.GetBool(c.NS, dccncli.ArgMonitoring)
+			if err != nil {
+				return err
+			}
+
+			keys, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgSSHKeys)
+			if err != nil {
+				return err
+			}
+
+			tagName, err := c.Ankr.GetString(c.NS, dccncli.ArgTagName)
+			if err != nil {
+				return err
+			}
+
+			tagNames, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTagNames)
+			if err != nil {
+				return err
+			}
+
+			sshKeys := extractSSHKeys(keys)
+
+			userData, err := c.Ankr.GetString(c.NS, dccncli.ArgUserData)
+			if err != nil {
+				return err
+			}
+
+			volumeList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgVolumeList)
+			if err != nil {
+				return err
+			}
+			volumes := extractVolumes(volumeList)
+
+			filename, err := c.Ankr.GetString(c.NS, dccncli.ArgUserDataFile)
+			if err != nil {
+				return err
+			}
+
+			userData, err = extractUserData(userData, filename)
+			if err != nil {
+				return err
+			}
+
+			imageStr, err := c.Ankr.GetString(c.NS, dccncli.ArgImage)
+			if err != nil {
+				return err
+			}
+			imageStr = "ubuntu-16-04-x64"
+			createImage := godo.TaskCreateImage{Slug: imageStr}
+
+			i, err := strconv.Atoi(imageStr)
+			if err == nil {
+				createImage = godo.TaskCreateImage{ID: i}
+			}
+
+		wait, err := c.Ankr.GetBool(c.NS, dccncli.ArgCommandWait)
+		if err != nil {
+			return err
+		}
+	*/
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
-		return err
-	}
-	size = "s-1vcpu-3gb"
-	backups, err := c.Ankr.GetBool(c.NS, dccncli.ArgBackups)
-	if err != nil {
-		return err
+		log.Fatalf("did not connect: %v", err)
 	}
 
-	ipv6, err := c.Ankr.GetBool(c.NS, dccncli.ArgIPv6)
-	if err != nil {
-		return err
+	defer conn.Close()
+	dc := pb.NewDccncliClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	var wg sync.WaitGroup
+	errs := make(chan error, len(c.Args))
+	for _, name := range c.Args {
+		tcr := &pb.AddTaskRequest{
+			Name:      name,
+			Region:    region,
+			Zone:      zone,
+			Usertoken: "ed1605e17374bde6c68864d072c9f5c9",
+		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			t, err := dc.AddTask(ctx, tcr)
+			if err != nil {
+				errs <- err
+				return
+			}
+			if t.Status == "Success" {
+				fmt.Printf("Task id %d created successfully. \n", t.Taskid)
+			} else {
+				fmt.Printf("Fail to create task. \n")
+			}
+		}()
 	}
-
-	privateNetworking, err := c.Ankr.GetBool(c.NS, dccncli.ArgPrivateNetworking)
-	if err != nil {
-		return err
+	wg.Wait()
+	close(errs)
+	for err := range errs {
+		if err != nil {
+			return err
+		}
 	}
-
-	monitoring, err := c.Ankr.GetBool(c.NS, dccncli.ArgMonitoring)
-	if err != nil {
-		return err
-	}
-
-	keys, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgSSHKeys)
-	if err != nil {
-		return err
-	}
-
-	tagName, err := c.Ankr.GetString(c.NS, dccncli.ArgTagName)
-	if err != nil {
-		return err
-	}
-
-	tagNames, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgTagNames)
-	if err != nil {
-		return err
-	}
-
-	sshKeys := extractSSHKeys(keys)
-
-	userData, err := c.Ankr.GetString(c.NS, dccncli.ArgUserData)
-	if err != nil {
-		return err
-	}
-
-	volumeList, err := c.Ankr.GetStringSlice(c.NS, dccncli.ArgVolumeList)
-	if err != nil {
-		return err
-	}
-	volumes := extractVolumes(volumeList)
-
-	filename, err := c.Ankr.GetString(c.NS, dccncli.ArgUserDataFile)
-	if err != nil {
-		return err
-	}
-
-	userData, err = extractUserData(userData, filename)
-	if err != nil {
-		return err
-	}
-
-	imageStr, err := c.Ankr.GetString(c.NS, dccncli.ArgImage)
-	if err != nil {
-		return err
-	}
-	imageStr = "ubuntu-16-04-x64"
-	createImage := godo.TaskCreateImage{Slug: imageStr}
-
-	i, err := strconv.Atoi(imageStr)
-	if err == nil {
-		createImage = godo.TaskCreateImage{ID: i}
-	}
-
-	wait, err := c.Ankr.GetBool(c.NS, dccncli.ArgCommandWait)
-	if err != nil {
-		return err
-	}
-
-	ds := c.Tasks()
+	/*ds := c.Tasks()
 	ts := c.Tags()
 
 	var wg sync.WaitGroup
 	var createdList do.Tasks
 	errs := make(chan error, len(c.Args))
 	for _, name := range c.Args {
-		dcr := &godo.TaskCreateRequest{
+		 dcr := &godo.TaskCreateRequest{
 			Name:              name,
 			Region:            region,
 			Zone:			   zone,
@@ -266,12 +317,11 @@ func RunTaskCreate(c *CmdConfig) error {
 			UserData:          userData,
 			Tags:              tagNames,
 		}
-
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
-			if tagName != "" {
+			/*if tagName != "" {
 				tag, err := ts.Get(tagName)
 				if err != nil {
 					errs <- err
@@ -282,17 +332,8 @@ func RunTaskCreate(c *CmdConfig) error {
 					return
 				}
 			}
-			d, err := ds.Create(dcr, wait)
-			if err != nil {
-				errs <- err
-				return
-			}
-			if (d.Status == "Success"){
-				fmt.Printf("Task id %d created successfully. \n", d.ID)
-			}else{
-				fmt.Printf("Fail to create task. \n")
-			}
-			
+			d, err := ds.Create(tcr, wait)
+
 			if tagName != "" {
 				trr := &godo.TagResourcesRequest{
 					Resources: []godo.Resource{
@@ -307,23 +348,23 @@ func RunTaskCreate(c *CmdConfig) error {
 
 			}
 
-			createdList = append(createdList, *d)
+			//createdList = append(createdList, *d)
 		}()
 	}
 
 	wg.Wait()
 	close(errs)
 
-	//item := &displayers.Task{Tasks: createdList}
+	item := &displayers.Task{Tasks: createdList}
 
 	for err := range errs {
 		if err != nil {
 			return err
 		}
 	}
-	
-	//c.Display(item)
 
+	c.Display(item)
+	*/
 	return nil
 }
 
@@ -467,14 +508,14 @@ func allInt(in []string) ([]int, error) {
 
 // RunTaskDelete destroy a task by id.
 func RunTaskDelete(c *CmdConfig) error {
-	ds := c.Tasks()
+	//ds := c.Tasks()
 
 	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
 	if err != nil {
 		return err
 	}
 
-	tagName, err := c.Ankr.GetString(c.NS, dccncli.ArgTagName)
+	/*tagName, err := c.Ankr.GetString(c.NS, dccncli.ArgTagName)
 	if err != nil {
 		return err
 	}
@@ -488,16 +529,28 @@ func RunTaskDelete(c *CmdConfig) error {
 			return ds.DeleteByTag(tagName)
 		}
 		return nil
+	}*/
+
+	if len(c.Args) < 1 {
+		return dccncli.NewMissingArgsErr(c.NS)
 	}
 
 	if force || AskForConfirm(fmt.Sprintf("delete %d task(s)", len(c.Args))) == nil {
+		conn, err := grpc.Dial(address, grpc.WithInsecure())
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+		defer conn.Close()
+		dc := pb.NewDccncliClient(conn)
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
 
 		fn := func(ids []int) error {
 			for _, id := range ids {
-				if status, err := ds.Delete(id); err != nil {
+				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: "ed1605e17374bde6c68864d072c9f5c9"}); err != nil {
 					return fmt.Errorf("unable to delete task %d: %v", id, err)
-				}else{
-					fmt.Printf("Delete task id %d...%s! \n", id, status)
+				} else {
+					fmt.Printf("Delete task id %d...%s! \n", id, ctr.Status)
 				}
 			}
 			return nil
@@ -558,7 +611,7 @@ func matchTasks(ids []string, ds do.TasksService, fn matchTasksFn) error {
 }
 
 // RunTaskGet returns a task.
-func RunTaskGet(c *CmdConfig) error {
+/*func RunTaskGet(c *CmdConfig) error {
 	id, err := getTaskIDArg(c.NS, c.Args)
 	if err != nil {
 		return err
@@ -586,7 +639,7 @@ func RunTaskGet(c *CmdConfig) error {
 		return t.Execute(c.Out, d)
 	}
 	return c.Display(item)
-}
+}*/
 
 // RunTaskKernels returns a list of available kernels for a task.
 func RunTaskKernels(c *CmdConfig) error {
@@ -609,18 +662,18 @@ func RunTaskKernels(c *CmdConfig) error {
 // RunTaskList returns a list of tasks.
 func RunTaskList(c *CmdConfig) error {
 
-	ds := c.Tasks()
-
-	region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
+	//ds := c.Tasks()
+	/*
+		region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
+		if err != nil {
+			return err
+		}
+	*/
+	/*tagName, err := c.Ankr.GetString(c.NS, dccncli.ArgTagName)
 	if err != nil {
 		return err
 	}
-
-	tagName, err := c.Ankr.GetString(c.NS, dccncli.ArgTagName)
-	if err != nil {
-		return err
-	}
-
+	*/
 	matches := []glob.Glob{}
 	for _, globStr := range c.Args {
 		g, err := glob.Compile(globStr)
@@ -631,9 +684,27 @@ func RunTaskList(c *CmdConfig) error {
 		matches = append(matches, g)
 	}
 
-	var matchedList do.Tasks
+	//var matchedList do.Tasks
+	var matchedList []pb.TaskInfo
+	//var list do.Tasks
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
 
-	var list do.Tasks
+	defer conn.Close()
+	dc := pb.NewDccncliClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	r, err := dc.TaskList(ctx, &pb.TaskListRequest{Usertoken: "ed1605e17374bde6c68864d072c9f5c9"})
+	if err != nil {
+		log.Fatalf("Client: could not send: %v", err)
+	}
+	Taskinfos := r.Tasksinfo
+	/*list, err = ds.List()
+	if err != nil {
+		return err
+	}
 	if tagName == "" {
 		list, err = ds.List()
 		if err != nil {
@@ -641,25 +712,32 @@ func RunTaskList(c *CmdConfig) error {
 		}
 	} else {
 		list, err = ds.ListByTag(tagName)
-	}
+	}*/
 
-	for _, task := range list {
+	for _, taskinfo := range Taskinfos {
 		var skip = true
 		if len(matches) == 0 {
 			skip = false
 		} else {
 			for _, m := range matches {
-				if m.Match(task.Taskname) {
+				if m.Match(taskinfo.Taskname) {
 					skip = false
 				}
 			}
 		}
 
-		if !skip && region != "" {
+		var task pb.TaskInfo
+		task.Taskid = taskinfo.Taskid
+		task.Taskname = taskinfo.Taskname
+		task.Uptime = taskinfo.Uptime
+		task.Creationdate = taskinfo.Creationdate
+		task.Status = taskinfo.Status
+
+		/*if !skip && region != "" {
 			if region != task.Region.Slug {
 				skip = true
 			}
-		}
+		}*/
 
 		if !skip {
 			matchedList = append(matchedList, task)
@@ -671,7 +749,7 @@ func RunTaskList(c *CmdConfig) error {
 }
 
 // RunTaskNeighbors returns a list of task neighbors.
-func RunTaskNeighbors(c *CmdConfig) error {
+/*func RunTaskNeighbors(c *CmdConfig) error {
 
 	ds := c.Tasks()
 
@@ -687,7 +765,7 @@ func RunTaskNeighbors(c *CmdConfig) error {
 
 	item := &displayers.Task{Tasks: list}
 	return c.Display(item)
-}
+}*/
 
 // RunTaskSnapshots returns a list of available kernels for a task.
 func RunTaskSnapshots(c *CmdConfig) error {
