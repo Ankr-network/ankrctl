@@ -15,31 +15,18 @@ package dccncli
 
 import (
 	"bytes"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"log"
-	"net/http"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 
-	"github.com/blang/semver"
-	"github.com/Ankr-network/dccn-cli/pkg/runner"
-	"github.com/Ankr-network/dccn-cli/pkg/ssh"
-	"github.com/Ankr-network/godo"
 	jww "github.com/spf13/jwalterweatherman"
 	"github.com/spf13/viper"
-	"golang.org/x/oauth2"
 )
 
 const (
 	// NSRoot is a configuration key that signifies this value is at the root.
-	NSRoot = "ankr"
-
-	// LatestReleaseURL is the latest release URL endpoint.
-	LatestReleaseURL = "https://api.github.com/repos/ankrnetwork/dccncli/releases/latest"
+	NSRoot = "akrctl"
 )
 
 var (
@@ -68,9 +55,6 @@ var (
 
 	// Label is dccncli's label.
 	Label string
-
-	// TraceHTTP traces http connections.
-	TraceHTTP bool
 )
 
 func init() {
@@ -93,70 +77,8 @@ func (v Version) String() string {
 	return buffer.String()
 }
 
-// Complete is the complete version for ankr.
-func (v Version) Complete(lv LatestVersioner) string {
-	var buffer bytes.Buffer
-	buffer.WriteString(fmt.Sprintf("ankr version %s", v.String()))
-
-	if v.Build != "" {
-		buffer.WriteString(fmt.Sprintf("\nGit commit hash: %s", v.Build))
-	}
-
-	if tagName, err := lv.LatestVersion(); err == nil {
-		v0, err1 := semver.Make(tagName)
-		v1, err2 := semver.Make(v.String())
-
-		if len(v0.Build) == 0 {
-			v0, err1 = semver.Make(tagName + "-release")
-		}
-
-		if err1 == nil && err2 == nil && v0.GT(v1) {
-			buffer.WriteString(fmt.Sprintf("\nrelease %s is available, check it out! ", tagName))
-		}
-	}
-
-	return buffer.String()
-}
-
-// LatestVersioner an interface for detecting the latest version.
-type LatestVersioner interface {
-	LatestVersion() (string, error)
-}
-
-// GithubLatestVersioner retrieves the latest version from Github.
-type GithubLatestVersioner struct{}
-
-var _ LatestVersioner = &GithubLatestVersioner{}
-
-// LatestVersion retrieves the latest version from Github or returns
-// an error.
-func (glv *GithubLatestVersioner) LatestVersion() (string, error) {
-	u := LatestReleaseURL
-	res, err := http.Get(u)
-	if err != nil {
-		return "", err
-	}
-
-	defer res.Body.Close()
-
-	var m map[string]interface{}
-	if err = json.NewDecoder(res.Body).Decode(&m); err != nil {
-		return "", err
-	}
-
-	tn, ok := m["tag_name"]
-	if !ok {
-		return "", errors.New("could not find tag name in response")
-	}
-
-	tagName := tn.(string)
-	return strings.TrimPrefix(tagName, "v"), nil
-}
-
 // Config is an interface that represent ankr's config.
 type Config interface {
-	GetGodoClient(trace bool, accessToken string) (*godo.Client, error)
-	SSH(user, host, keyPath string, port int, opts ssh.Options) runner.Runner
 	Set(ns, key string, val interface{})
 	IsSet(key string) bool
 	GetString(ns, key string) (string, error)
@@ -167,69 +89,10 @@ type Config interface {
 
 // LiveConfig is an implementation of Config for live values.
 type LiveConfig struct {
-	godoClient *godo.Client
-	cliArgs    map[string]bool
+	cliArgs map[string]bool
 }
 
 var _ Config = &LiveConfig{}
-
-// GetGodoClient returns a GodoClient.
-func (c *LiveConfig) GetGodoClient(trace bool, accessToken string) (*godo.Client, error) {
-	if accessToken == "" {
-		return nil, fmt.Errorf("access token is required. (hint: run 'ankr auth init')")
-	}
-
-	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: accessToken})
-	oauthClient := oauth2.NewClient(oauth2.NoContext, tokenSource)
-
-	if trace {
-		r := newRecorder(oauthClient.Transport)
-
-		go func() {
-			for {
-				select {
-				case msg := <-r.req:
-					log.Println("->", strconv.Quote(msg))
-				case msg := <-r.resp:
-					log.Println("<-", strconv.Quote(msg))
-				}
-			}
-		}()
-
-		oauthClient.Transport = r
-	}
-
-	args := []godo.ClientOpt{godo.SetUserAgent(userAgent())}
-
-	apiURL := viper.GetString("api-url")
-	if apiURL != "" {
-		args = append(args, godo.SetBaseURL(apiURL))
-	}
-
-	godoClient, err := godo.New(oauthClient, args...)
-	if err != nil {
-		return nil, err
-	}
-
-	c.godoClient = godoClient
-	return c.godoClient, nil
-}
-
-func userAgent() string {
-	return "dccncli/" + AnkrVersion.String()
-}
-
-// SSH creates a ssh connection to a host.
-func (c *LiveConfig) SSH(user, host, keyPath string, port int, opts ssh.Options) runner.Runner {
-	return &ssh.Runner{
-		User:            user,
-		Host:            host,
-		KeyPath:         keyPath,
-		Port:            port,
-		AgentForwarding: opts[ArgsSSHAgentForwarding].(bool),
-		Command:         opts[ArgSSHCommand].(string),
-	}
-}
 
 // Set sets a config key.
 func (c *LiveConfig) Set(ns, key string, val interface{}) {

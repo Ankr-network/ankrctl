@@ -12,9 +12,3 @@ docs/content
 _vendor-*
 
 /out
-
-# Snapcraft
-parts/
-prime/
-stage/
-*.snap

@@ -1,61 +1,70 @@
+# Gopkg.toml example
+#
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
+# for detailed Gopkg.toml documentation.
+#
+# required = ["github.com/user/thing/cmd/thing"]
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
+# [[constraint]]
+#   name = "github.com/user/project"
+#   version = "1.0.0"
+#
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
+#
+# [[override]]
+#   name = "github.com/x/y"
+#   version = "2.4.0"
+#
+# [prune]
+#   non-go = false
+#   go-tests = true
+#   unused-packages = true
+
 
 [[constraint]]
-  name = "github.com/blang/semver"
-  version = "3.1.0"
-
-[[constraint]]
-  name = "github.com/Ankr-network/godo"
-  branch = feat/swdev-79-dccncli
-  version = "1.5.0"
-
-[[constraint]]
-  name = "github.com/dustin/go-humanize"
+  branch = "feature/swdev-91-ankr_grpc"
+  name = "github.com/Ankr-network/dccn-rpc"
 
 [[constraint]]
   name = "github.com/fatih/color"
+  version = "1.7.0"
 
 [[constraint]]
   name = "github.com/gobwas/glob"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/mitchellh/ioprogress"
-
-[[constraint]]
-  name = "github.com/natefinch/pie"
-
-[[constraint]]
-  name = "github.com/pborman/uuid"
+  version = "0.2.3"
 
 [[constraint]]
   branch = "master"
   name = "github.com/shiena/ansicolor"
 
 [[constraint]]
-  name = "github.com/spf13/afero"
-
-[[constraint]]
   name = "github.com/spf13/cobra"
+  version = "0.0.3"
 
 [[constraint]]
   name = "github.com/spf13/jwalterweatherman"
+  version = "1.0.0"
 
 [[constraint]]
   name = "github.com/spf13/viper"
+  version = "1.2.1"
 
 [[constraint]]
   name = "github.com/stretchr/testify"
+  version = "1.2.2"
 
 [[constraint]]
-  name = "github.com/davecgh/go-spew"
-  version = "v1.1.0"
+  name = "google.golang.org/grpc"
+  version = "1.16.0"
 
 [[constraint]]
-  name = "golang.org/x/crypto"
-
-[[constraint]]
-  name = "golang.org/x/oauth2"
-
-[[constraint]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
+  version = "2.2.2"
+
+[prune]
+  go-tests = true
+  unused-packages = true

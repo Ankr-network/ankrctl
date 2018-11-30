@@ -28,6 +28,6 @@ jobs:
       - run:
           name: "Build & Push Docker Image"
           command: |
-            docker build -t dccn-cli .
-            docker tag dccn-cli:latest 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:dccn-cli
-            docker push 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:dccn-cli
+            docker build -t akrctl .
+            docker tag akrctl:latest 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:akrctl
+            docker push 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:akrctl

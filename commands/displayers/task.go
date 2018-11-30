@@ -17,11 +17,11 @@ import (
 	//"fmt"
 	"io"
 	//"strings"
-	pb "github.com/Ankr-network/dccn-hub/protocol"
+	pb "github.com/Ankr-network/dccn-rpc/protocol"
 )
 
 type Task struct {
-	//Tasks do.Tasks
+	//Tasks pb.Tasks
 	Tasks []pb.TaskInfo
 }
 

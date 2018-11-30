@@ -26,7 +26,6 @@ import (
 
 	"github.com/Ankr-network/dccn-cli"
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
-	"github.com/Ankr-network/dccn-cli/do"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,16 +39,16 @@ const (
 // AnkrCmd is the base command.
 var AnkrCmd = &Command{
 	Command: &cobra.Command{
-		Use:   "ankr",
-		Short: "ankr is a command line interface for the Ankr DCCN Hub.",
+		Use:   "akrctl",
+		Short: "akrctl is a command line interface for the Ankr DCCN Hub.",
 	},
 }
 
 // Context holds the current auth context
 var Context string
 
-// ApiURL holds the API URL to use.
-var ApiURL string
+// HubURL holds the HUB URL to use.
+var HubURL string
 
 // Token holds the global authorization token.
 var Token string
@@ -80,22 +79,11 @@ var ErrNoAccessToken = errors.New("no access token has been configured")
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	//AnkrCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.config/dccncli/config.yaml)")
-	AnkrCmd.PersistentFlags().StringVarP(&Token, dccncli.ArgAccessToken, "t", "", "Access Token")
-	AnkrCmd.PersistentFlags().StringVarP(&Output, "output", "o", "text", "output format [text|json]")
-	AnkrCmd.PersistentFlags().StringVarP(&ApiURL, "api-url", "u", "", "Override default endpoint")
-	AnkrCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
-	AnkrCmd.PersistentFlags().BoolVarP(&Trace, "trace", "", false, "trace api access")
-
-	AnkrCmd.PersistentFlags().StringVarP(&Context, dccncli.ArgContext, "", "", "authentication context name")
+	AnkrCmd.PersistentFlags().StringVarP(&HubURL, "hub-url", "u", "", "Override default endpoint")
 
 	viper.SetEnvPrefix("ANKR")
-	viper.BindEnv(dccncli.ArgAccessToken, "ANKR_ACCESS_TOKEN")
-	viper.BindPFlag(dccncli.ArgAccessToken, AnkrCmd.PersistentFlags().Lookup("access-token"))
-	viper.BindEnv("api-url", "ANKRNETWORK_API_URL")
-	viper.BindPFlag("api-url", AnkrCmd.PersistentFlags().Lookup("api-url"))
-	viper.BindPFlag("output", AnkrCmd.PersistentFlags().Lookup("output"))
-	viper.BindEnv("enable-beta", "ANKRNETWORK_ENABLE_BETA")
+	viper.BindEnv("hub-url", "ANKR_HUB_URL")
+	viper.BindPFlag("hub-url", AnkrCmd.PersistentFlags().Lookup("hub-url"))
 
 	addCommands()
 }
@@ -170,13 +158,7 @@ func Execute() {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	//AnkrCmd.AddCommand(Account())
-	//AnkrCmd.AddCommand(Auth())
-	//AnkrCmd.AddCommand(Completion())
-	//DCCN-CLI compute
 	AnkrCmd.AddCommand(computeCmd())
-	//AnkrCmd.AddCommand(Projects())
-	//AnkrCmd.AddCommand(Version())
 }
 
 func computeCmd() *Command {
@@ -189,31 +171,7 @@ func computeCmd() *Command {
 		},
 	}
 
-	//cmd.AddCommand(Actions())
-	//cmd.AddCommand(CDN())
-	//cmd.AddCommand(Certificate())
-	//cmd.AddCommand(TaskAction())
-	//DCCN-CLI task
 	cmd.AddCommand(Task())
-	//cmd.AddCommand(Domain())
-	//cmd.AddCommand(Firewall())
-	//cmd.AddCommand(FloatingIP())
-	//cmd.AddCommand(FloatingIPAction())
-	//cmd.AddCommand(Images())
-	//cmd.AddCommand(ImageAction())
-	//cmd.AddCommand(LoadBalancer())
-	//cmd.AddCommand(Plugin())
-	//cmd.AddCommand(Region())
-	//cmd.AddCommand(Size())
-	//cmd.AddCommand(Snapshot())
-	//cmd.AddCommand(SSHKeys())
-	//cmd.AddCommand(Tags())
-	//cmd.AddCommand(Volume())
-	//cmd.AddCommand(VolumeAction())
-
-	// SSH is different since it doesn't have any subcommands. In this case, let's
-	// give it a parent at init time.
-	//SSH(cmd)
 
 	return cmd
 }
@@ -319,75 +277,18 @@ type CmdConfig struct {
 	Out  io.Writer
 	Args []string
 
-	initServices          func(*CmdConfig) error
 	getContextAccessToken func() string
 	setContextAccessToken func(string)
-
-	// services
-	Keys              func() do.KeysService
-	Sizes             func() do.SizesService
-	Regions           func() do.RegionsService
-	Images            func() do.ImagesService
-	ImageActions      func() do.ImageActionsService
-	LoadBalancers     func() do.LoadBalancersService
-	FloatingIPs       func() do.FloatingIPsService
-	FloatingIPActions func() do.FloatingIPActionsService
-	//DCCN-CLI task
-	Tasks         func() do.TasksService
-	TaskActions   func() do.TaskActionsService
-	Domains       func() do.DomainsService
-	Actions       func() do.ActionsService
-	Account       func() do.AccountService
-	Tags          func() do.TagsService
-	Volumes       func() do.VolumesService
-	VolumeActions func() do.VolumeActionsService
-	Snapshots     func() do.SnapshotsService
-	Certificates  func() do.CertificatesService
-	Firewalls     func() do.FirewallsService
-	CDNs          func() do.CDNsService
-	//Projects          func() do.ProjectsService
 }
 
 // NewCmdConfig creates an instance of a CmdConfig.
-func NewCmdConfig(ns string, dc dccncli.Config, out io.Writer, args []string, initGodo bool) (*CmdConfig, error) {
+func NewCmdConfig(ns string, dc dccncli.Config, out io.Writer, args []string) (*CmdConfig, error) {
 
 	cmdConfig := &CmdConfig{
 		NS:   ns,
 		Ankr: dc,
 		Out:  out,
 		Args: args,
-
-		initServices: func(c *CmdConfig) error {
-			accessToken := c.getContextAccessToken()
-			godoClient, err := c.Ankr.GetGodoClient(Trace, accessToken)
-			if err != nil {
-				return fmt.Errorf("unable to initialize AnkrNetwork api client: %s", err)
-			}
-
-			c.Keys = func() do.KeysService { return do.NewKeysService(godoClient) }
-			c.Sizes = func() do.SizesService { return do.NewSizesService(godoClient) }
-			c.Regions = func() do.RegionsService { return do.NewRegionsService(godoClient) }
-			c.Images = func() do.ImagesService { return do.NewImagesService(godoClient) }
-			c.ImageActions = func() do.ImageActionsService { return do.NewImageActionsService(godoClient) }
-			c.FloatingIPs = func() do.FloatingIPsService { return do.NewFloatingIPsService(godoClient) }
-			c.FloatingIPActions = func() do.FloatingIPActionsService { return do.NewFloatingIPActionsService(godoClient) }
-			c.Tasks = func() do.TasksService { return do.NewTasksService(godoClient) }
-			c.TaskActions = func() do.TaskActionsService { return do.NewTaskActionsService(godoClient) }
-			c.Domains = func() do.DomainsService { return do.NewDomainsService(godoClient) }
-			c.Actions = func() do.ActionsService { return do.NewActionsService(godoClient) }
-			c.Account = func() do.AccountService { return do.NewAccountService(godoClient) }
-			c.Tags = func() do.TagsService { return do.NewTagsService(godoClient) }
-			c.Volumes = func() do.VolumesService { return do.NewVolumesService(godoClient) }
-			c.VolumeActions = func() do.VolumeActionsService { return do.NewVolumeActionsService(godoClient) }
-			c.Snapshots = func() do.SnapshotsService { return do.NewSnapshotsService(godoClient) }
-			c.Certificates = func() do.CertificatesService { return do.NewCertificatesService(godoClient) }
-			c.LoadBalancers = func() do.LoadBalancersService { return do.NewLoadBalancersService(godoClient) }
-			c.Firewalls = func() do.FirewallsService { return do.NewFirewallsService(godoClient) }
-			c.CDNs = func() do.CDNsService { return do.NewCDNsService(godoClient) }
-			//c.Projects = func() do.ProjectsService { return do.NewProjectsService(godoClient) }
-
-			return nil
-		},
 
 		getContextAccessToken: func() string {
 			context := Context
@@ -426,12 +327,6 @@ func NewCmdConfig(ns string, dc dccncli.Config, out io.Writer, args []string, in
 		},
 	}
 
-	if initGodo {
-		if err := cmdConfig.initServices(cmdConfig); err != nil {
-			return nil, err
-		}
-	}
-
 	return cmdConfig, nil
 }
 
@@ -449,10 +344,10 @@ func (c *CmdConfig) Display(d displayers.Displayable) error {
 
 // CmdBuilder builds a new command.
 func CmdBuilder(parent *Command, cr CmdRunner, cliText, desc string, out io.Writer, options ...cmdOption) *Command {
-	return cmdBuilderWithInit(parent, cr, cliText, desc, out, true, options...)
+	return cmdBuilderWithInit(parent, cr, cliText, desc, out, options...)
 }
 
-func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, desc string, out io.Writer, initCmd bool, options ...cmdOption) *Command {
+func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, desc string, out io.Writer, options ...cmdOption) *Command {
 	cc := &cobra.Command{
 		Use:   cliText,
 		Short: desc,
@@ -463,7 +358,6 @@ func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, desc string, out
 				dccncli.AnkrConfig,
 				out,
 				args,
-				initCmd,
 			)
 			checkErr(err, cmd)
 

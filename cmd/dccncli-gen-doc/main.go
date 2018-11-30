@@ -38,7 +38,7 @@ var (
 func main() {
 	flag.Parse()
 
-	log.SetPrefix("ankr: ")
+	log.SetPrefix("akrctl: ")
 	cmd := commands.AnkrCmd
 	cmd.DisableAutoGenTag = true
 
