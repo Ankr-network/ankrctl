@@ -54,10 +54,8 @@ func Task() *Command {
 	//DCCN-CLI comput task create
 	cmdTaskCreate := CmdBuilder(cmd, RunTaskCreate, "create <task-name> [task-name ...]", "create task", Writer,
 		aliasOpt("cr"), displayerType(&displayers.Task{}), docCategories("task"))
-	AddStringFlag(cmdTaskCreate, dccncli.ArgRegionSlug, "", "", "Task region",
-		requiredOpt())
-	AddStringFlag(cmdTaskCreate, dccncli.ArgZoneSlug, "", "", "Task zone",
-		requiredOpt())
+	AddStringFlag(cmdTaskCreate, dccncli.ArgRegionSlug, "", "", "Task region")
+	AddStringFlag(cmdTaskCreate, dccncli.ArgZoneSlug, "", "", "Task zone")
 
 	//DCCN-CLI comput task delete
 	cmdRunTaskDelete := CmdBuilder(cmd, RunTaskDelete, "delete <task-id|task-name> [task-id|task-name ...]", "Delete task by id or name", Writer,
