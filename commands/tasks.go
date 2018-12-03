@@ -34,7 +34,7 @@ import (
 )
 
 const (
-	address = ":50051"
+	address = "hub.ankr.network:50051"
 )
 
 // Task creates the task command.

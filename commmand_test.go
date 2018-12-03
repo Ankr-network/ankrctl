@@ -17,9 +17,8 @@ package dccncli
 
 import (
 	"errors"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestLiveCommand_Run(t *testing.T) {

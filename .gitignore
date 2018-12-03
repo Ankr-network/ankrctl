@@ -8,7 +8,6 @@ project.json
 dist
 public
 docs/content
-
 _vendor-*
-
 /out
+.idea/
