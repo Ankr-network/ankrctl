@@ -1,13 +1,2 @@
-.goxc.local.json
 .DS_Store
-builds
-ankr
-.vscode
-project.json
-.cover
-dist
-public
-docs/content
-_vendor-*
-/out
-.idea/
+/vendor

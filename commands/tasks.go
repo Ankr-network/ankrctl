@@ -34,7 +34,8 @@ import (
 )
 
 const (
-	address = "hub.ankr.network:50051"
+	address = "hub.ankr.network"
+	port    = ":50051"
 )
 
 // Task creates the task command.
@@ -87,8 +88,11 @@ func RunTaskCreate(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
-
-	conn, err := grpc.Dial(viper.GetString("hub-url")+address, grpc.WithInsecure())
+	url := viper.GetString("hub-url")
+	if url == "" {
+		url += address
+	}
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -166,7 +170,11 @@ func RunTaskDelete(c *CmdConfig) error {
 	}
 
 	if force || AskForConfirm(fmt.Sprintf("delete %d task(s)", len(c.Args))) == nil {
-		conn, err := grpc.Dial(viper.GetString("hub-url")+address, grpc.WithInsecure())
+		url := viper.GetString("hub-url")
+		if url == "" {
+			url += address
+		}
+		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -180,7 +188,7 @@ func RunTaskDelete(c *CmdConfig) error {
 				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: "ed1605e17374bde6c68864d072c9f5c9"}); err != nil {
 					return fmt.Errorf("unable to delete task %d: %v", id, err)
 				} else {
-					fmt.Printf("Delete task id %d...%s! \n", id, ctr.Status)
+					fmt.Printf("Delete task id %d ...%s! \n", id, ctr.Status)
 				}
 			}
 			return nil
@@ -210,7 +218,11 @@ func RunTaskList(c *CmdConfig) error {
 
 	var matchedList []pb.TaskInfo
 
-	conn, err := grpc.Dial(viper.GetString("hub-url")+address, grpc.WithInsecure())
+	url := viper.GetString("hub-url")
+	if url == "" {
+		url += address
+	}
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

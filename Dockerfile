@@ -1,6 +1,9 @@
 FROM golang:alpine as builder
 
-RUN apk update && apk add git && apk add --update bash && apk add openssh
+RUN apk update && \
+    apk add git && \
+    apk add --update bash && \
+    apk add openssh
 RUN go get github.com/golang/dep/cmd/dep
 
 COPY id_rsa /root/.ssh/
