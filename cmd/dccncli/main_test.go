@@ -28,7 +28,6 @@ import (
 	"log"
 	"net"
 
-	"github.com/Ankr-network/dccn-hub/util"
 	pb "github.com/Ankr-network/dccn-rpc/protocol"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -77,29 +76,34 @@ func TestMockCommand_Run(t *testing.T) {
 }
 
 type server struct {
-	task util.Task
+	Taskid   int64
+	TaskName string
+	Status   string
 }
 
 func (s *server) AddTask(ctx context.Context, in *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
 	fmt.Printf("received add task request, creating task with id 100\n")
-	s.task = util.Task{Name: in.Name, Region: in.Region, Zone: in.Zone, ID: 100, Status: "running"}
-	return &pb.AddTaskResponse{Status: "Success", Taskid: s.task.ID}, nil
+	s.Taskid = 100
+	s.TaskName = in.Name
+	s.Status = "running"
+	//util.Task{Name: in.Name, Region: in.Region, Zone: in.Zone, ID: 100, Status: "running"}
+	return &pb.AddTaskResponse{Status: "Success", Taskid: s.Taskid}, nil
 }
 
 func (s *server) TaskList(ctx context.Context, in *pb.TaskListRequest) (*pb.TaskListResponse, error) {
 	fmt.Printf("task list reqeust, returning with task id 100\n")
 	var taskList []*pb.TaskInfo
 	taskInfo := &pb.TaskInfo{}
-	taskInfo.Taskid = s.task.ID
-	taskInfo.Taskname = s.task.Name
-	taskInfo.Status = s.task.Status
+	taskInfo.Taskid = s.Taskid
+	taskInfo.Taskname = s.TaskName
+	taskInfo.Status = s.Status
 	taskList = append(taskList, taskInfo)
 	return &pb.TaskListResponse{Tasksinfo: taskList}, nil
 }
 
 func (s *server) CancelTask(ctx context.Context, in *pb.CancelTaskRequest) (*pb.CancelTaskResponse, error) {
-	fmt.Printf("received cancel task request, delete task id %d\n", s.task.ID)
-	if in.Taskid != s.task.ID {
+	fmt.Printf("received cancel task request, delete task id %d\n", s.Taskid)
+	if in.Taskid != s.Taskid {
 		fmt.Printf("can not find task\n")
 		return &pb.CancelTaskResponse{Status: "Failure"}, nil
 	}

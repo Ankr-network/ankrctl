@@ -26,7 +26,7 @@
 
 
 [[constraint]]
-  branch = "feature/swdev-91-ankr_grpc"
+  branch = "develop"
   name = "github.com/Ankr-network/dccn-rpc"
 
 [[constraint]]
