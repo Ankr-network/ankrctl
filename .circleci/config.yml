@@ -38,7 +38,10 @@ jobs:
             if [[ ($BRANCH_NAME == "develop") ]]
             then
               BRANCH_NAME="dev"
-            else
+            elif [[ ($BRANCH_NAME == "master") ]]
+            then
+              BRANCH_NAME="stage"
+            else 
               BRANCH_NAME="feat"
             fi
             docker build -t akrctl:$BRANCH_NAME .
