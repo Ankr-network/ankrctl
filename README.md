@@ -9,7 +9,7 @@ Available Commands:
 
 Flags:
   -u, --hub-url string        Override default Ankr Hub endpoint
-  -h, --help                  help for dccncli
+  -h, --help                  help for akrctl
 
 Use "akrctl [command] --help" for more information about a command.
 ```
@@ -32,32 +32,34 @@ go build -o akrcli cmd/dccncli/main.go
 
 ### Option 2 — Building with Docker
 
-If you have Docker configured, you can build a Docker image using `akrcli`'s and run `akrctl` within a container. first get the source as in Option 1 and then do the docker build using the "Dockerfile.dep" file: 
+If you have Docker configured, you can build a Docker image using `akrcli`'s and run `akrctl` within a container. 
+First, get the source as in Option 1 and then build docker image using the "Dockerfile.dep" file: 
 
 ```
 docker build -f Dockerfile.dep -t akrctl .
 ```
 
-Then you can run it within a container: (replace "addr" with your ankr hub address and "id" with taskid listed)
+Then you can run it within a container: 
 
 ```
 docker run --rm -p 50051:50051 akrctl any_akrctl_command
 ```
 
 ## Run with Docker Image on the ECR repository
-If you are able to login aws ecr you can use it with docker
-login aws ecr: 
+If you are able to login aws ecr you can use it with docker.
+Command for login aws ecr: 
 ```
 eval $(aws ecr get-login --no-include-email --region us-west-2)
 ```
-run akrctl with docker as following example:
+Run akrctl with docker as following example:
 ```
 docker run --rm -p 50051:50051 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:akrctl any_akrctl_command
 ```
 
 ## Examples
 
-`akrctl` is able to interact with all of your AnkrNetwork distributed cloud computing network resources. Below are a few common usage examples. 
+`akrctl` is able to interact with all of your Ankr Network distributed cloud computing network resources. 
+Below are a few common usage examples: 
 
 * List all Tasks:
 ```
@@ -74,7 +76,8 @@ akrctl compute task delete <taskid> -f -u <addr_of_hub>
 
 ## Building and dependencies
 
-`akrcli`'s dependencies are managed with [`dep`](https://github.com/golang/dep). To add dependencies, use [`dep ensure -add github.com/foo/bar`](https://github.com/golang/dep#adding-a-dependency)
+`akrcli`'s dependencies are managed with [`dep`](https://github.com/golang/dep). 
+To add dependencies, use [`dep ensure -add github.com/foo/bar`](https://github.com/golang/dep#adding-a-dependency)
 
 * Initialize the dependency in vendor folder and create "Gopkg.toml" and "Gopkg.lock":
 ```

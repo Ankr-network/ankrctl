@@ -19,7 +19,7 @@ jobs:
           name: Set dependency and mock test 
           command: |
             dep ensure --vendor-only
-            go test ./cmd/dccncli -v
+            go test ./cmd/akrctl -v
       - run:
           name: Install AWSCLI
           command: |

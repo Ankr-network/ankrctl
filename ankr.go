@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package dccncli
+package akrctl
 
 import (
 	"bytes"
@@ -44,16 +44,16 @@ var (
 	// Build is ankr's build tag.
 	Build string
 
-	// Major is dccncli's major version.
+	// Major is akrctl's major version.
 	Major string
 
-	// Minor is dccncli's minor version.
+	// Minor is akrctl's minor version.
 	Minor string
 
-	// Patch is dccncli's patch version.
+	// Patch is akrctl's patch version.
 	Patch string
 
-	// Label is dccncli's label.
+	// Label is akrctl's label.
 	Label string
 )
 

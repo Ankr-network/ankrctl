@@ -30,7 +30,7 @@ func configHome() string {
 		}
 	}
 
-	return filepath.Join(configHome, "dccncli", "config")
+	return filepath.Join(configHome, "akrctl", "config")
 }
 
 // legacyConfigCheck is a no-op on windows since go doesn't have a chmod

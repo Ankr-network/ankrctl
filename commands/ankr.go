@@ -117,9 +117,9 @@ func findConfig() (string, error) {
 	}
 
 	if homeDir() != "" {
-		legacyConfigPath := filepath.Join(homeDir(), ".dccnclicfg")
+		legacyConfigPath := filepath.Join(homeDir(), ".akrctlcfg")
 		if _, err := os.Stat(legacyConfigPath); err == nil {
-			msg := fmt.Sprintf("Configuration detected at %q. Please move .dccnclicfg to %s",
+			msg := fmt.Sprintf("Configuration detected at %q. Please move .akrctlcfg to %s",
 				legacyConfigPath, configPath())
 			warn(msg)
 		}
@@ -248,7 +248,7 @@ func AddStringSliceFlag(cmd *Command, name, shorthand string, def []string, desc
 }
 
 func flagName(cmd *Command, name string) string {
-	parentName := dccncli.NSRoot
+	parentName := akrctl.NSRoot
 	if cmd.Parent() != nil {
 		parentName = cmd.Parent().Name()
 	}
@@ -257,7 +257,7 @@ func flagName(cmd *Command, name string) string {
 }
 
 func cmdNS(cmd *cobra.Command) string {
-	parentName := dccncli.NSRoot
+	parentName := akrctl.NSRoot
 	if cmd.Parent() != nil {
 		parentName = cmd.Parent().Name()
 	}
@@ -271,7 +271,7 @@ type CmdRunner func(*CmdConfig) error
 // CmdConfig is a command configuration.
 type CmdConfig struct {
 	NS   string
-	Ankr dccncli.Config
+	Ankr akrctl.Config
 	Out  io.Writer
 	Args []string
 
@@ -280,7 +280,7 @@ type CmdConfig struct {
 }
 
 // NewCmdConfig creates an instance of a CmdConfig.
-func NewCmdConfig(ns string, dc dccncli.Config, out io.Writer, args []string) (*CmdConfig, error) {
+func NewCmdConfig(ns string, dc akrctl.Config, out io.Writer, args []string) (*CmdConfig, error) {
 
 	cmdConfig := &CmdConfig{
 		NS:   ns,
@@ -297,7 +297,7 @@ func NewCmdConfig(ns string, dc dccncli.Config, out io.Writer, args []string) (*
 
 			switch context {
 			case "default":
-				token = viper.GetString(dccncli.ArgAccessToken)
+				token = viper.GetString(akrctl.ArgAccessToken)
 			default:
 				contexts := viper.GetStringMapString("auth-contexts")
 
@@ -315,7 +315,7 @@ func NewCmdConfig(ns string, dc dccncli.Config, out io.Writer, args []string) (*
 
 			switch context {
 			case "default":
-				viper.Set(dccncli.ArgAccessToken, token)
+				viper.Set(akrctl.ArgAccessToken, token)
 			default:
 				contexts := viper.GetStringMapString("auth-contexts")
 				contexts[context] = token
@@ -353,7 +353,7 @@ func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, desc string, out
 		Run: func(cmd *cobra.Command, args []string) {
 			c, err := NewCmdConfig(
 				cmdNS(cmd),
-				dccncli.AnkrConfig,
+				akrctl.AnkrConfig,
 				out,
 				args,
 			)
@@ -377,8 +377,8 @@ func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, desc string, out
 	if cols := c.fmtCols; cols != nil {
 		formatHelp := fmt.Sprintf("Columns for output in a comma separated list. Possible values: %s",
 			strings.Join(cols, ","))
-		AddStringFlag(c, dccncli.ArgFormat, "", "", formatHelp)
-		AddBoolFlag(c, dccncli.ArgNoHeader, "", false, "hide headers")
+		AddStringFlag(c, akrctl.ArgFormat, "", "", formatHelp)
+		AddBoolFlag(c, akrctl.ArgNoHeader, "", false, "hide headers")
 	}
 
 	return c

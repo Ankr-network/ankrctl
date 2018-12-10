@@ -19,8 +19,8 @@ import (
 	"github.com/Ankr-network/dccn-cli"
 )
 
-func handleColumns(ns string, config dccncli.Config) ([]string, error) {
-	colStr, err := config.GetString(ns, dccncli.ArgFormat)
+func handleColumns(ns string, config akrctl.Config) ([]string, error) {
+	colStr, err := config.GetString(ns, akrctl.ArgFormat)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func handleColumns(ns string, config dccncli.Config) ([]string, error) {
 		}
 	}
 
-	hh, err := config.GetBool(ns, dccncli.ArgNoHeader)
+	hh, err := config.GetBool(ns, akrctl.ArgNoHeader)
 	if err != nil {
 		return nil, err
 	}

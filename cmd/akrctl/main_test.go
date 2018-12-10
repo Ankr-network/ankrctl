@@ -46,7 +46,7 @@ func TestMockCommand_Run(t *testing.T) {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
-	lc := dccncli.NewLiveCommand("go")
+	lc := akrctl.NewLiveCommand("go")
 	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create", "nginx:1.12", "-u", "localhost")
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskCreate)) > 0)

@@ -55,13 +55,13 @@ func Task() *Command {
 	//DCCN-CLI comput task create
 	cmdTaskCreate := CmdBuilder(cmd, RunTaskCreate, "create <task-name> [task-name ...]", "create task", Writer,
 		aliasOpt("cr"), displayerType(&displayers.Task{}), docCategories("task"))
-	AddStringFlag(cmdTaskCreate, dccncli.ArgRegionSlug, "", "", "Task region")
-	AddStringFlag(cmdTaskCreate, dccncli.ArgZoneSlug, "", "", "Task zone")
+	AddStringFlag(cmdTaskCreate, akrctl.ArgRegionSlug, "", "", "Task region")
+	AddStringFlag(cmdTaskCreate, akrctl.ArgZoneSlug, "", "", "Task zone")
 
 	//DCCN-CLI comput task delete
 	cmdRunTaskDelete := CmdBuilder(cmd, RunTaskDelete, "delete <task-id|task-name> [task-id|task-name ...]", "Delete task by id or name", Writer,
 		aliasOpt("d", "del", "rm"), docCategories("Task"))
-	AddBoolFlag(cmdRunTaskDelete, dccncli.ArgForce, dccncli.ArgShortForce, false, "Force task delete")
+	AddBoolFlag(cmdRunTaskDelete, akrctl.ArgForce, akrctl.ArgShortForce, false, "Force task delete")
 
 	//DCCN-CLI task list
 	cmdRunTaskList := CmdBuilder(cmd, RunTaskList, "list [GLOB]", "list tasks", Writer,
@@ -76,15 +76,15 @@ func Task() *Command {
 func RunTaskCreate(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return dccncli.NewMissingArgsErr(c.NS)
+		return akrctl.NewMissingArgsErr(c.NS)
 	}
 
-	region, err := c.Ankr.GetString(c.NS, dccncli.ArgRegionSlug)
+	region, err := c.Ankr.GetString(c.NS, akrctl.ArgRegionSlug)
 	if err != nil {
 		return err
 	}
 
-	zone, err := c.Ankr.GetString(c.NS, dccncli.ArgZoneSlug)
+	zone, err := c.Ankr.GetString(c.NS, akrctl.ArgZoneSlug)
 	if err != nil {
 		return err
 	}
@@ -160,13 +160,13 @@ func allInt(in []string) ([]int, error) {
 // RunTaskDelete destroy a task by id.
 func RunTaskDelete(c *CmdConfig) error {
 
-	force, err := c.Ankr.GetBool(c.NS, dccncli.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
 	if err != nil {
 		return err
 	}
 
 	if len(c.Args) < 1 {
-		return dccncli.NewMissingArgsErr(c.NS)
+		return akrctl.NewMissingArgsErr(c.NS)
 	}
 
 	if force || AskForConfirm(fmt.Sprintf("delete %d task(s)", len(c.Args))) == nil {

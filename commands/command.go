@@ -15,7 +15,7 @@ package commands
 
 import "github.com/spf13/cobra"
 
-// Command is a wrapper around cobra.Command that adds dccncli specific
+// Command is a wrapper around cobra.Command that adds akrctl specific
 // functionality.
 type Command struct {
 	*cobra.Command

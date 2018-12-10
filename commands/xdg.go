@@ -21,9 +21,9 @@ import (
 
 func configHome() string {
 	if xdgPath := os.Getenv("XDG_CONFIG_HOME"); xdgPath != "" {
-		return filepath.Join(xdgPath, "dccncli")
+		return filepath.Join(xdgPath, "akrctl")
 	} else {
-		return filepath.Join(homeDir(), ".config", "dccncli")
+		return filepath.Join(homeDir(), ".config", "akrctl")
 	}
 }
 
