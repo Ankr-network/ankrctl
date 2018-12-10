@@ -1,10 +1,11 @@
-FROM alpine:3.8 as builder
+FROM golang:1.10-alpine3.8 as builder
 
 RUN apk update && \
     apk add git && \
     apk add --update bash && \
     apk add openssh
-
+    
+RUN go get github.com/golang/dep/cmd/dep
 WORKDIR $GOPATH/src/github.com/Ankr-network/dccn-cli/
 COPY Gopkg.toml Gopkg.lock ./
 RUN dep ensure -vendor-only
