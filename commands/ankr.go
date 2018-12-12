@@ -16,17 +16,18 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/Ankr-network/dccn-cli"
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
-	"io"
-	"log"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 const (
@@ -170,7 +171,7 @@ func computeCmd() *Command {
 	}
 
 	cmd.AddCommand(Task())
-
+	cmd.AddCommand(Dc())
 	return cmd
 }
 

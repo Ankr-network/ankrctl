@@ -33,6 +33,19 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	taskID        = 100
+	taskName      = "nginx:1.12"
+	replica       = "2"
+	updateName    = "nginx:1.13"
+	updateReplica = "3"
+	status        = "running"
+	taskType      = "web"
+	taskDc        = "data-center1"
+	dcID          = 1
+	dcName        = "data-center1"
+)
+
 func TestMockCommand_Run(t *testing.T) {
 	go func() {
 		lis, err := net.Listen("tcp", ":50051")
@@ -47,13 +60,16 @@ func TestMockCommand_Run(t *testing.T) {
 		}
 	}()
 	lc := akrctl.NewLiveCommand("go")
-	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create", "nginx:1.12", "-u", "localhost")
+
+	//compute task create test
+	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create", taskName, "--dc", taskDc, "--type", taskType, "--replica", replica, "-u", "localhost")
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskCreate)) > 0)
 	assert.True(t, strings.Contains(string(taskCreate), "created successfully"))
 	id := strings.Fields(string(taskCreate))[2]
 	assert.True(t, len(id) > 0)
 
+	//compute task list test
 	taskList, err := lc.Run("run", "main.go", "compute", "task", "list", "-u", "localhost")
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskList)) > 0)
@@ -61,53 +77,108 @@ func TestMockCommand_Run(t *testing.T) {
 	taskFound := false
 	for _, task := range taskInfo {
 		if task != "" && id == strings.Fields(string(task))[0] {
-			assert.Equal(t, strings.Fields(string(task))[1], "nginx:1.12")
-			assert.Equal(t, strings.Fields(string(task))[4], "running")
+			assert.Equal(t, strings.Fields(string(task))[1], taskName)
+			assert.Equal(t, strings.Fields(string(task))[5], status)
 			taskFound = true
 		}
 	}
 	assert.True(t, taskFound)
 
+	//compute task update test
+	taskUpdate, err := lc.Run("run", "main.go", "compute", "task", "update", id, "--name", updateName, "--replica", updateReplica, "-u", "localhost")
+	assert.NoError(t, err)
+	assert.True(t, len(string(taskUpdate)) > 0)
+	assert.Equal(t, id, string(bytes.Split(taskUpdate, []byte(" "))[3]))
+	assert.True(t, strings.Contains(string(taskUpdate), "...Success!"))
+
+	//compute task delete test
 	taskDelete, err := lc.Run("run", "main.go", "compute", "task", "delete", "-f", id, "-u", "localhost")
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskDelete)) > 0)
 	assert.Equal(t, id, string(bytes.Split(taskDelete, []byte(" "))[3]))
 	assert.True(t, strings.Contains(string(taskDelete), "...Success!"))
+
+	//compute dc list test
+	dcList, err := lc.Run("run", "main.go", "compute", "dc", "list", "-u", "localhost")
+	assert.NoError(t, err)
+	assert.True(t, len(string(dcList)) > 0)
+	dcInfo := strings.Split(string(dcList), "\n")
+	dcFound := false
+	for _, dc := range dcInfo {
+		if dc != "" {
+			dcFound = true
+		}
+	}
+	assert.True(t, dcFound)
 }
 
 type server struct {
 	Taskid   int64
 	TaskName string
 	Status   string
+	Tasktype string
+	Taskdc   string
+	Replica  int64
 }
 
 func (s *server) AddTask(ctx context.Context, in *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
-	fmt.Printf("received add task request, creating task with id 100\n")
-	s.Taskid = 100
+	fmt.Printf("received add task request, creating task with id %d\n", taskID)
+	s.Taskid = taskID
+	s.Status = status
 	s.TaskName = in.Name
-	s.Status = "running"
-	//util.Task{Name: in.Name, Region: in.Region, Zone: in.Zone, ID: 100, Status: "running"}
+	s.Replica = in.Replica
 	return &pb.AddTaskResponse{Status: "Success", Taskid: s.Taskid}, nil
 }
 
 func (s *server) TaskList(ctx context.Context, in *pb.TaskListRequest) (*pb.TaskListResponse, error) {
-	fmt.Printf("task list reqeust, returning with task id 100\n")
+	fmt.Printf("task list reqeust, returning with task id %d\n", s.Taskid)
 	var taskList []*pb.TaskInfo
 	taskInfo := &pb.TaskInfo{}
 	taskInfo.Taskid = s.Taskid
 	taskInfo.Taskname = s.TaskName
 	taskInfo.Status = s.Status
+	taskInfo.Replica = s.Replica
 	taskList = append(taskList, taskInfo)
 	return &pb.TaskListResponse{Tasksinfo: taskList}, nil
+}
+
+func (s *server) DataCenterList(ctx context.Context, in *pb.DataCenterListRequest) (*pb.DataCenterListResponse, error) {
+	fmt.Printf("dc list reqeust, returning with dc list\n")
+	var dcList []*pb.DataCenterInfo
+	dataCenterInfo := &pb.DataCenterInfo{}
+	dataCenterInfo.Id = dcID
+	dataCenterInfo.Name = dcName
+	dcList = append(dcList, dataCenterInfo)
+	return &pb.DataCenterListResponse{DcList: dcList}, nil
+}
+
+func (s *server) TaskDetail(ctx context.Context, in *pb.TaskDetailRequest) (*pb.TaskDetailResponse, error) {
+	fmt.Printf("task detail list reqeust, returning with task detail\n")
+	return &pb.TaskDetailResponse{Body: "task detail"}, nil
 }
 
 func (s *server) CancelTask(ctx context.Context, in *pb.CancelTaskRequest) (*pb.CancelTaskResponse, error) {
 	fmt.Printf("received cancel task request, delete task id %d\n", s.Taskid)
 	if in.Taskid != s.Taskid {
-		fmt.Printf("can not find task\n")
-		return &pb.CancelTaskResponse{Status: "Failure"}, nil
+		return &pb.CancelTaskResponse{Status: "Failure"}, fmt.Errorf("Can not find task.\n")
 	}
 	return &pb.CancelTaskResponse{Status: "Success"}, nil
+}
+
+func (s *server) UpdateTask(ctx context.Context, in *pb.UpdateTaskRequest) (*pb.UpdateTaskResponse, error) {
+	fmt.Printf("received update task request, update task id %d\n", s.Taskid)
+	if in.Taskid != s.Taskid {
+		return &pb.UpdateTaskResponse{Status: "Failure"}, fmt.Errorf("Can not find task.\n")
+	}
+	if in.Name != updateName {
+		return &pb.UpdateTaskResponse{Status: "Failure"}, fmt.Errorf("Update task name not match.\n")
+	}
+
+	if in.Replica <= 0 {
+		return &pb.UpdateTaskResponse{Status: "Failure"}, fmt.Errorf("Update replica not valid.\n")
+	}
+
+	return &pb.UpdateTaskResponse{Status: "Success"}, nil
 }
 
 func (s *server) K8ReportStatus(ctx context.Context, in *pb.ReportRequest) (*pb.ReportResponse, error) {
