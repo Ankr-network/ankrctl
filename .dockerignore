@@ -1,3 +1,2 @@
 .dockerignore
 .circleci
-vendor
