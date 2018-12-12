@@ -32,7 +32,7 @@ func (d *Task) JSON(out io.Writer) error {
 
 func (d *Task) Cols() []string {
 	cols := []string{
-		"Taskid", "Taskname", "Uptime", "Creationdate", "Status",
+		"Taskid", "Taskname", "Uptime", "Creationdate", "Replica", "Status",
 	}
 	return cols
 }
@@ -40,7 +40,7 @@ func (d *Task) Cols() []string {
 func (d *Task) ColMap() map[string]string {
 	return map[string]string{
 		"Taskid": "Taskid", "Taskname": "Taskname", "Uptime": "Uptime",
-		"Creationdate": "Creationdate", "Status": "Status",
+		"Creationdate": "Creationdate", "Replica": "Replica", "Status": "Status",
 	}
 }
 
@@ -49,7 +49,7 @@ func (d *Task) KV() []map[string]interface{} {
 	for _, d := range d.Tasks {
 		m := map[string]interface{}{
 			"Taskid": d.Taskid, "Taskname": d.Taskname, "Uptime": d.Uptime,
-			"Creationdate": d.Creationdate, "Status": d.Status,
+			"Creationdate": d.Creationdate, "Replica": d.Replica, "Status": d.Status,
 		}
 		out = append(out, m)
 	}

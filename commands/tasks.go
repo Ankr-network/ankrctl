@@ -57,13 +57,20 @@ func Task() *Command {
 	//DCCN-CLI comput task create
 	cmdTaskCreate := CmdBuilder(cmd, RunTaskCreate, "create <task-name> [task-name ...]", "create task", Writer,
 		aliasOpt("cr"), displayerType(&displayers.Task{}), docCategories("task"))
-	AddStringFlag(cmdTaskCreate, akrctl.ArgRegionSlug, "", "", "Task region")
-	AddStringFlag(cmdTaskCreate, akrctl.ArgZoneSlug, "", "", "Task zone")
+	AddStringFlag(cmdTaskCreate, akrctl.ArgDcSlug, "", "", "Task dc")
+	AddStringFlag(cmdTaskCreate, akrctl.ArgTypeSlug, "", "", "Task type")
+	AddStringFlag(cmdTaskCreate, akrctl.ArgReplicaSlug, "", "", "Task replica")
 
 	//DCCN-CLI comput task delete
-	cmdRunTaskDelete := CmdBuilder(cmd, RunTaskDelete, "delete <task-id|task-name> [task-id|task-name ...]", "Delete task by id or name", Writer,
-		aliasOpt("d", "del", "rm"), docCategories("Task"))
+	cmdRunTaskDelete := CmdBuilder(cmd, RunTaskDelete, "delete <task-id> [task-id ...]", "Delete task by id", Writer,
+		aliasOpt("dl", "del", "rm"), docCategories("Task"))
 	AddBoolFlag(cmdRunTaskDelete, akrctl.ArgForce, akrctl.ArgShortForce, false, "Force task delete")
+
+	//DCCN-CLI comput task update
+	cmdRunTaskUpdate := CmdBuilder(cmd, RunTaskUpdate, "update <task-id> [task-id ...]", "Update task by id", Writer,
+		aliasOpt("ud", "udt", "ch"), docCategories("Task"))
+	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgNameSlug, "", "", "Task name")
+	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgReplicaSlug, "", "", "Task replica")
 
 	//DCCN-CLI task list
 	cmdRunTaskList := CmdBuilder(cmd, RunTaskList, "list [GLOB]", "list tasks", Writer,
@@ -81,12 +88,17 @@ func RunTaskCreate(c *CmdConfig) error {
 		return akrctl.NewMissingArgsErr(c.NS)
 	}
 
-	region, err := c.Ankr.GetString(c.NS, akrctl.ArgRegionSlug)
+	taskdc, err := c.Ankr.GetString(c.NS, akrctl.ArgDcSlug)
 	if err != nil {
 		return err
 	}
 
-	zone, err := c.Ankr.GetString(c.NS, akrctl.ArgZoneSlug)
+	tasktype, err := c.Ankr.GetString(c.NS, akrctl.ArgTypeSlug)
+	if err != nil {
+		return err
+	}
+
+	replica, err := c.Ankr.GetString(c.NS, akrctl.ArgReplicaSlug)
 	if err != nil {
 		return err
 	}
@@ -96,12 +108,7 @@ func RunTaskCreate(c *CmdConfig) error {
 		url += address
 	}
 
-	if demoToken == "" {
-		demoToken = viper.GetString("demoToken")
-	}
-
-	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
-	//TODO grpc shoule use secure connection in future
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -114,22 +121,29 @@ func RunTaskCreate(c *CmdConfig) error {
 	var wg sync.WaitGroup
 	errs := make(chan error, len(c.Args))
 	for _, name := range c.Args {
-		tcr := &pb.AddTaskRequest{
-			Name:      name,
-			Region:    region,
-			Zone:      zone,
-			Usertoken: demoToken,
+		tcrq := &pb.AddTaskRequest{
+			Name:       name,
+			Type:       tasktype,
+			Datacenter: taskdc,
+			Usertoken:  "ed1605e17374bde6c68864d072c9f5c9",
+		}
+		if replica != "" {
+			replicaCount, err := strconv.Atoi(replica)
+			if err != nil {
+				return fmt.Errorf("replica count %s is not an int", replica)
+			}
+			tcrq.Replica = int64(replicaCount)
 		}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			t, err := dc.AddTask(ctx, tcr)
+			tcrp, err := dc.AddTask(ctx, tcrq)
 			if err != nil {
 				errs <- err
 				return
 			}
-			if t.Status == "Success" {
-				fmt.Printf("Task id %d created successfully. \n", t.Taskid)
+			if tcrp.Status == "Success" {
+				fmt.Printf("Task id %d created successfully. \n", tcrp.Taskid)
 			} else {
 				fmt.Printf("Fail to create task. \n")
 			}
@@ -278,6 +292,7 @@ func RunTaskList(c *CmdConfig) error {
 		task.Uptime = taskinfo.Uptime
 		task.Creationdate = taskinfo.Creationdate
 		task.Status = taskinfo.Status
+		task.Replica = taskinfo.Replica
 
 		if !skip {
 			matchedList = append(matchedList, task)
@@ -286,4 +301,67 @@ func RunTaskList(c *CmdConfig) error {
 
 	item := &displayers.Task{Tasks: matchedList}
 	return c.Display(item)
+}
+
+// RunTaskUpdate updates a task.
+//DCCN-CLI comput task update
+func RunTaskUpdate(c *CmdConfig) error {
+
+	if len(c.Args) < 1 {
+		return akrctl.NewMissingArgsErr(c.NS)
+	}
+
+	name, err := c.Ankr.GetString(c.NS, akrctl.ArgNameSlug)
+	if err != nil {
+		return err
+	}
+
+	replica, err := c.Ankr.GetString(c.NS, akrctl.ArgReplicaSlug)
+	if err != nil {
+		return err
+	}
+
+	url := viper.GetString("hub-url")
+	if url == "" {
+		url += address
+	}
+
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	defer conn.Close()
+	dc := pb.NewDccncliClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	fn := func(ids []int) error {
+		for _, id := range ids {
+			utrq := &pb.UpdateTaskRequest{
+				Taskid:    int64(id),
+				Usertoken: "ed1605e17374bde6c68864d072c9f5c9",
+			}
+			if replica != "" {
+				replicaCount, err := strconv.Atoi(replica)
+				if err != nil {
+					return fmt.Errorf("replica count %s is not an int", replica)
+				}
+				utrq.Replica = int64(replicaCount)
+			}
+			if name != "" {
+				utrq.Name = name
+			}
+			if utrp, err := dc.UpdateTask(ctx, utrq); err != nil {
+				return fmt.Errorf("unable to update task %d: %v", id, err)
+			} else {
+				fmt.Printf("Update task id %d ...%s! \n", id, utrp.Status)
+			}
+		}
+		return nil
+	}
+	if extractedIDs, err := allInt(c.Args); err == nil {
+		return fn(extractedIDs)
+	}
+	return err
 }

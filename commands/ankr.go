@@ -174,7 +174,7 @@ func computeCmd() *Command {
 	}
 
 	cmd.AddCommand(Task())
-
+	cmd.AddCommand(Dc())
 	return cmd
 }
 
