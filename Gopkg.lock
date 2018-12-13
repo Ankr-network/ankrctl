@@ -3,11 +3,11 @@
 
 [[projects]]
   branch = "feature/swdev-110-ankr_rpc"
-  digest = "1:f6606e65fae859af06f21f4d18dbe4b0eb4fc2946746e652ed00a03499ab5594"
+  digest = "1:a19bb0fc710c565bed97ac807ef5fea425c80b859a16379aefed669fdb622d49"
   name = "github.com/Ankr-network/dccn-rpc"
   packages = ["protocol"]
   pruneopts = "UT"
-  revision = "b476b8edaf06f5adcaa488581f4ff48896d47286"
+  revision = "918d6eda4e86a35c5b803fe165e061b6b5c5b787"
 
 [[projects]]
   digest = "1:7cb4fdca4c251b3ef8027c90ea35f70c7b661a593b9eeae34753c65499098bb1"
@@ -243,11 +243,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:418531991b3ea024fd1947c8fdd18019b3ce285025955fddc6b8e4cc4f9213fc"
+  digest = "1:57155adf6e39c5ea209e43df1399cd29d4d450a4c092f2f11b6f83b1574de73a"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "7da8ea5c81829e397bdf930c5d8ba4b703616f33"
+  revision = "b05ddf57801d2239d6ab0ee35f9d981e0420f4ac"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"

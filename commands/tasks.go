@@ -75,6 +75,10 @@ func Task() *Command {
 		aliasOpt("ls"), displayerType(&displayers.Task{}), docCategories("task"))
 	_ = cmdRunTaskList
 
+	//DCCN-CLI task detail
+	cmdRunTaskDetail := CmdBuilder(cmd, RunTaskDetail, "detail <task-id>", "list tasks detail", Writer,
+		aliasOpt("dt"), displayerType(&displayers.Task{}), docCategories("task"))
+	_ = cmdRunTaskDetail
 	return cmd
 }
 
@@ -276,6 +280,7 @@ func RunTaskList(c *CmdConfig) error {
 		task.Uptime = taskinfo.Uptime
 		task.Creationdate = taskinfo.Creationdate
 		task.Status = taskinfo.Status
+		task.Datacenter = taskinfo.Datacenter
 		task.Replica = taskinfo.Replica
 
 		if !skip {
@@ -348,4 +353,40 @@ func RunTaskUpdate(c *CmdConfig) error {
 		return fn(extractedIDs)
 	}
 	return err
+}
+
+// RunTaskDetail show a task detail by id.
+func RunTaskDetail(c *CmdConfig) error {
+
+	if len(c.Args) < 1 {
+		return akrctl.NewMissingArgsErr(c.NS)
+	}
+
+	url := viper.GetString("hub-url")
+	if url == "" {
+		url += address
+	}
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	dc := pb.NewDccncliClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	fn := func(ids []int) error {
+		for _, id := range ids {
+			if ctr, err := dc.TaskDetail(ctx, &pb.TaskDetailRequest{Taskid: int64(id), Usertoken: "ed1605e17374bde6c68864d072c9f5c9"}); err != nil {
+				return fmt.Errorf("unable to get task %d detail: %v", id, err)
+			} else {
+				fmt.Printf("task id %d detail:\n%s\n", id, ctr.Body)
+			}
+		}
+		return nil
+	}
+	if extractedIDs, err := allInt(c.Args); err == nil {
+		return fn(extractedIDs)
+	}
+	return err
+
 }

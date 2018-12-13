@@ -17,6 +17,7 @@ package main
 
 import (
 	"bytes"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -34,16 +35,15 @@ import (
 )
 
 const (
-	taskID        = 100
-	taskName      = "nginx:1.12"
-	replica       = "2"
-	updateName    = "nginx:1.13"
-	updateReplica = "3"
-	status        = "running"
-	taskType      = "web"
-	taskDc        = "data-center1"
-	dcID          = 1
-	dcName        = "data-center1"
+	MockTaskid        = 100
+	MockTaskname      = "nginx:1.12"
+	MockReplica       = "2"
+	MockUpdateName    = "nginx:1.13"
+	MockUpdateReplica = "3"
+	MockStatus        = "running"
+	MockType          = "web"
+	MockDcid          = 1
+	MockDcname        = "data-center1"
 )
 
 func TestMockCommand_Run(t *testing.T) {
@@ -62,7 +62,9 @@ func TestMockCommand_Run(t *testing.T) {
 	lc := akrctl.NewLiveCommand("go")
 
 	//compute task create test
-	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create", taskName, "--dc", taskDc, "--type", taskType, "--replica", replica, "-u", "localhost")
+	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create",
+		MockTaskname, "--dc", MockDcname, "--type", MockType, "--replica", MockReplica,
+		"-u", "localhost")
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskCreate)) > 0)
 	assert.True(t, strings.Contains(string(taskCreate), "created successfully"))
@@ -77,15 +79,18 @@ func TestMockCommand_Run(t *testing.T) {
 	taskFound := false
 	for _, task := range taskInfo {
 		if task != "" && id == strings.Fields(string(task))[0] {
-			assert.Equal(t, strings.Fields(string(task))[1], taskName)
-			assert.Equal(t, strings.Fields(string(task))[5], status)
+			assert.Equal(t, strings.Fields(string(task))[1], MockTaskname)
+			assert.Equal(t, strings.Fields(string(task))[4], MockReplica)
+			assert.Equal(t, strings.Fields(string(task))[5], MockDcname)
+			assert.Equal(t, strings.Fields(string(task))[6], MockStatus)
 			taskFound = true
 		}
 	}
 	assert.True(t, taskFound)
 
 	//compute task update test
-	taskUpdate, err := lc.Run("run", "main.go", "compute", "task", "update", id, "--name", updateName, "--replica", updateReplica, "-u", "localhost")
+	taskUpdate, err := lc.Run("run", "main.go", "compute", "task", "update", id,
+		"--name", MockUpdateName, "--replica", MockUpdateReplica, "-u", "localhost")
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskUpdate)) > 0)
 	assert.Equal(t, id, string(bytes.Split(taskUpdate, []byte(" "))[3]))
@@ -97,6 +102,14 @@ func TestMockCommand_Run(t *testing.T) {
 	assert.True(t, len(string(taskDelete)) > 0)
 	assert.Equal(t, id, string(bytes.Split(taskDelete, []byte(" "))[3]))
 	assert.True(t, strings.Contains(string(taskDelete), "...Success!"))
+
+	//compute task detail test
+	taskDetail, err := lc.Run("run", "main.go", "compute", "task", "detail", strconv.Itoa(MockTaskid), "-u", "localhost")
+	assert.NoError(t, err)
+	assert.True(t, len(string(taskDetail)) > 0)
+	detailInfo := strings.Split(string(taskDetail), "\n")
+	assert.Equal(t, id, strings.Split(detailInfo[0], " ")[2])
+	assert.True(t, len(string(detailInfo[1])) > 0)
 
 	//compute dc list test
 	dcList, err := lc.Run("run", "main.go", "compute", "dc", "list", "-u", "localhost")
@@ -113,20 +126,22 @@ func TestMockCommand_Run(t *testing.T) {
 }
 
 type server struct {
-	Taskid   int64
-	TaskName string
-	Status   string
-	Tasktype string
-	Taskdc   string
-	Replica  int64
+	Taskid     int64
+	Taskname   string
+	Status     string
+	Tasktype   string
+	Taskdc     string
+	Replica    int64
+	Datacenter string
 }
 
 func (s *server) AddTask(ctx context.Context, in *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
-	fmt.Printf("received add task request, creating task with id %d\n", taskID)
-	s.Taskid = taskID
-	s.Status = status
-	s.TaskName = in.Name
+	fmt.Printf("received add task request, creating task with id %d\n", MockTaskid)
+	s.Taskid = MockTaskid
+	s.Status = MockStatus
+	s.Taskname = in.Name
 	s.Replica = in.Replica
+	s.Datacenter = in.Datacenter
 	return &pb.AddTaskResponse{Status: "Success", Taskid: s.Taskid}, nil
 }
 
@@ -135,9 +150,10 @@ func (s *server) TaskList(ctx context.Context, in *pb.TaskListRequest) (*pb.Task
 	var taskList []*pb.TaskInfo
 	taskInfo := &pb.TaskInfo{}
 	taskInfo.Taskid = s.Taskid
-	taskInfo.Taskname = s.TaskName
+	taskInfo.Taskname = s.Taskname
 	taskInfo.Status = s.Status
 	taskInfo.Replica = s.Replica
+	taskInfo.Datacenter = s.Datacenter
 	taskList = append(taskList, taskInfo)
 	return &pb.TaskListResponse{Tasksinfo: taskList}, nil
 }
@@ -146,8 +162,8 @@ func (s *server) DataCenterList(ctx context.Context, in *pb.DataCenterListReques
 	fmt.Printf("dc list reqeust, returning with dc list\n")
 	var dcList []*pb.DataCenterInfo
 	dataCenterInfo := &pb.DataCenterInfo{}
-	dataCenterInfo.Id = dcID
-	dataCenterInfo.Name = dcName
+	dataCenterInfo.Id = MockDcid
+	dataCenterInfo.Name = MockDcname
 	dcList = append(dcList, dataCenterInfo)
 	return &pb.DataCenterListResponse{DcList: dcList}, nil
 }
@@ -170,8 +186,8 @@ func (s *server) UpdateTask(ctx context.Context, in *pb.UpdateTaskRequest) (*pb.
 	if in.Taskid != s.Taskid {
 		return &pb.UpdateTaskResponse{Status: "Failure"}, fmt.Errorf("Can not find task.\n")
 	}
-	if in.Name != updateName {
-		return &pb.UpdateTaskResponse{Status: "Failure"}, fmt.Errorf("Update task name not match.\n")
+	if in.Name == s.Taskname {
+		return &pb.UpdateTaskResponse{Status: "Failure"}, fmt.Errorf("Update task name no change.\n")
 	}
 
 	if in.Replica <= 0 {
