@@ -17,7 +17,9 @@ COPY Gopkg.toml Gopkg.lock ./
 RUN dep ensure -vendor-only
 COPY . $GOPATH/src/github.com/Ankr-network/dccn-cli/
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/akrctl $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/akrctl/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a \
+    -installsuffix cgo -ldflags="-w -s" -o /go/bin/akrctl \
+    $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/akrctl/main.go
 
 FROM scratch
 COPY --from=builder /go/bin/akrctl /go/bin/akrctl
