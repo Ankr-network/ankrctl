@@ -35,7 +35,7 @@ go build -o akrcli cmd/dccncli/main.go
 ### Option 2 — Building with Docker
 
 If you have Docker configured, you can build a Docker image using `akrcli`'s and run `akrctl` within a container. 
-First, using "git clone" as in the "Option 1" to get the source code and then build docker image using the `Dockerfile.dep` file(below procedure tested on Docker version 18.09.0): 
+First, using "git clone" as in the "Option 1" to get the source code and then build docker image using the `Dockerfile.dep` file. (below procedure tested on Docker version 18.09.0): 
 
 ```
 docker build -f Dockerfile.dep -t akrctl .
@@ -48,7 +48,7 @@ docker run --rm -p 50051:50051 akrctl any_akrctl_command
 ```
 
 ## Run with Docker Image on the ECR repository
-If you are able to login AWS ECR you can run it within docker environment.(below procedure tested on Docker version 18.09.0)
+If you are able to login AWS ECR you can run it within docker environment. (below procedure tested on Docker version 18.09.0)
 
 * Command for login AWS ECR: 
 ```
