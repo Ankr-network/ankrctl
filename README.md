@@ -22,7 +22,7 @@ There are two ways to install `akrctl`:
 
 ### Option 1 — Building the Development Version from Source
 
-If you have a Go environment configured, you can install the development version of `akrctl` from the source.(below procedure tested in go version "go1.11.2 darwin/amd64")
+If you have a Go environment configured, you can install the development version of `akrctl` from the source.(below procedure tested in go version `go1.11.2 darwin/amd64`)
 
 ```
 git clone -b feat/swdev-79-dccncli https://github.com/Ankr-network/dccn-cli.git $GOPATH/src/github.com/Ankr-network/dccncli

@@ -86,7 +86,6 @@ func (s *server) AddTask(ctx context.Context, in *pb.AddTaskRequest) (*pb.AddTas
 	s.Taskid = 100
 	s.TaskName = in.Name
 	s.Status = "running"
-	//util.Task{Name: in.Name, Region: in.Region, Zone: in.Zone, ID: 100, Status: "running"}
 	return &pb.AddTaskResponse{Status: "Success", Taskid: s.Taskid}, nil
 }
 

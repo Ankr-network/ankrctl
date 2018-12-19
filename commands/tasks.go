@@ -34,8 +34,9 @@ import (
 )
 
 const (
-	address = "hub.ankr.network"
-	port    = ":50051"
+	address   = "hub.ankr.network"
+	port      = "50051"
+	demoToken = "ed1605e17374bde6c68864d072c9f5c9"
 )
 
 // Task creates the task command.
@@ -92,7 +93,7 @@ func RunTaskCreate(c *CmdConfig) error {
 	if url == "" {
 		url += address
 	}
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -109,7 +110,7 @@ func RunTaskCreate(c *CmdConfig) error {
 			Name:      name,
 			Region:    region,
 			Zone:      zone,
-			Usertoken: "ed1605e17374bde6c68864d072c9f5c9",
+			Usertoken: demoToken,
 		}
 		wg.Add(1)
 		go func() {
@@ -174,7 +175,7 @@ func RunTaskDelete(c *CmdConfig) error {
 		if url == "" {
 			url += address
 		}
-		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+		conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -185,7 +186,7 @@ func RunTaskDelete(c *CmdConfig) error {
 
 		fn := func(ids []int) error {
 			for _, id := range ids {
-				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: "ed1605e17374bde6c68864d072c9f5c9"}); err != nil {
+				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: demoToken}); err != nil {
 					return fmt.Errorf("unable to delete task %d: %v", id, err)
 				} else {
 					fmt.Printf("Delete task id %d ...%s! \n", id, ctr.Status)
@@ -222,7 +223,7 @@ func RunTaskList(c *CmdConfig) error {
 	if url == "" {
 		url += address
 	}
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -231,7 +232,7 @@ func RunTaskList(c *CmdConfig) error {
 	dc := pb.NewDccncliClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	r, err := dc.TaskList(ctx, &pb.TaskListRequest{Usertoken: "ed1605e17374bde6c68864d072c9f5c9"})
+	r, err := dc.TaskList(ctx, &pb.TaskListRequest{Usertoken: demoToken})
 	if err != nil {
 		log.Fatalf("Client: could not send: %v", err)
 	}

@@ -34,10 +34,8 @@ const (
 	ArgNoHeader = "no-header"
 	// ArgPollTime is how long before the next poll argument.
 	ArgPollTime = "poll-timeout"
-
 	// ArgOutput is an output type argument.
 	ArgOutput = "output"
-
 	// ArgForce forces confirmation on actions
 	ArgForce = "force"
 )
