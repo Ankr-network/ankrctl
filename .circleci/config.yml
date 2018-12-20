@@ -35,16 +35,19 @@ jobs:
             BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
             SHA1_SHORT=$(git rev-parse --short HEAD)
             DATE=`date +%Y%m%d%H%M%S`
-            if [[ ($BRANCH_NAME == "develop") ]]
-            then
-              BRANCH_NAME="dev"
-            elif [[ ($BRANCH_NAME == "master") ]]
+            if [[ ($BRANCH_NAME == "master") ]]
             then
               BRANCH_NAME="stage"
+              URL_BRANCH="client.dccn.ankr.network"
+            elif [[ ($BRANCH_NAME == "develop") ]]
+            then
+              BRANCH_NAME="dev"
+              URL_BRANCH="client-stage.dccn.ankr.network"
             else 
               BRANCH_NAME="feat"
+              URL_BRANCH="client-dev.dccn.ankr.network"
             fi
-            docker build -t akrctl:$BRANCH_NAME .
+            docker build --build-arg URL_BRANCH=$URL_BRANCH -t akrctl:$BRANCH_NAME .
             for TAG in $BRANCH_NAME $SHA1_SHORT $BRANCH_NAME$DATE; do
             docker tag akrctl:$BRANCH_NAME $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/akrctl:$TAG
             docker push $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/akrctl:$TAG
