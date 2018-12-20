@@ -71,7 +71,7 @@ func RunDcList(c *CmdConfig) error {
 	if url == "" {
 		url += clientURL
 	}
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
