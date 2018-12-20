@@ -69,7 +69,7 @@ func RunDcList(c *CmdConfig) error {
 
 	url := viper.GetString("hub-url")
 	if url == "" {
-		url += address
+		url += clientURL
 	}
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {

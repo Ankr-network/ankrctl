@@ -34,11 +34,10 @@ import (
 )
 
 const (
-	address = "hub.ankr.network"
-	port    = "50051"
+	port = "50051"
 )
 
-var demoToken string
+var clientURL string
 
 // Task creates the task command.
 func Task() *Command {
@@ -109,10 +108,10 @@ func RunTaskCreate(c *CmdConfig) error {
 
 	url := viper.GetString("hub-url")
 	if url == "" {
-		url += address
+		url += clientURL
 	}
 
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -199,11 +198,9 @@ func RunTaskDelete(c *CmdConfig) error {
 	if force || AskForConfirm(fmt.Sprintf("delete %d task(s)", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
 		if url == "" {
-			url += address
+			url += clientURL
 		}
-
 		conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
-		//TODO grpc shoule use secure connection in future
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -255,11 +252,9 @@ func RunTaskList(c *CmdConfig) error {
 
 	url := viper.GetString("hub-url")
 	if url == "" {
-		url += address
+		url += clientURL
 	}
-
 	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
-	//TODO grpc shoule use secure connection in future
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -328,10 +323,10 @@ func RunTaskUpdate(c *CmdConfig) error {
 
 	url := viper.GetString("hub-url")
 	if url == "" {
-		url += address
+		url += clientURL
 	}
 
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -380,9 +375,9 @@ func RunTaskDetail(c *CmdConfig) error {
 
 	url := viper.GetString("hub-url")
 	if url == "" {
-		url += address
+		url += clientURL
 	}
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
