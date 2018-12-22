@@ -30,7 +30,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/Ankr-network/dccn-rpc/protocol"
+	pb "github.com/Ankr-network/dccn-rpc/protocol_new/cli"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -43,7 +43,7 @@ const (
 	MockUpdateReplica = "3"
 	MockStatus        = "running"
 	MockType          = "web"
-	MockDcid          = 1
+	MockDcid          = "1"
 	MockDcname        = "data-center1"
 )
 
@@ -64,11 +64,11 @@ func TestMockCommand_Run(t *testing.T) {
 
 	//compute task create test
 	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create",
-		MockTaskname, "--dc", MockDcname, "--type", MockType, "--replica", MockReplica,
+		MockTaskname, "--dc-id", MockDcid, "--type", MockType, "--replica", MockReplica,
 		"-u", "localhost")
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskCreate)) > 0)
-	assert.True(t, strings.Contains(string(taskCreate), "created successfully"))
+	assert.True(t, strings.Contains(string(taskCreate), "initialize successfully"))
 	id := strings.Fields(string(taskCreate))[2]
 	assert.True(t, len(id) > 0)
 
@@ -82,8 +82,7 @@ func TestMockCommand_Run(t *testing.T) {
 		if task != "" && id == strings.Fields(string(task))[0] {
 			assert.Equal(t, strings.Fields(string(task))[1], MockTaskname)
 			assert.Equal(t, strings.Fields(string(task))[4], MockReplica)
-			assert.Equal(t, strings.Fields(string(task))[5], MockDcname)
-			assert.Equal(t, strings.Fields(string(task))[6], MockStatus)
+			assert.Equal(t, strings.Fields(string(task))[5], MockStatus)
 			taskFound = true
 		}
 	}
@@ -127,13 +126,14 @@ func TestMockCommand_Run(t *testing.T) {
 }
 
 type server struct {
-	Taskid     int64
-	Taskname   string
-	Status     string
-	Tasktype   string
-	Taskdc     string
-	Replica    int64
-	Datacenter string
+	Taskid       int64
+	Taskname     string
+	Status       string
+	Tasktype     string
+	Taskdc       string
+	Replica      int64
+	Datacenterid int64
+	Datacenter   string
 }
 
 func (s *server) AddTask(ctx context.Context, in *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
@@ -142,7 +142,7 @@ func (s *server) AddTask(ctx context.Context, in *pb.AddTaskRequest) (*pb.AddTas
 	s.Status = MockStatus
 	s.Taskname = in.Name
 	s.Replica = in.Replica
-	s.Datacenter = in.Datacenter
+	s.Datacenterid = in.Datacenterid
 	return &pb.AddTaskResponse{Status: "Success", Taskid: s.Taskid}, nil
 }
 
@@ -163,7 +163,7 @@ func (s *server) DataCenterList(ctx context.Context, in *pb.DataCenterListReques
 	fmt.Printf("dc list reqeust, returning with dc list\n")
 	var dcList []*pb.DataCenterInfo
 	dataCenterInfo := &pb.DataCenterInfo{}
-	dataCenterInfo.Id = MockDcid
+	dataCenterInfo.Id = 1
 	dataCenterInfo.Name = MockDcname
 	dcList = append(dcList, dataCenterInfo)
 	return &pb.DataCenterListResponse{DcList: dcList}, nil
@@ -182,6 +182,14 @@ func (s *server) CancelTask(ctx context.Context, in *pb.CancelTaskRequest) (*pb.
 	return &pb.CancelTaskResponse{Status: "Success"}, nil
 }
 
+func (s *server) PurgeTask(ctx context.Context, in *pb.PurgeTaskRequest) (*pb.PurgeTaskResponse, error) {
+	fmt.Printf("received purge task request, purge task id %d\n", s.Taskid)
+	if in.Taskid != s.Taskid {
+		return &pb.PurgeTaskResponse{Status: "Failure"}, fmt.Errorf("Can not find task.\n")
+	}
+	return &pb.PurgeTaskResponse{Status: "Success"}, nil
+}
+
 func (s *server) UpdateTask(ctx context.Context, in *pb.UpdateTaskRequest) (*pb.UpdateTaskResponse, error) {
 	fmt.Printf("received update task request, update task id %d\n", s.Taskid)
 	if in.Taskid != s.Taskid {
@@ -196,12 +204,4 @@ func (s *server) UpdateTask(ctx context.Context, in *pb.UpdateTaskRequest) (*pb.
 	}
 
 	return &pb.UpdateTaskResponse{Status: "Success"}, nil
-}
-
-func (s *server) K8ReportStatus(ctx context.Context, in *pb.ReportRequest) (*pb.ReportResponse, error) {
-	return &pb.ReportResponse{Status: "Success"}, nil
-}
-
-func (s *server) K8Task(stream pb.Dccncli_K8TaskServer) error {
-	return nil
 }

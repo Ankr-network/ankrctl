@@ -26,7 +26,7 @@ import (
 
 	"context"
 
-	pb "github.com/Ankr-network/dccn-rpc/protocol"
+	pb "github.com/Ankr-network/dccn-rpc/protocol_new/cli"
 	"google.golang.org/grpc"
 )
 
@@ -101,7 +101,7 @@ func RunDcList(c *CmdConfig) error {
 		var dcinfo pb.DataCenterInfo
 		dcinfo.Id = dc.Id
 		dcinfo.Name = dc.Name
-
+		dcinfo.Status = dc.Status
 		if !skip {
 			matchedList = append(matchedList, dcinfo)
 		}
