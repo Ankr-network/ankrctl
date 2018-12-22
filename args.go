@@ -25,7 +25,7 @@ const (
 	// ArgTaskName is a task name argument.
 	ArgTaskName = "task-name"
 	// ArgDcSlug is a datacenter slug argument.
-	ArgDcSlug = "dc"
+	ArgDcidSlug = "dc-id"
 	// ArgTypeSlug is a type slug argument.
 	ArgTypeSlug = "type"
 	// ArgFormat is columns to include in output argment.

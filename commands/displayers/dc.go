@@ -17,7 +17,7 @@ import (
 	//"fmt"
 	"io"
 	//"strings"
-	pb "github.com/Ankr-network/dccn-rpc/protocol"
+	pb "github.com/Ankr-network/dccn-rpc/protocol_new/cli"
 )
 
 type Dc struct {
@@ -33,14 +33,14 @@ func (d *Dc) JSON(out io.Writer) error {
 
 func (d *Dc) Cols() []string {
 	cols := []string{
-		"Id", "Name",
+		"Id", "Name", "Status",
 	}
 	return cols
 }
 
 func (d *Dc) ColMap() map[string]string {
 	return map[string]string{
-		"Id": "Id", "Name": "Name",
+		"Id": "Id", "Name": "Name", "Status": "Status",
 	}
 }
 
@@ -48,7 +48,7 @@ func (d *Dc) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	for _, d := range d.Dcs {
 		m := map[string]interface{}{
-			"Id": d.Id, "Name": d.Name,
+			"Id": d.Id, "Name": d.Name, "Status": d.Status,
 		}
 		out = append(out, m)
 	}

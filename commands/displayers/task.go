@@ -17,7 +17,7 @@ import (
 	//"fmt"
 	"io"
 	//"strings"
-	pb "github.com/Ankr-network/dccn-rpc/protocol"
+	pb "github.com/Ankr-network/dccn-rpc/protocol_new/cli"
 )
 
 type Task struct {
