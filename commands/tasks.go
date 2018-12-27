@@ -34,10 +34,11 @@ import (
 )
 
 const (
-	address   = "hub.ankr.network"
-	port      = "50051"
-	demoToken = "ed1605e17374bde6c68864d072c9f5c9"
+	address = "hub.ankr.network"
+	port    = "50051"
 )
+
+var demoToken string
 
 // Task creates the task command.
 func Task() *Command {
@@ -89,11 +90,18 @@ func RunTaskCreate(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
+
 	url := viper.GetString("hub-url")
 	if url == "" {
 		url += address
 	}
+
+	if demoToken == "" {
+		demoToken = viper.GetString("demoToken")
+	}
+
 	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+	//TODO grpc shoule use secure connection in future
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -175,10 +183,17 @@ func RunTaskDelete(c *CmdConfig) error {
 		if url == "" {
 			url += address
 		}
+
 		conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+		//TODO grpc shoule use secure connection in future
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
+
+		if demoToken == "" {
+			demoToken = viper.GetString("demoToken")
+		}
+
 		defer conn.Close()
 		dc := pb.NewDccncliClient(conn)
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -194,6 +209,7 @@ func RunTaskDelete(c *CmdConfig) error {
 			}
 			return nil
 		}
+
 		if extractedIDs, err := allInt(c.Args); err == nil {
 			return fn(extractedIDs)
 		}
@@ -223,9 +239,15 @@ func RunTaskList(c *CmdConfig) error {
 	if url == "" {
 		url += address
 	}
+
 	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+	//TODO grpc shoule use secure connection in future
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+	}
+
+	if demoToken == "" {
+		demoToken = viper.GetString("demoToken")
 	}
 
 	defer conn.Close()

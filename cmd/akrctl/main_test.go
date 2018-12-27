@@ -24,6 +24,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -32,6 +33,8 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
+
+var demoToken = flag.String("demoToken", "", "demo token")
 
 func TestMockCommand_Run(t *testing.T) {
 	go func() {
@@ -47,14 +50,14 @@ func TestMockCommand_Run(t *testing.T) {
 		}
 	}()
 	lc := akrctl.NewLiveCommand("go")
-	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create", "nginx:1.12", "-u", "localhost")
+	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create", "nginx:1.12", "-u", "localhost", "-t", *demoToken)
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskCreate)) > 0)
 	assert.True(t, strings.Contains(string(taskCreate), "created successfully"))
 	id := strings.Fields(string(taskCreate))[2]
 	assert.True(t, len(id) > 0)
 
-	taskList, err := lc.Run("run", "main.go", "compute", "task", "list", "-u", "localhost")
+	taskList, err := lc.Run("run", "main.go", "compute", "task", "list", "-u", "localhost", "-t", *demoToken)
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskList)) > 0)
 	taskInfo := strings.Split(string(taskList), "\n")
@@ -68,7 +71,7 @@ func TestMockCommand_Run(t *testing.T) {
 	}
 	assert.True(t, taskFound)
 
-	taskDelete, err := lc.Run("run", "main.go", "compute", "task", "delete", "-f", id, "-u", "localhost")
+	taskDelete, err := lc.Run("run", "main.go", "compute", "task", "delete", "-f", id, "-u", "localhost", "-t", *demoToken)
 	assert.NoError(t, err)
 	assert.True(t, len(string(taskDelete)) > 0)
 	assert.Equal(t, id, string(bytes.Split(taskDelete, []byte(" "))[3]))

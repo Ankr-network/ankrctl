@@ -11,7 +11,7 @@ Flags:
   -u, --hub-url string        Override default Ankr Hub endpoint
   -h, --help                  help for akrctl
 
-Use "akrctl [command] --help" for more information about a command.
+Use `akrctl [command] --help` for more information about a command.
 ```
 
 ## Installing `akrctl`
@@ -35,7 +35,7 @@ go build -o akrcli cmd/dccncli/main.go
 ### Option 2 — Building with Docker
 
 If you have Docker configured, you can build a Docker image using `akrcli`'s and run `akrctl` within a container. 
-First, using "git clone" as in the "Option 1" to get the source code and then build docker image using the `Dockerfile.dep` file. (below procedure tested on Docker version 18.09.0): 
+First, using `git clone` as in the `Option 1` to get the source code and then build docker image using the `Dockerfile.dep` file. (below procedure tested on Docker version 18.09.0): 
 
 ```
 docker build -f Dockerfile.dep -t akrctl .
