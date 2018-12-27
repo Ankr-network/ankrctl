@@ -34,7 +34,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-var demoToken = flag.String("demoToken", "", "demo token")
+var demoToken = flag.String("t", "", "demo token")
 
 func TestMockCommand_Run(t *testing.T) {
 	go func() {
