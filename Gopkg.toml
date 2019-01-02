@@ -1,6 +1,6 @@
 [[constraint]]
-  branch = "feature/swdev-110-ankr_rpc"
-  name = "github.com/Ankr-network/dccn-rpc"
+  branch = "feature/SWDEV-117-ankr_comm"
+  name = "github.com/Ankr-network/dccn-common"
 
 [[constraint]]
   name = "github.com/fatih/color"

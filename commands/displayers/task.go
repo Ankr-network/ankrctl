@@ -14,10 +14,9 @@ limitations under the License.
 package displayers
 
 import (
-	//"fmt"
 	"io"
-	//"strings"
-	pb "github.com/Ankr-network/dccn-rpc/protocol_new/cli"
+
+	pb "github.com/Ankr-network/dccn-common/protocol/cli"
 )
 
 type Task struct {

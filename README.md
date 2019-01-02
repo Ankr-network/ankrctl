@@ -11,7 +11,7 @@ Flags:
   -u, --hub-url string        Override default Ankr Hub endpoint
   -h, --help                  help for akrctl
 
-Use "akrctl [command] --help" for more information about a command.
+Use `akrctl [command] --help` for more information about a command.
 ```
 
 ## Installing `akrctl`
@@ -33,7 +33,7 @@ go build -o akrcli cmd/dccncli/main.go
 ### Option 2 — Building with Docker
 
 If you have Docker configured, you can build a Docker image using `akrcli`'s and run `akrctl` within a container. 
-First, get the source as in Option 1 and then build docker image using the "Dockerfile.dep" file: 
+First, get the source as in Option 1 and then build docker image using the `Dockerfile.dep` file: 
 
 ```
 docker build -f Dockerfile.dep -t akrctl .
@@ -79,12 +79,12 @@ akrctl compute task delete <taskid> -f -u <addr_of_hub>
 `akrcli`'s dependencies are managed with [`dep`](https://github.com/golang/dep). 
 To add dependencies, use [`dep ensure -add github.com/foo/bar`](https://github.com/golang/dep#adding-a-dependency)
 
-* Initialize the dependency in vendor folder and create "Gopkg.toml" and "Gopkg.lock":
+* Initialize the dependency in vendor folder and create `Gopkg.toml` and `Gopkg.lock`:
 ```
 dep init
 ```
 
-* If any dependency like branch and version changed in "Gopkg.toml", update the "Gopkg.lock" and vendor:
+* If any dependency like branch and version changed in `Gopkg.toml`, update the `Gopkg.lock` and vendor:
 ```
 dep ensure -update
 ```
