@@ -16,11 +16,13 @@ Use `akrctl [command] --help` for more information about a command.
 
 ## Installing `akrctl`
 
-There are two ways to install `akrctl`:  building a development version from source, or building it with Docker,.
+There are two ways to install `akrctl`:  
+* Building a development version from source.
+* Building it with Docker.
 
 ### Option 1 — Building the Development Version from Source
 
-If you have a Go environment configured, you can install the development version of `akrctl` from the source.
+If you have a Go environment configured, you can install the development version of `akrctl` from the source.(below procedure tested in go version `go1.11.2 darwin/amd64`)
 
 ```
 git clone -b feat/swdev-79-dccncli https://github.com/Ankr-network/dccn-cli.git $GOPATH/src/github.com/Ankr-network/dccncli
@@ -46,12 +48,13 @@ docker run --rm -p 50051:50051 akrctl any_akrctl_command
 ```
 
 ## Run with Docker Image on the ECR repository
-If you are able to login aws ecr you can use it with docker.
-Command for login aws ecr: 
+If you are able to login AWS ECR you can run it within docker environment. (below procedure tested on Docker version 18.09.0)
+
+* Command for login AWS ECR: 
 ```
 eval $(aws ecr get-login --no-include-email --region us-west-2)
 ```
-Run akrctl with docker as following example:
+* Run akrctl with docker as following example:
 ```
 docker run --rm -p 50051:50051 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:akrctl any_akrctl_command
 ```
