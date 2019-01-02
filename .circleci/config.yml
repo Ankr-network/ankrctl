@@ -52,4 +52,3 @@ jobs:
             docker tag akrctl:$BRANCH_NAME $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/akrctl:$TAG
             docker push $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/akrctl:$TAG
             done
-            

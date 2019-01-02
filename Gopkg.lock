@@ -2,12 +2,23 @@
 
 
 [[projects]]
+  branch = "feature/SWDEV-117-ankr_comm"
+  digest = "1:0cda8de48233751f420219249fd8e63c23958724c7125882d8d58b711f1815f8"
+  name = "github.com/Ankr-network/dccn-common"
+  packages = [
+    ".",
+    "protocol/cli",
+  ]
+  pruneopts = "UT"
+  revision = "fe316843b2e66625e5cb052706829868faf54358"
+
+[[projects]]
   branch = "feature/swdev-110-ankr_rpc"
   digest = "1:6c40090b2c12323dfc9b319eb6bc9ab058adc0393391694c535ada04991e50a3"
   name = "github.com/Ankr-network/dccn-rpc"
   packages = ["protocol_new/cli"]
   pruneopts = "UT"
-  revision = "fc9bf26f6f0e4a58db776b0f6eeee9f875b954f4"
+  revision = "da483b401062e87ab21921b20a812f1abb8878f3"
 
 [[projects]]
   digest = "1:7cb4fdca4c251b3ef8027c90ea35f70c7b661a593b9eeae34753c65499098bb1"
@@ -243,11 +254,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9652da56be8fe4998e79e36be6b9d30fe4fd4aacb73ecf0d9b3a33228189dc7e"
+  digest = "1:5b7594f7c43cb5fc8f31c3f4a9f6a61ee798dbd5fcb36b70cb3d4780aad4c509"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "b4a75ba826a64a70990f11a225237acd6ef35c9f"
+  revision = "9a3f9b0469bbc6b8802087ae5c0af9f61502de01"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -332,6 +343,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/Ankr-network/dccn-common",
+    "github.com/Ankr-network/dccn-common/protocol/cli",
     "github.com/Ankr-network/dccn-rpc/protocol_new/cli",
     "github.com/fatih/color",
     "github.com/gobwas/glob",

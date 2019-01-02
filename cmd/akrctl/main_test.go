@@ -30,7 +30,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/Ankr-network/dccn-rpc/protocol_new/cli"
+	pb "github.com/Ankr-network/dccn-common/protocol/cli"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

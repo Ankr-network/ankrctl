@@ -29,13 +29,12 @@ import (
 
 	"context"
 
-	pb "github.com/Ankr-network/dccn-rpc/protocol_new/cli"
+	ankr_const "github.com/Ankr-network/dccn-common"
+	pb "github.com/Ankr-network/dccn-common/protocol/cli"
 	"google.golang.org/grpc"
 )
 
-const (
-	port = "50051"
-)
+var port = ":" + strconv.Itoa(ankr_const.DefaultPort)
 
 var clientURL string
 
@@ -114,18 +113,15 @@ func RunTaskCreate(c *CmdConfig) error {
 	}
 
 	url := viper.GetString("hub-url")
-	if url == "" {
-		url += clientURL
-	}
 
-	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
 	var wg sync.WaitGroup
@@ -134,7 +130,7 @@ func RunTaskCreate(c *CmdConfig) error {
 		tcrq := &pb.AddTaskRequest{
 			Name:      name,
 			Type:      tasktype,
-			Usertoken: "ed1605e17374bde6c68864d072c9f5c9",
+			Usertoken: ankr_const.DefaultUserToken,
 		}
 		if taskdcid != "" {
 			dcid, err := strconv.Atoi(taskdcid)
@@ -210,16 +206,14 @@ func RunTaskPurge(c *CmdConfig) error {
 
 	if force || AskForConfirm(fmt.Sprintf("purge %d task(s)", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
-		if url == "" {
-			url += clientURL
-		}
-		conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+
+		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
 		defer conn.Close()
 		dc := pb.NewDccncliClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 		defer cancel()
 
 		fn := func(ids []int) error {
@@ -256,10 +250,8 @@ func RunTaskDelete(c *CmdConfig) error {
 
 	if force || AskForConfirm(fmt.Sprintf("delete %d task(s)", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
-		if url == "" {
-			url += clientURL
-		}
-		conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+
+		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -270,7 +262,7 @@ func RunTaskDelete(c *CmdConfig) error {
 
 		defer conn.Close()
 		dc := pb.NewDccncliClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 		defer cancel()
 
 		fn := func(ids []int) error {
@@ -310,10 +302,8 @@ func RunTaskList(c *CmdConfig) error {
 	var matchedList []pb.TaskInfo
 
 	url := viper.GetString("hub-url")
-	if url == "" {
-		url += clientURL
-	}
-	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -324,9 +314,9 @@ func RunTaskList(c *CmdConfig) error {
 
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
-	r, err := dc.TaskList(ctx, &pb.TaskListRequest{Usertoken: demoToken})
+	r, err := dc.TaskList(ctx, &pb.TaskListRequest{Usertoken: ankr_const.DefaultUserToken})
 	if err != nil {
 		log.Fatalf("Client: could not send: %v", err)
 	}
@@ -381,25 +371,22 @@ func RunTaskUpdate(c *CmdConfig) error {
 	}
 
 	url := viper.GetString("hub-url")
-	if url == "" {
-		url += clientURL
-	}
 
-	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
 	fn := func(ids []int) error {
 		for _, id := range ids {
 			utrq := &pb.UpdateTaskRequest{
 				Taskid:    int64(id),
-				Usertoken: "ed1605e17374bde6c68864d072c9f5c9",
+				Usertoken: ankr_const.DefaultUserToken,
 			}
 			if replica != "" {
 				replicaCount, err := strconv.Atoi(replica)
@@ -433,16 +420,14 @@ func RunTaskDetail(c *CmdConfig) error {
 	}
 
 	url := viper.GetString("hub-url")
-	if url == "" {
-		url += clientURL
-	}
-	conn, err := grpc.Dial(url+":"+port, grpc.WithInsecure())
+
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 	fn := func(ids []int) error {
 		for _, id := range ids {
