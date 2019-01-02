@@ -83,8 +83,6 @@ func init() {
 	viper.SetEnvPrefix("ANKR")
 	viper.BindEnv("hub-url", "ANKR_HUB_URL")
 	viper.BindPFlag("hub-url", AnkrCmd.PersistentFlags().Lookup("hub-url"))
-	viper.BindEnv("demo-token", "Demo_Token")
-	viper.BindPFlag("demo-token", AnkrCmd.PersistentFlags().Lookup("demo-token"))
 
 	addCommands()
 }

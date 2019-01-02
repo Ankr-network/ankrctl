@@ -218,7 +218,7 @@ func RunTaskPurge(c *CmdConfig) error {
 
 		fn := func(ids []int) error {
 			for _, id := range ids {
-				if ctr, err := dc.PurgeTask(ctx, &pb.PurgeTaskRequest{Taskid: int64(id), Usertoken: "ed1605e17374bde6c68864d072c9f5c9"}); err != nil {
+				if ctr, err := dc.PurgeTask(ctx, &pb.PurgeTaskRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
 					return fmt.Errorf("unable to purge task %d: %v", id, err)
 				} else {
 					fmt.Printf("Purge task id %d ...%s! %s\n", id, ctr.Status, ctr.Reason)
@@ -256,10 +256,6 @@ func RunTaskDelete(c *CmdConfig) error {
 			log.Fatalf("did not connect: %v", err)
 		}
 
-		if demoToken == "" {
-			demoToken = viper.GetString("demoToken")
-		}
-
 		defer conn.Close()
 		dc := pb.NewDccncliClient(conn)
 		ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
@@ -267,7 +263,7 @@ func RunTaskDelete(c *CmdConfig) error {
 
 		fn := func(ids []int) error {
 			for _, id := range ids {
-				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: demoToken}); err != nil {
+				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
 					return fmt.Errorf("unable to delete task %d: %v", id, err)
 				} else {
 					fmt.Printf("Delete task id %d ...%s! \n", id, ctr.Status)
@@ -306,10 +302,6 @@ func RunTaskList(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
-	}
-
-	if demoToken == "" {
-		demoToken = viper.GetString("demoToken")
 	}
 
 	defer conn.Close()
@@ -431,7 +423,7 @@ func RunTaskDetail(c *CmdConfig) error {
 	defer cancel()
 	fn := func(ids []int) error {
 		for _, id := range ids {
-			if ctr, err := dc.TaskDetail(ctx, &pb.TaskDetailRequest{Taskid: int64(id), Usertoken: "ed1605e17374bde6c68864d072c9f5c9"}); err != nil {
+			if ctr, err := dc.TaskDetail(ctx, &pb.TaskDetailRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
 				return fmt.Errorf("unable to get task %d detail: %v", id, err)
 			} else {
 				fmt.Printf("task id %d detail:\n%s\n", id, ctr.Body)
