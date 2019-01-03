@@ -1,5 +1,5 @@
 [[constraint]]
-  branch = "feature/SWDEV-117-ankr_comm"
+  branch = "develop"
   name = "github.com/Ankr-network/dccn-common"
 
 [[constraint]]
