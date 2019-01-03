@@ -1,5 +1,5 @@
 FROM golang:1.10-alpine3.8 as builder
-ARG demoToken
+ARG URL_BRANCH
 RUN apk update && \
     apk add git && \
     apk add --update bash && \
@@ -22,7 +22,7 @@ RUN CGO_ENABLED=0 \
     GOARCH=amd64 \
     go build -a \
     -installsuffix cgo \
-    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.demoToken=${demoToken}" \
+    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=${URL_BRANCH}" \
     -o /go/bin/akrctl \
     $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/akrctl/main.go
 

@@ -35,7 +35,7 @@ go build -o akrcli cmd/dccncli/main.go
 ### Option 2 — Building with Docker
 
 If you have Docker configured, you can build a Docker image using `akrcli`'s and run `akrctl` within a container. 
-First, using `git clone` as in the `Option 1` to get the source code and then build docker image using the `Dockerfile.dep` file. (below procedure tested on Docker version 18.09.0): 
+First, get the source as in Option 1 and then build docker image using the `Dockerfile.dep` file: 
 
 ```
 docker build -f Dockerfile.dep -t akrctl .
@@ -87,7 +87,7 @@ To add dependencies, use [`dep ensure -add github.com/foo/bar`](https://github.c
 dep init
 ```
 
-* If any dependency like branch and version changed in `Gopkg.toml`, update the `Gopkg.lock` file related section and update the vendor folder:
+* If any dependency like branch and version changed in `Gopkg.toml`, update the `Gopkg.lock` and vendor:
 ```
 dep ensure -update
 ```

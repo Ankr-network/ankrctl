@@ -78,14 +78,11 @@ var ErrNoAccessToken = errors.New("no access token has been configured")
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	AnkrCmd.PersistentFlags().StringVarP(&HubURL, "hub-url", "u", "", "Override default endpoint")
-	AnkrCmd.PersistentFlags().StringVarP(&demoToken, "demo-token", "t", "", "demo token")
+	AnkrCmd.PersistentFlags().StringVarP(&HubURL, "hub-url", "u", clientURL, "Override default endpoint")
 
 	viper.SetEnvPrefix("ANKR")
 	viper.BindEnv("hub-url", "ANKR_HUB_URL")
 	viper.BindPFlag("hub-url", AnkrCmd.PersistentFlags().Lookup("hub-url"))
-	viper.BindEnv("demo-token", "Demo_Token")
-	viper.BindPFlag("demo-token", AnkrCmd.PersistentFlags().Lookup("demo-token"))
 
 	addCommands()
 }
@@ -174,7 +171,7 @@ func computeCmd() *Command {
 	}
 
 	cmd.AddCommand(Task())
-
+	cmd.AddCommand(Dc())
 	return cmd
 }
 

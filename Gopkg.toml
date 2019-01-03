@@ -1,6 +1,6 @@
 [[constraint]]
   branch = "develop"
-  name = "github.com/Ankr-network/dccn-rpc"
+  name = "github.com/Ankr-network/dccn-common"
 
 [[constraint]]
   name = "github.com/fatih/color"

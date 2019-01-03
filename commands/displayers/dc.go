@@ -19,39 +19,35 @@ import (
 	pb "github.com/Ankr-network/dccn-common/protocol/cli"
 )
 
-type Task struct {
+type Dc struct {
 	//Tasks pb.Tasks
-	Tasks []pb.TaskInfo
+	Dcs []pb.DataCenterInfo
 }
 
-var _ Displayable = &Task{}
+var _ Displayable = &Dc{}
 
-func (d *Task) JSON(out io.Writer) error {
-	return writeJSON(d.Tasks, out)
+func (d *Dc) JSON(out io.Writer) error {
+	return writeJSON(d.Dcs, out)
 }
 
-func (d *Task) Cols() []string {
+func (d *Dc) Cols() []string {
 	cols := []string{
-		"Taskid", "Taskname", "Uptime", "Creationdate", "Replica", "Datacenter", "Status",
+		"Id", "Name", "Status",
 	}
 	return cols
 }
 
-func (d *Task) ColMap() map[string]string {
+func (d *Dc) ColMap() map[string]string {
 	return map[string]string{
-		"Taskid": "Taskid", "Taskname": "Taskname", "Uptime": "Uptime",
-		"Creationdate": "Creationdate", "Replica": "Replica",
-		"Datacenter": "Datacenter", "Status": "Status",
+		"Id": "Id", "Name": "Name", "Status": "Status",
 	}
 }
 
-func (d *Task) KV() []map[string]interface{} {
+func (d *Dc) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
-	for _, d := range d.Tasks {
+	for _, d := range d.Dcs {
 		m := map[string]interface{}{
-			"Taskid": d.Taskid, "Taskname": d.Taskname, "Uptime": d.Uptime,
-			"Creationdate": d.Creationdate, "Replica": d.Replica,
-			"Datacenter": d.Datacenter, "Status": d.Status,
+			"Id": d.Id, "Name": d.Name, "Status": d.Status,
 		}
 		out = append(out, m)
 	}

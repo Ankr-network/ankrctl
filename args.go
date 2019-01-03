@@ -24,18 +24,20 @@ const (
 	ArgTaskIDs = "task-ids"
 	// ArgTaskName is a task name argument.
 	ArgTaskName = "task-name"
-	// ArgRegionSlug is a region slug argument.
-	ArgRegionSlug = "region"
-	// ArgZoneSlug is a zone slug argument.
-	ArgZoneSlug = "zone"
+	// ArgDcSlug is a datacenter slug argument.
+	ArgDcidSlug = "dc-id"
+	// ArgTypeSlug is a type slug argument.
+	ArgTypeSlug = "type"
 	// ArgFormat is columns to include in output argment.
 	ArgFormat = "format"
 	// ArgNoHeader hides the output header.
 	ArgNoHeader = "no-header"
-	// ArgPollTime is how long before the next poll argument.
-	ArgPollTime = "poll-timeout"
 	// ArgOutput is an output type argument.
 	ArgOutput = "output"
 	// ArgForce forces confirmation on actions
 	ArgForce = "force"
+	// ArgNameSlug is a name slug argument.
+	ArgNameSlug = "name"
+	// ArgReplicaSlug is a replica slug argument.
+	ArgReplicaSlug = "replica"
 )
