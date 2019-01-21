@@ -2,23 +2,14 @@
 
 
 [[projects]]
-  branch = "feature/SWDEV-117-ankr_comm"
-  digest = "1:0cda8de48233751f420219249fd8e63c23958724c7125882d8d58b711f1815f8"
+  digest = "1:348d9a5fd58788eb42cd83983e55618f9480b4acdd5634438708df23e1c02de7"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
-    ".",
+    "constant",
     "protocol/cli",
   ]
   pruneopts = "UT"
-  revision = "fe316843b2e66625e5cb052706829868faf54358"
-
-[[projects]]
-  branch = "feature/swdev-110-ankr_rpc"
-  digest = "1:6c40090b2c12323dfc9b319eb6bc9ab058adc0393391694c535ada04991e50a3"
-  name = "github.com/Ankr-network/dccn-rpc"
-  packages = ["protocol_new/cli"]
-  pruneopts = "UT"
-  revision = "da483b401062e87ab21921b20a812f1abb8878f3"
+  revision = "ec8ffdf8dc11f5d2712770caf7d32c20a9a8f1b7"
 
 [[projects]]
   digest = "1:7cb4fdca4c251b3ef8027c90ea35f70c7b661a593b9eeae34753c65499098bb1"
@@ -343,9 +334,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/Ankr-network/dccn-common",
+    "github.com/Ankr-network/dccn-common/constant",
     "github.com/Ankr-network/dccn-common/protocol/cli",
-    "github.com/Ankr-network/dccn-rpc/protocol_new/cli",
     "github.com/fatih/color",
     "github.com/gobwas/glob",
     "github.com/shiena/ansicolor",

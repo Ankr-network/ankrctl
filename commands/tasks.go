@@ -14,27 +14,24 @@ limitations under the License.
 package commands
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strconv"
 	"sync"
 	"time"
 
-	"github.com/spf13/viper"
-
 	akrctl "github.com/Ankr-network/dccn-cli"
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	"github.com/Ankr-network/dccn-common/constant"
+	pb "github.com/Ankr-network/dccn-common/protocol/cli"
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
-
-	"context"
-
-	ankr_const "github.com/Ankr-network/dccn-common"
-	pb "github.com/Ankr-network/dccn-common/protocol/cli"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 )
 
-var port = ":" + strconv.Itoa(ankr_const.DefaultPort)
+var port = ":" + strconv.Itoa(constant.DefaultPort)
 
 var clientURL string
 
@@ -121,7 +118,7 @@ func RunTaskCreate(c *CmdConfig) error {
 
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constant.ClientTimeOut*time.Second)
 	defer cancel()
 
 	var wg sync.WaitGroup
@@ -130,7 +127,7 @@ func RunTaskCreate(c *CmdConfig) error {
 		tcrq := &pb.AddTaskRequest{
 			Name:      name,
 			Type:      tasktype,
-			Usertoken: ankr_const.DefaultUserToken,
+			Usertoken: constant.DefaultUserToken,
 		}
 		if taskdcid != "" {
 			dcid, err := strconv.Atoi(taskdcid)
@@ -213,12 +210,12 @@ func RunTaskPurge(c *CmdConfig) error {
 		}
 		defer conn.Close()
 		dc := pb.NewDccncliClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), constant.ClientTimeOut*time.Second)
 		defer cancel()
 
 		fn := func(ids []int) error {
 			for _, id := range ids {
-				if ctr, err := dc.PurgeTask(ctx, &pb.PurgeTaskRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
+				if ctr, err := dc.PurgeTask(ctx, &pb.PurgeTaskRequest{Taskid: int64(id), Usertoken: constant.DefaultUserToken}); err != nil {
 					return fmt.Errorf("unable to purge task %d: %v", id, err)
 				} else {
 					fmt.Printf("Purge task id %d ...%s! %s\n", id, ctr.Status, ctr.Reason)
@@ -258,12 +255,12 @@ func RunTaskDelete(c *CmdConfig) error {
 
 		defer conn.Close()
 		dc := pb.NewDccncliClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), constant.ClientTimeOut*time.Second)
 		defer cancel()
 
 		fn := func(ids []int) error {
 			for _, id := range ids {
-				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
+				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: constant.DefaultUserToken}); err != nil {
 					return fmt.Errorf("unable to delete task %d: %v", id, err)
 				} else {
 					fmt.Printf("Delete task id %d ...%s! \n", id, ctr.Status)
@@ -306,9 +303,9 @@ func RunTaskList(c *CmdConfig) error {
 
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constant.ClientTimeOut*time.Second)
 	defer cancel()
-	r, err := dc.TaskList(ctx, &pb.TaskListRequest{Usertoken: ankr_const.DefaultUserToken})
+	r, err := dc.TaskList(ctx, &pb.TaskListRequest{Usertoken: constant.DefaultUserToken})
 	if err != nil {
 		log.Fatalf("Client: could not send: %v", err)
 	}
@@ -371,14 +368,14 @@ func RunTaskUpdate(c *CmdConfig) error {
 
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constant.ClientTimeOut*time.Second)
 	defer cancel()
 
 	fn := func(ids []int) error {
 		for _, id := range ids {
 			utrq := &pb.UpdateTaskRequest{
 				Taskid:    int64(id),
-				Usertoken: ankr_const.DefaultUserToken,
+				Usertoken: constant.DefaultUserToken,
 			}
 			if replica != "" {
 				replicaCount, err := strconv.Atoi(replica)
@@ -419,11 +416,11 @@ func RunTaskDetail(c *CmdConfig) error {
 	}
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constant.ClientTimeOut*time.Second)
 	defer cancel()
 	fn := func(ids []int) error {
 		for _, id := range ids {
-			if ctr, err := dc.TaskDetail(ctx, &pb.TaskDetailRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
+			if ctr, err := dc.TaskDetail(ctx, &pb.TaskDetailRequest{Taskid: int64(id), Usertoken: constant.DefaultUserToken}); err != nil {
 				return fmt.Errorf("unable to get task %d detail: %v", id, err)
 			} else {
 				fmt.Printf("task id %d detail:\n%s\n", id, ctr.Body)

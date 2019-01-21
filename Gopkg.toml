@@ -1,6 +1,6 @@
 [[constraint]]
-  branch = "develop"
   name = "github.com/Ankr-network/dccn-common"
+  revision = "ec8ffdf8dc11f5d2712770caf7d32c20a9a8f1b7" # SWDEV-134
 
 [[constraint]]
   name = "github.com/fatih/color"

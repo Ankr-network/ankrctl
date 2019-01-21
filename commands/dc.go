@@ -14,20 +14,17 @@ limitations under the License.
 package commands
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
 
-	"github.com/spf13/viper"
-
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	"github.com/Ankr-network/dccn-common/constant"
+	pb "github.com/Ankr-network/dccn-common/protocol/cli"
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
-
-	"context"
-
-	ankr_const "github.com/Ankr-network/dccn-common"
-	pb "github.com/Ankr-network/dccn-common/protocol/cli"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 )
 
@@ -77,9 +74,9 @@ func RunDcList(c *CmdConfig) error {
 
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constant.ClientTimeOut*time.Second)
 	defer cancel()
-	r, err := dc.DataCenterList(ctx, &pb.DataCenterListRequest{Usertoken: ankr_const.DefaultUserToken})
+	r, err := dc.DataCenterList(ctx, &pb.DataCenterListRequest{Usertoken: constant.DefaultUserToken})
 	if err != nil {
 		log.Fatalf("Client: could not send: %v", err)
 	}
