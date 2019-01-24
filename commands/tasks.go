@@ -24,13 +24,15 @@ import (
 
 	akrctl "github.com/Ankr-network/dccn-cli"
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	common_proto "github.com/Ankr-network/dccn-common/protos/common"
+
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
 
 	"context"
 
 	ankr_const "github.com/Ankr-network/dccn-common"
-	pb "github.com/Ankr-network/dccn-common/protocol/cli"
+	pb "github.com/Ankr-network/dccn-common/protos/taskmgr/v1/grpc"
 	"google.golang.org/grpc"
 )
 
@@ -97,6 +99,11 @@ func RunTaskCreate(c *CmdConfig) error {
 		return akrctl.NewMissingArgsErr(c.NS)
 	}
 
+	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	if err != nil {
+		return err
+	}
+
 	taskdcid, err := c.Ankr.GetString(c.NS, akrctl.ArgDcidSlug)
 	if err != nil {
 		return err
@@ -120,7 +127,7 @@ func RunTaskCreate(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	dc := pb.NewDccncliClient(conn)
+	dc := pb.NewTaskMgrClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
@@ -128,36 +135,38 @@ func RunTaskCreate(c *CmdConfig) error {
 	errs := make(chan error, len(c.Args))
 	for _, name := range c.Args {
 		tcrq := &pb.AddTaskRequest{
-			Name:      name,
-			Type:      tasktype,
-			Usertoken: ankr_const.DefaultUserToken,
+			UserId: int64(userid),
+			Task: &common_proto.Task{
+				Name: name,
+				Type: tasktype,
+			},
 		}
 		if taskdcid != "" {
 			dcid, err := strconv.Atoi(taskdcid)
 			if err != nil {
 				return fmt.Errorf("dc id %s is not an int", taskdcid)
 			}
-			tcrq.Datacenterid = int64(dcid)
+			tcrq.Task.DataCenterId = int64(dcid)
 		}
 		if replica != "" {
 			replicaCount, err := strconv.Atoi(replica)
 			if err != nil {
 				return fmt.Errorf("replica count %s is not an int", replica)
 			}
-			tcrq.Replica = int64(replicaCount)
+			tcrq.Task.Replica = int32(replicaCount)
 		}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			tcrp, err := dc.AddTask(ctx, tcrq)
+			tcrp, err := dc.CreateTask(ctx, tcrq)
 			if err != nil {
 				errs <- err
 				return
 			}
-			if tcrp.Status == "Success" {
-				fmt.Printf("Task id %d initialize successfully. \n", tcrp.Taskid)
+			if tcrp.Error != nil {
+				fmt.Printf("Fail to initialize task, %s.\n", tcrp.Error.Details)
 			} else {
-				fmt.Printf("Fail to initialize task, %s.\n", tcrp.Reason)
+				fmt.Printf("Task id %d initialize successfully. \n", tcrp.TaskId)
 			}
 		}()
 	}
@@ -195,6 +204,11 @@ func allInt(in []string) ([]int, error) {
 // RunTaskPurge purge a task from hub.
 func RunTaskPurge(c *CmdConfig) error {
 
+	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	if err != nil {
+		return err
+	}
+
 	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
 	if err != nil {
 		return err
@@ -212,24 +226,19 @@ func RunTaskPurge(c *CmdConfig) error {
 			log.Fatalf("did not connect: %v", err)
 		}
 		defer conn.Close()
-		dc := pb.NewDccncliClient(conn)
+		dc := pb.NewTaskMgrClient(conn)
 		ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 		defer cancel()
 
-		fn := func(ids []int) error {
+		fn := func(ids []string) error {
 			for _, id := range ids {
-				if ctr, err := dc.PurgeTask(ctx, &pb.PurgeTaskRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
-					return fmt.Errorf("unable to purge task %d: %v", id, err)
-				} else {
-					fmt.Printf("Purge task id %d ...%s! %s\n", id, ctr.Status, ctr.Reason)
+				if ctr, _ := dc.PurgeTask(ctx, &pb.Request{UserId: int64(userid), TaskId: id}); err != nil {
+					return fmt.Errorf("unable to purge task %d: %v", id, ctr.Details)
 				}
 			}
 			return nil
 		}
-		if extractedIDs, err := allInt(c.Args); err == nil {
-			return fn(extractedIDs)
-		}
-		return err
+		return fn(c.Args)
 
 	}
 	return fmt.Errorf("operation aborted")
@@ -238,6 +247,11 @@ func RunTaskPurge(c *CmdConfig) error {
 
 // RunTaskDelete destroy a task by id.
 func RunTaskDelete(c *CmdConfig) error {
+
+	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	if err != nil {
+		return err
+	}
 
 	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
 	if err != nil {
@@ -257,26 +271,20 @@ func RunTaskDelete(c *CmdConfig) error {
 		}
 
 		defer conn.Close()
-		dc := pb.NewDccncliClient(conn)
+		dc := pb.NewTaskMgrClient(conn)
 		ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 		defer cancel()
 
-		fn := func(ids []int) error {
+		fn := func(ids []string) error {
 			for _, id := range ids {
-				if ctr, err := dc.CancelTask(ctx, &pb.CancelTaskRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
-					return fmt.Errorf("unable to delete task %d: %v", id, err)
-				} else {
-					fmt.Printf("Delete task id %d ...%s! \n", id, ctr.Status)
+				if ctr, _ := dc.CancelTask(ctx, &pb.Request{UserId: int64(userid), TaskId: id}); ctr != nil {
+					return fmt.Errorf("unable to delete task %d: %v", id, ctr.Details)
 				}
 			}
 			return nil
 		}
 
-		if extractedIDs, err := allInt(c.Args); err == nil {
-			return fn(extractedIDs)
-		}
-		return err
-
+		return fn(c.Args)
 	}
 	return fmt.Errorf("operation aborted")
 
@@ -284,6 +292,11 @@ func RunTaskDelete(c *CmdConfig) error {
 
 // RunTaskList returns a list of tasks.
 func RunTaskList(c *CmdConfig) error {
+
+	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	if err != nil {
+		return err
+	}
 
 	matches := []glob.Glob{}
 	for _, globStr := range c.Args {
@@ -295,8 +308,6 @@ func RunTaskList(c *CmdConfig) error {
 		matches = append(matches, g)
 	}
 
-	var matchedList []pb.TaskInfo
-
 	url := viper.GetString("hub-url")
 
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
@@ -305,48 +316,26 @@ func RunTaskList(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	dc := pb.NewDccncliClient(conn)
+	dc := pb.NewTaskMgrClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
-	r, err := dc.TaskList(ctx, &pb.TaskListRequest{Usertoken: ankr_const.DefaultUserToken})
+	r, err := dc.TaskList(ctx, &pb.ID{UserId: int64(userid)})
 	if err != nil {
 		log.Fatalf("Client: could not send: %v", err)
 	}
-	Taskinfos := r.Tasksinfo
 
-	for _, taskinfo := range Taskinfos {
-		var skip = true
-		if len(matches) == 0 {
-			skip = false
-		} else {
-			for _, m := range matches {
-				if m.Match(taskinfo.Taskname) {
-					skip = false
-				}
-			}
-		}
-
-		var task pb.TaskInfo
-		task.Taskid = taskinfo.Taskid
-		task.Taskname = taskinfo.Taskname
-		task.Uptime = taskinfo.Uptime
-		task.Creationdate = taskinfo.Creationdate
-		task.Status = taskinfo.Status
-		task.Datacenter = taskinfo.Datacenter
-		task.Replica = taskinfo.Replica
-
-		if !skip {
-			matchedList = append(matchedList, task)
-		}
-	}
-
-	item := &displayers.Task{Tasks: matchedList}
+	item := &displayers.Task{Tasks: r.Tasks}
 	return c.Display(item)
 }
 
 // RunTaskUpdate updates a task.
 //DCCN-CLI comput task update
 func RunTaskUpdate(c *CmdConfig) error {
+
+	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	if err != nil {
+		return err
+	}
 
 	if len(c.Args) < 1 {
 		return akrctl.NewMissingArgsErr(c.NS)
@@ -370,42 +359,44 @@ func RunTaskUpdate(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	dc := pb.NewDccncliClient(conn)
+	dc := pb.NewTaskMgrClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
-	fn := func(ids []int) error {
+	fn := func(ids []string) error {
 		for _, id := range ids {
 			utrq := &pb.UpdateTaskRequest{
-				Taskid:    int64(id),
-				Usertoken: ankr_const.DefaultUserToken,
+				UserId: int64(userid),
+				Task: &common_proto.Task{
+					Id: id,
+				},
 			}
 			if replica != "" {
 				replicaCount, err := strconv.Atoi(replica)
 				if err != nil {
 					return fmt.Errorf("replica count %s is not an int", replica)
 				}
-				utrq.Replica = int64(replicaCount)
+				utrq.Task.Replica = int32(replicaCount)
 			}
 			if name != "" {
-				utrq.Name = name
+				utrq.Task.Name = name
 			}
-			if utrp, err := dc.UpdateTask(ctx, utrq); err != nil {
-				return fmt.Errorf("unable to update task %d: %v", id, err)
-			} else {
-				fmt.Printf("Update task id %d ...%s! \n", id, utrp.Status)
+			if utrp, _ := dc.UpdateTask(ctx, utrq); utrp != nil {
+				return fmt.Errorf("unable to update task %d: %v", id, utrp.Details)
 			}
 		}
 		return nil
 	}
-	if extractedIDs, err := allInt(c.Args); err == nil {
-		return fn(extractedIDs)
-	}
-	return err
+	return fn(c.Args)
 }
 
 // RunTaskDetail show a task detail by id.
 func RunTaskDetail(c *CmdConfig) error {
+
+	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	if err != nil {
+		return err
+	}
 
 	if len(c.Args) < 1 {
 		return akrctl.NewMissingArgsErr(c.NS)
@@ -418,22 +409,16 @@ func RunTaskDetail(c *CmdConfig) error {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	dc := pb.NewDccncliClient(conn)
+	dc := pb.NewTaskMgrClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
-	fn := func(ids []int) error {
+	fn := func(ids []string) error {
 		for _, id := range ids {
-			if ctr, err := dc.TaskDetail(ctx, &pb.TaskDetailRequest{Taskid: int64(id), Usertoken: ankr_const.DefaultUserToken}); err != nil {
-				return fmt.Errorf("unable to get task %d detail: %v", id, err)
-			} else {
-				fmt.Printf("task id %d detail:\n%s\n", id, ctr.Body)
+			if ctr, _ := dc.TaskDetail(ctx, &pb.Request{UserId: int64(userid)}); ctr.Error != nil {
+				return fmt.Errorf("unable to get task %d detail: %v", id, ctr.Error.Details)
 			}
 		}
 		return nil
 	}
-	if extractedIDs, err := allInt(c.Args); err == nil {
-		return fn(extractedIDs)
-	}
-	return err
-
+	return fn(c.Args)
 }
