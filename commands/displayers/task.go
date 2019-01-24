@@ -16,12 +16,12 @@ package displayers
 import (
 	"io"
 
-	pb "github.com/Ankr-network/dccn-common/protocol/cli"
+	pb "github.com/Ankr-network/dccn-common/protos/common"
 )
 
 type Task struct {
 	//Tasks pb.Tasks
-	Tasks []pb.TaskInfo
+	Tasks []*pb.Task
 }
 
 var _ Displayable = &Task{}
@@ -32,16 +32,16 @@ func (d *Task) JSON(out io.Writer) error {
 
 func (d *Task) Cols() []string {
 	cols := []string{
-		"Taskid", "Taskname", "Uptime", "Creationdate", "Replica", "Datacenter", "Status",
+		"TaskId", "TaskName", "Uptime", "CreationDate", "Replica", "DatacEnter", "Status",
 	}
 	return cols
 }
 
 func (d *Task) ColMap() map[string]string {
 	return map[string]string{
-		"Taskid": "Taskid", "Taskname": "Taskname", "Uptime": "Uptime",
-		"Creationdate": "Creationdate", "Replica": "Replica",
-		"Datacenter": "Datacenter", "Status": "Status",
+		"TaskId": "TaskId", "TaskName": "TaskName", "Uptime": "Uptime",
+		"CreationDate": "CreationDate", "Replica": "Replica",
+		"DataCenter": "DataCenter", "Status": "Status",
 	}
 }
 
@@ -49,9 +49,9 @@ func (d *Task) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	for _, d := range d.Tasks {
 		m := map[string]interface{}{
-			"Taskid": d.Taskid, "Taskname": d.Taskname, "Uptime": d.Uptime,
-			"Creationdate": d.Creationdate, "Replica": d.Replica,
-			"Datacenter": d.Datacenter, "Status": d.Status,
+			"TaskId": d.Id, "TaskName": d.Name, "Uptime": d.Uptime,
+			"CreationDate": d.CreationDate, "Replica": d.Replica,
+			"DataCenter": d.DataCenter, "Status": d.Status,
 		}
 		out = append(out, m)
 	}
