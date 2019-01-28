@@ -18,6 +18,8 @@ const (
 	ArgAccessToken = "access-token"
 	// ArgContext is the name of the auth context to use
 	ArgContext = "context"
+	// ArgUserID is a user id argument.
+	ArgUserID = "user-id"
 	// ArgTaskID is a task id argument.
 	ArgTaskID = "task-id"
 	// ArgTaskIDs is a list of task IDs.

@@ -21,7 +21,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Ankr-network/dccn-cli"
+	akrctl "github.com/Ankr-network/dccn-cli"
+	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 
 	"github.com/stretchr/testify/assert"
 
@@ -29,13 +30,14 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/Ankr-network/dccn-common/protocol/cli"
+	// pb "github.com/Ankr-network/dccn-common/protocol/cli"
+	pb "github.com/Ankr-network/dccn-common/protos/taskmgr/v1/grpc"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
 const (
-	MockTaskid        = 100
+	MockTaskid        = "100"
 	MockTaskname      = "nginx:1.12"
 	MockReplica       = "2"
 	MockUpdateName    = "nginx:1.13"
@@ -125,7 +127,7 @@ func TestMockCommand_Run(t *testing.T) {
 }
 
 type server struct {
-	Taskid       int64
+	Taskid       string
 	Taskname     string
 	Status       string
 	Tasktype     string
@@ -135,17 +137,17 @@ type server struct {
 	Datacenter   string
 }
 
-func (s *server) AddTask(ctx context.Context, in *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
+func (s *server) AddTask(ctx context.Context, in *pb.CreateTaskRequest) (*pb.CreateTaskResponse, error) {
 	fmt.Printf("received add task request, creating task with id %d\n", MockTaskid)
 	s.Taskid = MockTaskid
 	s.Status = MockStatus
-	s.Taskname = in.Name
-	s.Replica = in.Replica
-	s.Datacenterid = in.Datacenterid
-	return &pb.AddTaskResponse{Status: "Success", Taskid: s.Taskid}, nil
+	s.Taskname = in.Task.Name
+	s.Replica = int64(in.Task.Replica)
+	s.Datacenterid = in.Task.DataCenterId
+	return &pb.CreateTaskResponse{Error: &common_proto.Error{Status: common_proto.Status_SUCCESS}, TaskId: s.Taskid}, nil
 }
 
-func (s *server) TaskList(ctx context.Context, in *pb.TaskListRequest) (*pb.TaskListResponse, error) {
+func (s *server) TaskList(ctx context.Context, in *pb.Request) (*pb.TaskListResponse, error) {
 	fmt.Printf("task list reqeust, returning with task id %d\n", s.Taskid)
 	var taskList []*pb.TaskInfo
 	taskInfo := &pb.TaskInfo{}
