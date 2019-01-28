@@ -2,23 +2,17 @@
 
 
 [[projects]]
-  branch = "feature/SWDEV-117-ankr_comm"
-  digest = "1:0cda8de48233751f420219249fd8e63c23958724c7125882d8d58b711f1815f8"
+  branch = "develop"
+  digest = "1:b9582880d36efbc021f0d00c77475d662911d84b309599cb07e995ec55818e2d"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
     ".",
     "protocol/cli",
+    "protos/common",
+    "protos/taskmgr/v1/grpc",
   ]
   pruneopts = "UT"
-  revision = "fe316843b2e66625e5cb052706829868faf54358"
-
-[[projects]]
-  branch = "feature/swdev-110-ankr_rpc"
-  digest = "1:6c40090b2c12323dfc9b319eb6bc9ab058adc0393391694c535ada04991e50a3"
-  name = "github.com/Ankr-network/dccn-rpc"
-  packages = ["protocol_new/cli"]
-  pruneopts = "UT"
-  revision = "da483b401062e87ab21921b20a812f1abb8878f3"
+  revision = "7a53dfa087d86a46bf6da083212159ad9d85272f"
 
 [[projects]]
   digest = "1:7cb4fdca4c251b3ef8027c90ea35f70c7b661a593b9eeae34753c65499098bb1"
@@ -229,16 +223,16 @@
   version = "v1.3.1"
 
 [[projects]]
-  digest = "1:18752d0b95816a1b777505a97f71c7467a8445b8ffb55631a7bf779f6ba4fa83"
+  digest = "1:972c2427413d41a1e06ca4897e8528e5a1622894050e2f527b38ddf0f343f759"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   pruneopts = "UT"
-  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
-  version = "v1.2.2"
+  revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
+  version = "v1.3.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:89a0cb976397aa9157a45bb2b896d0bcd07ee095ac975e0f03c53250c402265e"
+  digest = "1:fc7b6b4384e1e849d99eab58eca4f8c0a76bad4699117d5077a9a5c3c83e289e"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -250,15 +244,15 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "927f97764cc334a6575f4b7a1584a147864d5723"
+  revision = "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf"
 
 [[projects]]
   branch = "master"
-  digest = "1:5b7594f7c43cb5fc8f31c3f4a9f6a61ee798dbd5fcb36b70cb3d4780aad4c509"
+  digest = "1:db12953ac7a80656b159265fe13146959beaada45938a532f484a3aeb289462e"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "9a3f9b0469bbc6b8802087ae5c0af9f61502de01"
+  revision = "b90733256f2e882e81d52f9126de08df5615afd9"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -289,10 +283,10 @@
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = "UT"
-  revision = "bd9b4fb69e2ffd37621a6caa54dcbead29b546f2"
+  revision = "aa24cbd621fe1e2867110ea8c673d99a1a92efdc"
 
 [[projects]]
-  digest = "1:9edd250a3c46675d0679d87540b30c9ed253b19bd1fd1af08f4f5fb3c79fc487"
+  digest = "1:9ab5a33d8cb5c120602a34d2e985ce17956a4e8c2edce7e6961568f95e40c09a"
   name = "google.golang.org/grpc"
   packages = [
     ".",
@@ -328,8 +322,8 @@
     "tap",
   ]
   pruneopts = "UT"
-  revision = "df014850f6dee74ba2fc94874043a9f3f75fbfd8"
-  version = "v1.17.0"
+  revision = "a02b0774206b209466313a0b525d2c738fe407eb"
+  version = "v1.18.0"
 
 [[projects]]
   digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
@@ -345,7 +339,8 @@
   input-imports = [
     "github.com/Ankr-network/dccn-common",
     "github.com/Ankr-network/dccn-common/protocol/cli",
-    "github.com/Ankr-network/dccn-rpc/protocol_new/cli",
+    "github.com/Ankr-network/dccn-common/protos/common",
+    "github.com/Ankr-network/dccn-common/protos/taskmgr/v1/grpc",
     "github.com/fatih/color",
     "github.com/gobwas/glob",
     "github.com/shiena/ansicolor",

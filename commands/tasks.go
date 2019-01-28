@@ -14,6 +14,7 @@ limitations under the License.
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -99,7 +100,7 @@ func RunTaskCreate(c *CmdConfig) error {
 		return akrctl.NewMissingArgsErr(c.NS)
 	}
 
-	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
 	if err != nil {
 		return err
 	}
@@ -132,10 +133,10 @@ func RunTaskCreate(c *CmdConfig) error {
 	defer cancel()
 
 	var wg sync.WaitGroup
-	errs := make(chan error, len(c.Args))
+	errs := make(chan *common_proto.Error, len(c.Args))
 	for _, name := range c.Args {
-		tcrq := &pb.AddTaskRequest{
-			UserId: int64(userid),
+		tcrq := &pb.CreateTaskRequest{
+			UserId: userid,
 			Task: &common_proto.Task{
 				Name: name,
 				Type: tasktype,
@@ -158,13 +159,11 @@ func RunTaskCreate(c *CmdConfig) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			tcrp, err := dc.CreateTask(ctx, tcrq)
-			if err != nil {
-				errs <- err
-				return
-			}
-			if tcrp.Error != nil {
+			tcrp, _ := dc.CreateTask(ctx, tcrq)
+			if tcrp.Error != nil && tcrp.Error.Status == common_proto.Status_FAILURE {
+				errs <- tcrp.Error
 				fmt.Printf("Fail to initialize task, %s.\n", tcrp.Error.Details)
+				return
 			} else {
 				fmt.Printf("Task id %d initialize successfully. \n", tcrp.TaskId)
 			}
@@ -174,7 +173,7 @@ func RunTaskCreate(c *CmdConfig) error {
 	close(errs)
 	for err := range errs {
 		if err != nil {
-			return err
+			return errors.New(err.Details)
 		}
 	}
 
@@ -204,7 +203,7 @@ func allInt(in []string) ([]int, error) {
 // RunTaskPurge purge a task from hub.
 func RunTaskPurge(c *CmdConfig) error {
 
-	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
 	if err != nil {
 		return err
 	}
@@ -232,7 +231,7 @@ func RunTaskPurge(c *CmdConfig) error {
 
 		fn := func(ids []string) error {
 			for _, id := range ids {
-				if ctr, _ := dc.PurgeTask(ctx, &pb.Request{UserId: int64(userid), TaskId: id}); err != nil {
+				if ctr, _ := dc.PurgeTask(ctx, &pb.Request{UserId: userid, TaskId: id}); ctr != nil && ctr.Status == common_proto.Status_FAILURE {
 					return fmt.Errorf("unable to purge task %d: %v", id, ctr.Details)
 				}
 			}
@@ -248,7 +247,7 @@ func RunTaskPurge(c *CmdConfig) error {
 // RunTaskDelete destroy a task by id.
 func RunTaskDelete(c *CmdConfig) error {
 
-	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
 	if err != nil {
 		return err
 	}
@@ -277,7 +276,7 @@ func RunTaskDelete(c *CmdConfig) error {
 
 		fn := func(ids []string) error {
 			for _, id := range ids {
-				if ctr, _ := dc.CancelTask(ctx, &pb.Request{UserId: int64(userid), TaskId: id}); ctr != nil {
+				if ctr, _ := dc.CancelTask(ctx, &pb.Request{UserId: userid, TaskId: id}); ctr != nil && ctr.Status == common_proto.Status_FAILURE {
 					return fmt.Errorf("unable to delete task %d: %v", id, ctr.Details)
 				}
 			}
@@ -293,7 +292,7 @@ func RunTaskDelete(c *CmdConfig) error {
 // RunTaskList returns a list of tasks.
 func RunTaskList(c *CmdConfig) error {
 
-	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
 	if err != nil {
 		return err
 	}
@@ -319,9 +318,9 @@ func RunTaskList(c *CmdConfig) error {
 	dc := pb.NewTaskMgrClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
-	r, err := dc.TaskList(ctx, &pb.ID{UserId: int64(userid)})
-	if err != nil {
-		log.Fatalf("Client: could not send: %v", err)
+	r, _ := dc.TaskList(ctx, &pb.ID{UserId: userid})
+	if r.Error != nil && r.Error.Status == common_proto.Status_FAILURE {
+		log.Fatalf("Client: could not send: %v", r.Error.Details)
 	}
 
 	item := &displayers.Task{Tasks: r.Tasks}
@@ -332,7 +331,7 @@ func RunTaskList(c *CmdConfig) error {
 //DCCN-CLI comput task update
 func RunTaskUpdate(c *CmdConfig) error {
 
-	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
 	if err != nil {
 		return err
 	}
@@ -366,7 +365,7 @@ func RunTaskUpdate(c *CmdConfig) error {
 	fn := func(ids []string) error {
 		for _, id := range ids {
 			utrq := &pb.UpdateTaskRequest{
-				UserId: int64(userid),
+				UserId: userid,
 				Task: &common_proto.Task{
 					Id: id,
 				},
@@ -381,7 +380,7 @@ func RunTaskUpdate(c *CmdConfig) error {
 			if name != "" {
 				utrq.Task.Name = name
 			}
-			if utrp, _ := dc.UpdateTask(ctx, utrq); utrp != nil {
+			if utrp, _ := dc.UpdateTask(ctx, utrq); utrp != nil && utrp.Status == common_proto.Status_FAILURE {
 				return fmt.Errorf("unable to update task %d: %v", id, utrp.Details)
 			}
 		}
@@ -393,7 +392,7 @@ func RunTaskUpdate(c *CmdConfig) error {
 // RunTaskDetail show a task detail by id.
 func RunTaskDetail(c *CmdConfig) error {
 
-	userid, err := c.Ankr.GetInt(c.NS, akrctl.ArgUserID)
+	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
 	if err != nil {
 		return err
 	}
@@ -414,7 +413,7 @@ func RunTaskDetail(c *CmdConfig) error {
 	defer cancel()
 	fn := func(ids []string) error {
 		for _, id := range ids {
-			if ctr, _ := dc.TaskDetail(ctx, &pb.Request{UserId: int64(userid)}); ctr.Error != nil {
+			if ctr, _ := dc.TaskDetail(ctx, &pb.Request{UserId: userid}); ctr.Error != nil && ctr.Error.Status == common_proto.Status_FAILURE {
 				return fmt.Errorf("unable to get task %d detail: %v", id, ctr.Error.Details)
 			}
 		}
