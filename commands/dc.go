@@ -29,6 +29,7 @@ import (
 	ankr_const "github.com/Ankr-network/dccn-common"
 	pb "github.com/Ankr-network/dccn-common/protocol/cli"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 // Dc creates the dc command.
@@ -75,11 +76,22 @@ func RunDcList(c *CmdConfig) error {
 		log.Fatalf("did not connect: %v", err)
 	}
 
+	token, _ := c.getContextAccessToken()
+
+	if token == "" {
+		return fmt.Errorf("unable to read AnkrNetwork access token")
+	}
+
+	md := metadata.New(map[string]string{
+		"token": token,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+
 	defer conn.Close()
 	dc := pb.NewDccncliClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
-	r, err := dc.DataCenterList(ctx, &pb.DataCenterListRequest{Usertoken: ankr_const.DefaultUserToken})
+	r, err := dc.DataCenterList(tokenctx, &pb.DataCenterListRequest{Usertoken: ankr_const.DefaultUserToken})
 	if err != nil {
 		log.Fatalf("Client: could not send: %v", err)
 	}

@@ -32,7 +32,7 @@ func (d *Task) JSON(out io.Writer) error {
 
 func (d *Task) Cols() []string {
 	cols := []string{
-		"TaskId", "TaskName", "Uptime", "CreationDate", "Replica", "DatacEnter", "Status",
+		"TaskId", "TaskName", "Uptime", "CreationDate", "Replica", "DataCenter", "Status",
 	}
 	return cols
 }

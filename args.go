@@ -19,7 +19,7 @@ const (
 	// ArgContext is the name of the auth context to use
 	ArgContext = "context"
 	// ArgUserID is a user id argument.
-	ArgUserID = "user-id"
+	ArgUserID = "userid"
 	// ArgTaskID is a task id argument.
 	ArgTaskID = "task-id"
 	// ArgTaskIDs is a list of task IDs.
@@ -42,4 +42,14 @@ const (
 	ArgNameSlug = "name"
 	// ArgReplicaSlug is a replica slug argument.
 	ArgReplicaSlug = "replica"
+	// ArgReplicaSlug is a replica slug argument.
+	ArgNicknameSlug = "nickname"
+	// ArgReplicaSlug is a replica slug argument.
+	ArgPasswordSlug = "password"
+	// ArgReplicaSlug is a replica slug argument.
+	ArgEmailSlug = "email"
+	// ArgReplicaSlug is a replica slug argument.
+	ArgBalanceSlug = "balance"
+	// ArgReplicaSlug is a replica slug argument.
+	ArgImageSlug = "image"
 )
