@@ -55,6 +55,7 @@ func TestMockCommand_Run(t *testing.T) {
 	randstr := b.String() // E.g. "ExcbsVQs"
 
 	var url = os.Getenv("URL_BRANCH")
+	t.Log("url: " + url + "\n")
 
 	lc := akrctl.NewLiveCommand("go")
 
