@@ -34,6 +34,7 @@ jobs:
             BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
             SHA1_SHORT=$(git rev-parse --short HEAD)
             DATE=`date +%Y%m%d%H%M%S`
+            URL_BRANCH=""
             if [[ ($BRANCH_NAME == "master") ]]
             then
               BRANCH_NAME="stage"
