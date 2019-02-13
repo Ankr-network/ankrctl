@@ -195,11 +195,6 @@ func RunTaskCreate(c *CmdConfig) error {
 // RunTaskPurge purge a task from hub.
 func RunTaskPurge(c *CmdConfig) error {
 
-	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
-	if err != nil {
-		return err
-	}
-
 	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
 	if err != nil {
 		return err
@@ -251,11 +246,6 @@ func RunTaskPurge(c *CmdConfig) error {
 
 // RunTaskCancel destroy a task by id.
 func RunTaskCancel(c *CmdConfig) error {
-
-	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
-	if err != nil {
-		return err
-	}
 
 	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
 	if err != nil {
@@ -310,11 +300,6 @@ func RunTaskCancel(c *CmdConfig) error {
 // RunTaskList returns a list of tasks.
 func RunTaskList(c *CmdConfig) error {
 
-	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
-	if err != nil {
-		return err
-	}
-
 	matches := []glob.Glob{}
 	for _, globStr := range c.Args {
 		g, err := glob.Compile(globStr)
@@ -344,19 +329,20 @@ func RunTaskList(c *CmdConfig) error {
 
 	defer conn.Close()
 	dc := pb.NewTaskMgrClient(conn)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 	r, _ := dc.TaskList(tokenctx, &pb.ID{UserId: userid})
 	if r.Error != nil && r.Error.Status == common_proto.Status_FAILURE {
+		log.Fatalf("Client: could not send: %v", r.Error.Details)
+	}
+
+	item := &displayers.Task{Tasks: r.Tasks}
+	return c.Display(item)
 }
 
 // RunTaskUpdate updates a task.
 //DCCN-CLI comput task update
 func RunTaskUpdate(c *CmdConfig) error {
-
-	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
-	if err != nil {
-		return err
-	}
 
 	if len(c.Args) < 1 {
 		return akrctl.NewMissingArgsErr(c.NS)
@@ -442,11 +428,6 @@ func RunTaskUpdate(c *CmdConfig) error {
 
 // RunTaskDetail show a task detail by id.
 func RunTaskDetail(c *CmdConfig) error {
-
-	userid, err := c.Ankr.GetString(c.NS, akrctl.ArgUserID)
-	if err != nil {
-		return err
-	}
 
 	if len(c.Args) < 1 {
 		return akrctl.NewMissingArgsErr(c.NS)
