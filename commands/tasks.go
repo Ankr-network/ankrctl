@@ -64,10 +64,10 @@ func Task() *Command {
 	AddStringFlag(cmdTaskCreate, akrctl.ArgTypeSlug, "", "", "Task type")
 	AddStringFlag(cmdTaskCreate, akrctl.ArgReplicaSlug, "", "", "Task replica")
 
-	//DCCN-CLI comput task delete
-	cmdRunTaskDelete := CmdBuilder(cmd, RunTaskDelete, "delete <task-id> [task-id ...]", "Delete task by id", Writer,
+	//DCCN-CLI comput task cancel
+	cmdRunTaskCancel := CmdBuilder(cmd, RunTaskCancel, "cancel <task-id> [task-id ...]", "Cancel task by id", Writer,
 		aliasOpt("dl", "del", "rm"), docCategories("Task"))
-	AddBoolFlag(cmdRunTaskDelete, akrctl.ArgForce, akrctl.ArgShortForce, false, "Force task delete")
+	AddBoolFlag(cmdRunTaskCancel, akrctl.ArgForce, akrctl.ArgShortForce, false, "Force task cancel")
 
 	//DCCN-CLI comput task update
 	cmdRunTaskUpdate := CmdBuilder(cmd, RunTaskUpdate, "update <task-id> [task-id ...]", "Update task by id", Writer,
@@ -118,6 +118,9 @@ func RunTaskCreate(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
+	if tasktype == "" {
+		tasktype = "Default"
+	}
 
 	replica, err := c.Ankr.GetString(c.NS, akrctl.ArgReplicaSlug)
 	if err != nil {
@@ -129,7 +132,7 @@ func RunTaskCreate(c *CmdConfig) error {
 	token, userid := c.getContextAccessToken()
 
 	if token == "" {
-		return fmt.Errorf("unable to read AnkrNetwork access token")
+		return fmt.Errorf("Unable to read AnkrNetwork access token.")
 	}
 	md := metadata.New(map[string]string{
 		"token": token,
@@ -138,7 +141,7 @@ func RunTaskCreate(c *CmdConfig) error {
 
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("Did not connect: %v", err)
 	}
 
 	defer conn.Close()
@@ -154,23 +157,18 @@ func RunTaskCreate(c *CmdConfig) error {
 			Task: &common_proto.Task{
 				Name:  name,
 				Image: image,
-				Type:  tasktype,
+				Type:  common_proto.TaskType(common_proto.TaskType_value[tasktype+"TaskType"]),
 			},
 		}
 		if taskdcid != "" {
-			dcid, err := strconv.Atoi(taskdcid)
-			if err != nil {
-				return fmt.Errorf("dc id %s is not an int", taskdcid)
-			}
-			_ = dcid
 			tcrq.Task.DataCenterId = taskdcid
 		}
 		if replica != "" {
-			replicaCount, err := strconv.Atoi(replica)
+			r, err := strconv.Atoi(replica)
 			if err != nil {
-				return fmt.Errorf("replica count %s is not an int", replica)
+				return fmt.Errorf("Replica count %s is not an int\n", replica)
 			}
-			tcrq.Task.Replica = int32(replicaCount)
+			tcrq.Task.Replica = int32(r)
 		}
 		wg.Add(1)
 		go func() {
@@ -178,10 +176,8 @@ func RunTaskCreate(c *CmdConfig) error {
 			tcrp, err := dc.CreateTask(tokenctx, tcrq)
 			if err != nil {
 				log.Fatal(err.Error())
-				return
 			} else {
-				log.Println("CreateTask ok", *tcrp)
-				fmt.Printf("Task id %s initialize successfully. \n", tcrp.TaskId)
+				fmt.Printf("Task %s Create Success. \n", tcrp.TaskId)
 			}
 		}()
 	}
@@ -211,7 +207,7 @@ func RunTaskPurge(c *CmdConfig) error {
 	token, userid := c.getContextAccessToken()
 
 	if token == "" {
-		return fmt.Errorf("unable to read AnkrNetwork access token")
+		return fmt.Errorf("Unable to read Ankr Network access token")
 	}
 
 	md := metadata.New(map[string]string{
@@ -219,12 +215,12 @@ func RunTaskPurge(c *CmdConfig) error {
 	})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
-	if force || AskForConfirm(fmt.Sprintf("purge %d task(s)", len(c.Args))) == nil {
+	if force || AskForConfirm(fmt.Sprintf("Purge %d task(s)", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
 
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
-			log.Fatalf("did not connect: %v", err)
+			log.Fatalf("Did not connect: %v", err)
 		}
 		defer conn.Close()
 		dc := pb.NewTaskMgrClient(conn)
@@ -234,7 +230,9 @@ func RunTaskPurge(c *CmdConfig) error {
 		fn := func(ids []string) error {
 			for _, id := range ids {
 				if ctr, _ := dc.PurgeTask(tokenctx, &pb.Request{UserId: userid, TaskId: id}); ctr != nil && ctr.Status == common_proto.Status_FAILURE {
-					return fmt.Errorf("unable to purge task %d: %v", id, ctr.Details)
+					return fmt.Errorf("Unable to purge task %s: %v", id, ctr.Details)
+				} else {
+					fmt.Printf("Task %s Purge Success.\n", id)
 				}
 			}
 			return nil
@@ -242,12 +240,12 @@ func RunTaskPurge(c *CmdConfig) error {
 		return fn(c.Args)
 
 	}
-	return fmt.Errorf("operation aborted")
+	return fmt.Errorf("Operation aborted")
 
 }
 
-// RunTaskDelete destroy a task by id.
-func RunTaskDelete(c *CmdConfig) error {
+// RunTaskCancel destroy a task by id.
+func RunTaskCancel(c *CmdConfig) error {
 
 	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
 	if err != nil {
@@ -261,7 +259,7 @@ func RunTaskDelete(c *CmdConfig) error {
 	token, userid := c.getContextAccessToken()
 
 	if token == "" {
-		return fmt.Errorf("unable to read AnkrNetwork access token")
+		return fmt.Errorf("Unable to read AnkrNetwork access token")
 	}
 
 	md := metadata.New(map[string]string{
@@ -269,12 +267,12 @@ func RunTaskDelete(c *CmdConfig) error {
 	})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
-	if force || AskForConfirm(fmt.Sprintf("delete %d task(s)", len(c.Args))) == nil {
+	if force || AskForConfirm(fmt.Sprintf("Cancel %d task(s)", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
 
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
-			log.Fatalf("did not connect: %v", err)
+			log.Fatalf("Did not connect: %v", err)
 		}
 
 		defer conn.Close()
@@ -285,7 +283,9 @@ func RunTaskDelete(c *CmdConfig) error {
 		fn := func(ids []string) error {
 			for _, id := range ids {
 				if ctr, _ := dc.CancelTask(tokenctx, &pb.Request{UserId: userid, TaskId: id}); ctr != nil && ctr.Status == common_proto.Status_FAILURE {
-					return fmt.Errorf("unable to delete task %d: %v", id, ctr.Details)
+					return fmt.Errorf("Unable to cancel task %s: %v", id, ctr.Details)
+				} else {
+					fmt.Printf("Task %s Cancel Success.\n", id)
 				}
 			}
 			return nil
@@ -293,7 +293,7 @@ func RunTaskDelete(c *CmdConfig) error {
 
 		return fn(c.Args)
 	}
-	return fmt.Errorf("operation aborted")
+	return fmt.Errorf("Operation aborted")
 
 }
 
@@ -304,7 +304,7 @@ func RunTaskList(c *CmdConfig) error {
 	for _, globStr := range c.Args {
 		g, err := glob.Compile(globStr)
 		if err != nil {
-			return fmt.Errorf("unknown glob %q", globStr)
+			return fmt.Errorf("Unknown glob %q", globStr)
 		}
 
 		matches = append(matches, g)
@@ -314,12 +314,12 @@ func RunTaskList(c *CmdConfig) error {
 
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("Did not connect: %v", err)
 	}
 	token, userid := c.getContextAccessToken()
 
 	if token == "" {
-		return fmt.Errorf("unable to read AnkrNetwork access token")
+		return fmt.Errorf("Unable to read Ankr Network access token.")
 	}
 
 	md := metadata.New(map[string]string{
@@ -372,13 +372,13 @@ func RunTaskUpdate(c *CmdConfig) error {
 
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("Did not connect: %v", err)
 	}
 
 	token, userid := c.getContextAccessToken()
 
 	if token == "" {
-		return fmt.Errorf("unable to read AnkrNetwork access token")
+		return fmt.Errorf("Unable to read Ankr Network access token")
 	}
 
 	md := metadata.New(map[string]string{
@@ -402,7 +402,7 @@ func RunTaskUpdate(c *CmdConfig) error {
 			if replica != "" {
 				replicaCount, err := strconv.Atoi(replica)
 				if err != nil {
-					return fmt.Errorf("replica count %s is not an int", replica)
+					return fmt.Errorf("Replica count %s is not an int", replica)
 				}
 				utrq.Task.Replica = int32(replicaCount)
 			}
@@ -410,13 +410,15 @@ func RunTaskUpdate(c *CmdConfig) error {
 				utrq.Task.Name = image
 			}
 			if tasktype != "" {
-				utrq.Task.Type = tasktype
+				utrq.Task.Type = common_proto.TaskType(common_proto.TaskType_value[tasktype+"TaskType"])
 			}
 			if dcid != "" {
 				utrq.Task.DataCenterId = dcid
 			}
 			if utrp, _ := dc.UpdateTask(tokenctx, utrq); utrp != nil && utrp.Status == common_proto.Status_FAILURE {
-				return fmt.Errorf("unable to update task %d: %v", id, utrp.Details)
+				return fmt.Errorf("Unable to update task %s: %v", id, utrp.Details)
+			} else {
+				fmt.Printf("Task %s Update Success.\n", id)
 			}
 		}
 		return nil
@@ -435,13 +437,13 @@ func RunTaskDetail(c *CmdConfig) error {
 
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("Did not connect: %v", err)
 	}
 
 	token, userid := c.getContextAccessToken()
 
 	if token == "" {
-		return fmt.Errorf("unable to read AnkrNetwork access token")
+		return fmt.Errorf("Unable to read Ankr Network access token")
 	}
 
 	md := metadata.New(map[string]string{
@@ -455,8 +457,10 @@ func RunTaskDetail(c *CmdConfig) error {
 	defer cancel()
 	fn := func(ids []string) error {
 		for _, id := range ids {
-			if ctr, _ := dc.TaskDetail(tokenctx, &pb.Request{UserId: userid}); ctr.Error != nil && ctr.Error.Status == common_proto.Status_FAILURE {
-				return fmt.Errorf("unable to get task %d detail: %v", id, ctr.Error.Details)
+			if ctr, _ := dc.TaskDetail(tokenctx, &pb.Request{UserId: userid, TaskId: id}); ctr.Error != nil && ctr.Error.Status == common_proto.Status_FAILURE {
+				return fmt.Errorf("Unable to get task %s detail: %v", id, ctr.Error.Details)
+			} else {
+				fmt.Printf("Task %s Detail Success.\n", ctr.Task.Id)
 			}
 		}
 		return nil

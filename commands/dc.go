@@ -27,7 +27,8 @@ import (
 	"context"
 
 	ankr_const "github.com/Ankr-network/dccn-common"
-	pb "github.com/Ankr-network/dccn-common/protocol/cli"
+	common "github.com/Ankr-network/dccn-common/protos/common"
+	dcmgr "github.com/Ankr-network/dccn-common/protos/dcmgr/v1/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -67,7 +68,7 @@ func RunDcList(c *CmdConfig) error {
 		matches = append(matches, g)
 	}
 
-	var matchedList []pb.DataCenterInfo
+	var matchedList []common.DataCenter
 
 	url := viper.GetString("hub-url")
 
@@ -88,16 +89,15 @@ func RunDcList(c *CmdConfig) error {
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
 	defer conn.Close()
-	dc := pb.NewDccncliClient(conn)
+	dcClient := dcmgr.NewDCAPIClient(conn)
 	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
-	r, err := dc.DataCenterList(tokenctx, &pb.DataCenterListRequest{Usertoken: ankr_const.DefaultUserToken})
+	r, err := dcClient.DataCenterList(tokenctx, &dcmgr.DataCenterListRequest{})
 	if err != nil {
 		log.Fatalf("Client: could not send: %v", err)
 	}
-	DcList := r.DcList
 
-	for _, dc := range DcList {
+	for _, dc := range r.DcList {
 		var skip = true
 		if len(matches) == 0 {
 			skip = false
@@ -109,12 +109,8 @@ func RunDcList(c *CmdConfig) error {
 			}
 		}
 
-		var dcinfo pb.DataCenterInfo
-		dcinfo.Id = dc.Id
-		dcinfo.Name = dc.Name
-		dcinfo.Status = dc.Status
 		if !skip {
-			matchedList = append(matchedList, dcinfo)
+			matchedList = append(matchedList, *dc)
 		}
 	}
 

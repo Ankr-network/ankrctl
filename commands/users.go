@@ -36,9 +36,9 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// Task creates the task command.
+// User creates the user command.
 func User() *Command {
-	//DCCN-CLI task
+	//DCCN-CLI user
 	cmd := &Command{
 		Command: &cobra.Command{
 			Use:     "user",
@@ -134,7 +134,7 @@ func RunUserRegister(c *CmdConfig) error {
 			if _, err := userClient.Register(ctx, user); err != nil {
 				log.Fatal(err.Error())
 			} else {
-				log.Printf("User id %s Register Ok\n", email)
+				fmt.Printf("User %s Register Success.\n", email)
 			}
 		}()
 	}
@@ -176,7 +176,7 @@ func RunUserLogin(c *CmdConfig) error {
 			if rsp, err := userClient.Login(ctx, &usermgr.LoginRequest{Email: email, Password: password}); err != nil {
 				log.Fatal(err.Error())
 			} else {
-				log.Printf("login Success: %s\n", rsp.Token)
+				fmt.Printf("User %s Login Success, Token: %s\n", email, rsp.Token)
 				c.setContextAccessToken(rsp.Token, rsp.UserId)
 			}
 		}
@@ -215,7 +215,7 @@ func RunUserLogout(c *CmdConfig) error {
 	if _, err := userClient.Logout(tokenContext, &usermgr.LogoutRequest{}); err != nil {
 		return fmt.Errorf(err.Error())
 	} else {
-		log.Println("Logout ok")
+		fmt.Println("Logout Success.")
 	}
 	return nil
 }

@@ -16,10 +16,9 @@ jobs:
           command: |
             cp ${HOME}/.ssh/id_rsa id_rsa
       - run:
-          name: Set dependency and mock test 
+          name: Set dependency
           command: |
             dep ensure --vendor-only
-            go test ./cmd/akrctl -v
       - run:
           name: Install AWSCLI
           command: |
@@ -30,7 +29,7 @@ jobs:
           name: Log in to AWS ECR
           command: eval $(aws ecr get-login --no-include-email --region $AWS_REGION)
       - run:
-          name: "Build & Push Docker Image"
+          name: "Test, Build & Push Docker Image"
           command: |
             BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
             SHA1_SHORT=$(git rev-parse --short HEAD)
@@ -47,8 +46,10 @@ jobs:
               BRANCH_NAME="feat"
               URL_BRANCH="client-dev.dccn.ankr.network"
             fi
+            go test ./cmd/akrctl -v
             docker build --build-arg URL_BRANCH=${URL_BRANCH} -t akrctl:$BRANCH_NAME .
             for TAG in $BRANCH_NAME $SHA1_SHORT $BRANCH_NAME$DATE; do
             docker tag akrctl:$BRANCH_NAME $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/akrctl:$TAG
             docker push $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/akrctl:$TAG
             done
+            

@@ -2,18 +2,18 @@
 
 
 [[projects]]
-  branch = "feature/SWDEV-135-micro-service"
-  digest = "1:be35322744526c246ff00da61b054b51149d53236b797805795f89c266a92692"
+  branch = "develop"
+  digest = "1:d815412bcc6b26091eb971545a4e45e88ef05aa253e388c25cdb107d0e374fc9"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
     ".",
-    "protocol/cli",
     "protos/common",
+    "protos/dcmgr/v1/grpc",
     "protos/taskmgr/v1/grpc",
     "protos/usermgr/v1/grpc",
   ]
   pruneopts = "UT"
-  revision = "eccca9bc2122f77e7c291598ae0ac0b8d6ba2fb0"
+  revision = "42d978b2e00ef091fcc253018c078bd5b0c4f189"
 
 [[projects]]
   digest = "1:7cb4fdca4c251b3ef8027c90ea35f70c7b661a593b9eeae34753c65499098bb1"
@@ -245,15 +245,15 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf"
+  revision = "65e2d4e15006aab9813ff8769e768bbf4bb667a0"
 
 [[projects]]
   branch = "master"
-  digest = "1:969c44c96e9866e912a16e282a362cf045b64202107424983fe8abc3373d1eab"
+  digest = "1:8b466798e96432c23185ca32826702885299f94eb644c9a8dedb79771dff383a"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "41f3e6584952bb034a481797859f6ab34b6803bd"
+  revision = "3b5209105503162ded1863c307ac66fec31120dd"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -339,8 +339,8 @@
   analyzer-version = 1
   input-imports = [
     "github.com/Ankr-network/dccn-common",
-    "github.com/Ankr-network/dccn-common/protocol/cli",
     "github.com/Ankr-network/dccn-common/protos/common",
+    "github.com/Ankr-network/dccn-common/protos/dcmgr/v1/grpc",
     "github.com/Ankr-network/dccn-common/protos/taskmgr/v1/grpc",
     "github.com/Ankr-network/dccn-common/protos/usermgr/v1/grpc",
     "github.com/fatih/color",
