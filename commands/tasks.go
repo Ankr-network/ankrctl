@@ -348,7 +348,7 @@ func RunTaskUpdate(c *CmdConfig) error {
 		return akrctl.NewMissingArgsErr(c.NS)
 	}
 
-	image, err := c.Ankr.GetString(c.NS, akrctl.ArgNameSlug)
+	image, err := c.Ankr.GetString(c.NS, akrctl.ArgImageSlug)
 	if err != nil {
 		return err
 	}
@@ -407,7 +407,7 @@ func RunTaskUpdate(c *CmdConfig) error {
 				utrq.Task.Replica = int32(replicaCount)
 			}
 			if image != "" {
-				utrq.Task.Name = image
+				utrq.Task.Image = image
 			}
 			if tasktype != "" {
 				utrq.Task.Type = common_proto.TaskType(common_proto.TaskType_value[tasktype+"TaskType"])

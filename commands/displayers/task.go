@@ -32,7 +32,7 @@ func (d *Task) JSON(out io.Writer) error {
 
 func (d *Task) Cols() []string {
 	cols := []string{
-		"TaskId", "TaskName", "Type", "Image", "Uptime", "CreationDate", "Replica", "DataCenterId", "DataCenter", "Status",
+		"TaskId", "TaskName", "Type", "Image", "Uptime", "CreationDate", "Replica", "DataCenter", "Status",
 	}
 	return cols
 }
@@ -40,8 +40,7 @@ func (d *Task) Cols() []string {
 func (d *Task) ColMap() map[string]string {
 	return map[string]string{
 		"TaskId": "TaskId", "TaskName": "TaskName", "Type": "Type", "Image": "Image", "Uptime": "Uptime",
-		"CreationDate": "CreationDate", "Replica": "Replica", "DataCenterId": "DataCenterId",
-		"DataCenter": "DataCenter", "Status": "Status",
+		"CreationDate": "CreationDate", "Replica": "Replica", "DataCenter": "DataCenter", "Status": "Status",
 	}
 }
 
@@ -50,8 +49,7 @@ func (d *Task) KV() []map[string]interface{} {
 	for _, d := range d.Tasks {
 		m := map[string]interface{}{
 			"TaskId": d.Id, "TaskName": d.Name, "Type": d.Type, "Image": d.Image, "Uptime": d.Uptime,
-			"CreationDate": d.CreationDate, "Replica": d.Replica, "DataCenterId": d.DataCenterId,
-			"DataCenter": d.DataCenter, "Status": d.Status,
+			"CreationDate": d.CreationDate, "Replica": d.Replica, "DataCenter": d.DataCenter, "Status": d.Status,
 		}
 		out = append(out, m)
 	}
