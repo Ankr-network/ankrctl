@@ -158,6 +158,7 @@ func Execute() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	AnkrCmd.AddCommand(computeCmd())
+	AnkrCmd.AddCommand(User())
 }
 
 func computeCmd() *Command {
@@ -276,8 +277,8 @@ type CmdConfig struct {
 	Out  io.Writer
 	Args []string
 
-	getContextAccessToken func() string
-	setContextAccessToken func(string)
+	getContextAccessToken func() (string, string)
+	setContextAccessToken func(string, string)
 }
 
 // NewCmdConfig creates an instance of a CmdConfig.
@@ -289,26 +290,27 @@ func NewCmdConfig(ns string, dc akrctl.Config, out io.Writer, args []string) (*C
 		Out:  out,
 		Args: args,
 
-		getContextAccessToken: func() string {
+		getContextAccessToken: func() (string, string) {
 			context := Context
 			if context == "" {
 				context = viper.GetString("context")
 			}
 			token := ""
+			userid := ""
 
 			switch context {
 			case "default":
 				token = viper.GetString(akrctl.ArgAccessToken)
+				userid = viper.GetString(akrctl.ArgUserID)
 			default:
 				contexts := viper.GetStringMapString("auth-contexts")
-
-				token = contexts[context]
+				userid = contexts[akrctl.ArgUserID]
+				token = contexts[akrctl.ArgAccessToken]
 			}
-			token = "ankr-token"
-			return token
+			return token, userid
 		},
 
-		setContextAccessToken: func(token string) {
+		setContextAccessToken: func(token string, userid string) {
 			context := Context
 			if context == "" {
 				context = viper.GetString("context")
@@ -317,9 +319,11 @@ func NewCmdConfig(ns string, dc akrctl.Config, out io.Writer, args []string) (*C
 			switch context {
 			case "default":
 				viper.Set(akrctl.ArgAccessToken, token)
+				viper.Set(akrctl.ArgUserID, userid)
 			default:
 				contexts := viper.GetStringMapString("auth-contexts")
-				contexts[context] = token
+				contexts[akrctl.ArgAccessToken] = token
+				contexts[akrctl.ArgUserID] = userid
 
 				viper.Set("auth-contexts", contexts)
 			}

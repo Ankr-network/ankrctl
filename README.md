@@ -38,13 +38,14 @@ If you have Docker configured, you can build a Docker image using `akrcli`'s and
 First, get the source as in Option 1 and then build docker image using the `Dockerfile.dep` file: 
 
 ```
-docker build -f Dockerfile.dep -t akrctl .
+docker build -t akrctl .
 ```
 
 Then you can run it within a container: 
 
 ```
-docker run --rm -p 50051:50051 akrctl any_akrctl_command
+docker run -it akrctl:latest
+/ # akrctl <any_akrctl_command>
 ```
 
 ## Run with Docker Image on the ECR repository
@@ -56,7 +57,8 @@ eval $(aws ecr get-login --no-include-email --region us-west-2)
 ```
 * Run akrctl with docker as following example:
 ```
-docker run --rm -p 50051:50051 815280425737.dkr.ecr.us-west-2.amazonaws.com/dccn_ecr:akrctl any_akrctl_command
+docker run -it 815280425737.dkr.ecr.us-west-2.amazonaws.com/akrctl:feat
+/ # akrctl <any_akrctl_command>
 ```
 
 ## Examples
@@ -70,13 +72,20 @@ akrctl compute task list -u <addr_of_hub>
 ```
 * Create a Task:
 ```
-akrctl compute task create <taskname> --region <region> --zone <zone> -u <addr_of_hub>
+akrctl compute task create <task-name> --image <image-name> --replica <replica> --dc-id <dc-id> -u <addr_of_hub>
 ```
 * Delete a Task:
 ```
 akrctl compute task delete <taskid> -f -u <addr_of_hub>
 ```
-
+* Purge a Task:
+```
+akrctl compute task purge <taskid> -f -u <addr_of_hub>
+```
+* Update a Task:
+```
+akrctl compute task update <taskid> --image <image-name> --replica <replica> --dc-id <dc-id> -u <addr_of_hub>
+```
 ## Building and dependencies
 
 `akrcli`'s dependencies are managed with [`dep`](https://github.com/golang/dep). 

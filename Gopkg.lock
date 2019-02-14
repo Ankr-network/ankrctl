@@ -3,16 +3,17 @@
 
 [[projects]]
   branch = "develop"
-  digest = "1:b9582880d36efbc021f0d00c77475d662911d84b309599cb07e995ec55818e2d"
+  digest = "1:d815412bcc6b26091eb971545a4e45e88ef05aa253e388c25cdb107d0e374fc9"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
     ".",
-    "protocol/cli",
     "protos/common",
+    "protos/dcmgr/v1/grpc",
     "protos/taskmgr/v1/grpc",
+    "protos/usermgr/v1/grpc",
   ]
   pruneopts = "UT"
-  revision = "7a53dfa087d86a46bf6da083212159ad9d85272f"
+  revision = "42d978b2e00ef091fcc253018c078bd5b0c4f189"
 
 [[projects]]
   digest = "1:7cb4fdca4c251b3ef8027c90ea35f70c7b661a593b9eeae34753c65499098bb1"
@@ -169,15 +170,15 @@
   revision = "a422bbe96644373c5753384a59d678f7d261ff10"
 
 [[projects]]
-  digest = "1:d707dbc1330c0ed177d4642d6ae102d5e2c847ebd0eb84562d0dc4f024531cfc"
+  digest = "1:3e39bafd6c2f4bf3c76c3bfd16a2e09e016510ad5db90dc02b88e2f565d6d595"
   name = "github.com/spf13/afero"
   packages = [
     ".",
     "mem",
   ]
   pruneopts = "UT"
-  revision = "a5d6946387efe7d64d09dcba68cdd523dc1273a3"
-  version = "v1.2.0"
+  revision = "f4711e4db9e9a1d3887343acb72b2bbfc2f686f5"
+  version = "v1.2.1"
 
 [[projects]]
   digest = "1:08d65904057412fc0270fc4812a1c90c594186819243160dc779a402d4b6d0bc"
@@ -244,15 +245,15 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf"
+  revision = "65e2d4e15006aab9813ff8769e768bbf4bb667a0"
 
 [[projects]]
   branch = "master"
-  digest = "1:db12953ac7a80656b159265fe13146959beaada45938a532f484a3aeb289462e"
+  digest = "1:8b466798e96432c23185ca32826702885299f94eb644c9a8dedb79771dff383a"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "b90733256f2e882e81d52f9126de08df5615afd9"
+  revision = "3b5209105503162ded1863c307ac66fec31120dd"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -283,7 +284,7 @@
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = "UT"
-  revision = "aa24cbd621fe1e2867110ea8c673d99a1a92efdc"
+  revision = "4b09977fb92221987e99d190c8f88f2c92727a29"
 
 [[projects]]
   digest = "1:9ab5a33d8cb5c120602a34d2e985ce17956a4e8c2edce7e6961568f95e40c09a"
@@ -338,9 +339,10 @@
   analyzer-version = 1
   input-imports = [
     "github.com/Ankr-network/dccn-common",
-    "github.com/Ankr-network/dccn-common/protocol/cli",
     "github.com/Ankr-network/dccn-common/protos/common",
+    "github.com/Ankr-network/dccn-common/protos/dcmgr/v1/grpc",
     "github.com/Ankr-network/dccn-common/protos/taskmgr/v1/grpc",
+    "github.com/Ankr-network/dccn-common/protos/usermgr/v1/grpc",
     "github.com/fatih/color",
     "github.com/gobwas/glob",
     "github.com/shiena/ansicolor",
@@ -349,8 +351,8 @@
     "github.com/spf13/jwalterweatherman",
     "github.com/spf13/viper",
     "github.com/stretchr/testify/assert",
-    "golang.org/x/net/context",
     "google.golang.org/grpc",
+    "google.golang.org/grpc/metadata",
     "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"

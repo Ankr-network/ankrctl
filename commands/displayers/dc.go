@@ -16,12 +16,11 @@ package displayers
 import (
 	"io"
 
-	pb "github.com/Ankr-network/dccn-common/protocol/cli"
+	common "github.com/Ankr-network/dccn-common/protos/common"
 )
 
 type Dc struct {
-	//Tasks pb.Tasks
-	Dcs []pb.DataCenterInfo
+	Dcs []common.DataCenter
 }
 
 var _ Displayable = &Dc{}
@@ -32,14 +31,14 @@ func (d *Dc) JSON(out io.Writer) error {
 
 func (d *Dc) Cols() []string {
 	cols := []string{
-		"Id", "Name", "Status",
+		"Id", "Name", "Lat", "Lng", "Status", "WalletAddress",
 	}
 	return cols
 }
 
 func (d *Dc) ColMap() map[string]string {
 	return map[string]string{
-		"Id": "Id", "Name": "Name", "Status": "Status",
+		"Id": "Id", "Name": "Name", "Lat": "Latitude", "Lng": "Longitude", "Status": "Status", "WalletAddress": "WalletAddress",
 	}
 }
 
@@ -47,7 +46,7 @@ func (d *Dc) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	for _, d := range d.Dcs {
 		m := map[string]interface{}{
-			"Id": d.Id, "Name": d.Name, "Status": d.Status,
+			"Id": d.Id, "Name": d.Name, "Lat": d.Lat, "Lng": d.Lng, "Status": d.Status, "WalletAddress": d.WalletAddress,
 		}
 		out = append(out, m)
 	}

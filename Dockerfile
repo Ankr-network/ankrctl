@@ -20,6 +20,6 @@ RUN CGO_ENABLED=0 \
     -o /go/bin/akrctl \
     $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/akrctl/main.go
 
-FROM scratch
-COPY --from=builder /go/bin/akrctl /go/bin/akrctl
-ENTRYPOINT ["/go/bin/akrctl"]
+FROM alpine:3.7
+COPY --from=builder /go/bin/akrctl /bin/akrctl
+
