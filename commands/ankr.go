@@ -158,7 +158,8 @@ func Execute() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	AnkrCmd.AddCommand(computeCmd())
-	AnkrCmd.AddCommand(User())
+	AnkrCmd.AddCommand(userCmd())
+	AnkrCmd.AddCommand(walletCmd())
 }
 
 func computeCmd() *Command {

@@ -58,6 +58,12 @@ func Dc() *Command {
 // RunDcList returns a list of dc.
 func RunDcList(c *CmdConfig) error {
 
+	token, _ := c.getContextAccessToken()
+
+	if token == "" {
+		return fmt.Errorf("unable to read AnkrNetwork access token")
+	}
+
 	matches := []glob.Glob{}
 	for _, globStr := range c.Args {
 		g, err := glob.Compile(globStr)
@@ -75,12 +81,6 @@ func RunDcList(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
-	}
-
-	token, _ := c.getContextAccessToken()
-
-	if token == "" {
-		return fmt.Errorf("unable to read AnkrNetwork access token")
 	}
 
 	md := metadata.New(map[string]string{

@@ -20,12 +20,6 @@ const (
 	ArgContext = "context"
 	// ArgUserID is a user id argument.
 	ArgUserID = "userid"
-	// ArgTaskID is a task id argument.
-	ArgTaskID = "task-id"
-	// ArgTaskIDs is a list of task IDs.
-	ArgTaskIDs = "task-ids"
-	// ArgTaskName is a task name argument.
-	ArgTaskName = "task-name"
 	// ArgDcSlug is a datacenter slug argument.
 	ArgDcidSlug = "dc-id"
 	// ArgTypeSlug is a type slug argument.
@@ -38,18 +32,24 @@ const (
 	ArgOutput = "output"
 	// ArgForce forces confirmation on actions
 	ArgForce = "force"
-	// ArgNameSlug is a name slug argument.
-	ArgNameSlug = "name"
 	// ArgReplicaSlug is a replica slug argument.
 	ArgReplicaSlug = "replica"
-	// ArgReplicaSlug is a replica slug argument.
+	// ArgNicknameSlug is a nickname slug argument.
 	ArgNicknameSlug = "nickname"
-	// ArgReplicaSlug is a replica slug argument.
+	// ArgPasswordSlug is a password slug argument.
 	ArgPasswordSlug = "password"
-	// ArgReplicaSlug is a replica slug argument.
+	// ArgEmailSlug is a email slug argument.
 	ArgEmailSlug = "email"
-	// ArgReplicaSlug is a replica slug argument.
+	// ArgBalanceSlug is a balance slug argument.
 	ArgBalanceSlug = "balance"
-	// ArgReplicaSlug is a replica slug argument.
+	// ArgImageSlug is a image slug argument.
 	ArgImageSlug = "image"
+	// ArgAddressSlug is a to address slug argument.
+	ArgAddressSlug = "address"
+	// ArgTargetSlug is a to address slug argument.
+	ArgTargetSlug = "target"
+	// ArgPrivateKeySlug is a to private key slug argument.
+	ArgPrivateKeySlug = "private-key"
+	// ArgPublicKeySlug is a to public key slug argument.
+	ArgPublicKeySlug = "public-key"
 )

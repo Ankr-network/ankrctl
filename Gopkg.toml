@@ -1,5 +1,5 @@
 [[constraint]]
-  branch = "develop"
+  branch = "feature/SWDEV-149-restructure-proto"
   name = "github.com/Ankr-network/dccn-common"
 
 [[constraint]]

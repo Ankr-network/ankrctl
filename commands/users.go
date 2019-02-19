@@ -36,8 +36,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// User creates the user command.
-func User() *Command {
+// userCmd creates the user command.
+func userCmd() *Command {
 	//DCCN-CLI user
 	cmd := &Command{
 		Command: &cobra.Command{

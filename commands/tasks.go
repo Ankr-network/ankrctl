@@ -60,7 +60,7 @@ func Task() *Command {
 	cmdTaskCreate := CmdBuilder(cmd, RunTaskCreate, "create <task-name> [task-name ...]", "create task", Writer,
 		aliasOpt("cr"), displayerType(&displayers.Task{}), docCategories("task"))
 	AddStringFlag(cmdTaskCreate, akrctl.ArgDcidSlug, "", "", "Task data center id")
-	AddStringFlag(cmdTaskCreate, akrctl.ArgImageSlug, "", "", "Task image")
+	AddStringFlag(cmdTaskCreate, akrctl.ArgImageSlug, "", "", "Task image", requiredOpt())
 	AddStringFlag(cmdTaskCreate, akrctl.ArgTypeSlug, "", "", "Task type")
 	AddStringFlag(cmdTaskCreate, akrctl.ArgReplicaSlug, "", "", "Task replica")
 
@@ -177,7 +177,9 @@ func RunTaskCreate(c *CmdConfig) error {
 			if err != nil {
 				log.Fatal(err.Error())
 			} else {
-				fmt.Printf("Task %s Create Success. \n", tcrp.TaskId)
+				if tcrp != nil {
+					fmt.Printf("Task %s Create Success. \n", tcrp.TaskId)
+				}
 			}
 		}()
 	}
@@ -215,7 +217,7 @@ func RunTaskPurge(c *CmdConfig) error {
 	})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
-	if force || AskForConfirm(fmt.Sprintf("Purge %d task(s)", len(c.Args))) == nil {
+	if force || AskForConfirm(fmt.Sprintf("Are you sure you want to Purge %d task(s) (y/N) ? ", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
 
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
@@ -229,7 +231,11 @@ func RunTaskPurge(c *CmdConfig) error {
 
 		fn := func(ids []string) error {
 			for _, id := range ids {
-				if ctr, _ := dc.PurgeTask(tokenctx, &pb.Request{UserId: userid, TaskId: id}); ctr != nil && ctr.Status == common_proto.Status_FAILURE {
+				ctr, err := dc.PurgeTask(tokenctx, &pb.Request{UserId: userid, TaskId: id})
+				if err != nil {
+					return err
+				}
+				if ctr != nil && ctr.Status == common_proto.Status_FAILURE {
 					return fmt.Errorf("Unable to purge task %s: %v", id, ctr.Details)
 				} else {
 					fmt.Printf("Task %s Purge Success.\n", id)
@@ -267,7 +273,7 @@ func RunTaskCancel(c *CmdConfig) error {
 	})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
-	if force || AskForConfirm(fmt.Sprintf("Cancel %d task(s)", len(c.Args))) == nil {
+	if force || AskForConfirm(fmt.Sprintf("Are you sure you want to Cancel %d task(s) (y/N) ? ", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
 
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
@@ -282,7 +288,11 @@ func RunTaskCancel(c *CmdConfig) error {
 
 		fn := func(ids []string) error {
 			for _, id := range ids {
-				if ctr, _ := dc.CancelTask(tokenctx, &pb.Request{UserId: userid, TaskId: id}); ctr != nil && ctr.Status == common_proto.Status_FAILURE {
+				ctr, err := dc.CancelTask(tokenctx, &pb.Request{UserId: userid, TaskId: id})
+				if err != nil {
+					return err
+				}
+				if ctr != nil && ctr.Status == common_proto.Status_FAILURE {
 					return fmt.Errorf("Unable to cancel task %s: %v", id, ctr.Details)
 				} else {
 					fmt.Printf("Task %s Cancel Success.\n", id)
@@ -331,8 +341,11 @@ func RunTaskList(c *CmdConfig) error {
 	dc := pb.NewTaskMgrClient(conn)
 	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
-	r, _ := dc.TaskList(tokenctx, &pb.ID{UserId: userid})
-	if r.Error != nil && r.Error.Status == common_proto.Status_FAILURE {
+	r, err := dc.TaskList(tokenctx, &pb.ID{UserId: userid})
+	if err != nil {
+		return err
+	}
+	if r != nil && r.Error != nil && r.Error.Status == common_proto.Status_FAILURE {
 		log.Fatalf("Client: could not send: %v", r.Error.Details)
 	}
 
@@ -415,7 +428,11 @@ func RunTaskUpdate(c *CmdConfig) error {
 			if dcid != "" {
 				utrq.Task.DataCenterId = dcid
 			}
-			if utrp, _ := dc.UpdateTask(tokenctx, utrq); utrp != nil && utrp.Status == common_proto.Status_FAILURE {
+			utrp, err := dc.UpdateTask(tokenctx, utrq)
+			if err != nil {
+				return err
+			}
+			if utrp != nil && utrp.Status == common_proto.Status_FAILURE {
 				return fmt.Errorf("Unable to update task %s: %v", id, utrp.Details)
 			} else {
 				fmt.Printf("Task %s Update Success.\n", id)
@@ -457,7 +474,11 @@ func RunTaskDetail(c *CmdConfig) error {
 	defer cancel()
 	fn := func(ids []string) error {
 		for _, id := range ids {
-			if ctr, _ := dc.TaskDetail(tokenctx, &pb.Request{UserId: userid, TaskId: id}); ctr.Error != nil && ctr.Error.Status == common_proto.Status_FAILURE {
+			ctr, err := dc.TaskDetail(tokenctx, &pb.Request{UserId: userid, TaskId: id})
+			if err != nil {
+				return err
+			}
+			if ctr.Error != nil && ctr.Error.Status == common_proto.Status_FAILURE {
 				return fmt.Errorf("Unable to get task %s detail: %v", id, ctr.Error.Details)
 			} else {
 				fmt.Printf("Task %s Detail Success.\n", ctr.Task.Id)
