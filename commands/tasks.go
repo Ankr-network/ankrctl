@@ -14,10 +14,10 @@ limitations under the License.
 package commands
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -26,6 +26,7 @@ import (
 	akrctl "github.com/Ankr-network/dccn-cli"
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
+	usermgr "github.com/Ankr-network/dccn-common/protos/usermgr/v1/grpc"
 
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
@@ -57,39 +58,46 @@ func Task() *Command {
 	}
 
 	//DCCN-CLI comput task create
-	cmdTaskCreate := CmdBuilder(cmd, RunTaskCreate, "create <task-name> [task-name ...]", "create task", Writer,
-		aliasOpt("cr"), displayerType(&displayers.Task{}), docCategories("task"))
-	AddStringFlag(cmdTaskCreate, akrctl.ArgDcidSlug, "", "", "Task data center id")
-	AddStringFlag(cmdTaskCreate, akrctl.ArgImageSlug, "", "", "Task image", requiredOpt())
-	AddStringFlag(cmdTaskCreate, akrctl.ArgTypeSlug, "", "", "Task type")
-	AddStringFlag(cmdTaskCreate, akrctl.ArgReplicaSlug, "", "", "Task replica")
+	cmdRunTaskCreate := CmdBuilder(cmd, RunTaskCreate, "create <task-name> [task-name ...]",
+		"create task", Writer, aliasOpt("cr"), displayerType(&displayers.Task{}), docCategories("task"))
+	AddStringFlag(cmdRunTaskCreate, akrctl.ArgImageSlug, "", "", "Task image", requiredOpt())
+	AddStringFlag(cmdRunTaskCreate, akrctl.ArgTypeSlug, "", "", "Task type")
+	AddStringFlag(cmdRunTaskCreate, akrctl.ArgDcNameSlug, "", "", "Task data center name")
+	AddStringFlag(cmdRunTaskCreate, akrctl.ArgReplicaSlug, "", "", "Task replica")
+	AddStringFlag(cmdRunTaskCreate, akrctl.ArgScheduleSlug, "", "", "Task schedule")
 
 	//DCCN-CLI comput task cancel
-	cmdRunTaskCancel := CmdBuilder(cmd, RunTaskCancel, "cancel <task-id> [task-id ...]", "Cancel task by id", Writer,
-		aliasOpt("dl", "del", "rm"), docCategories("Task"))
+	cmdRunTaskCancel := CmdBuilder(cmd, RunTaskCancel, "cancel <task-id> [task-id ...]",
+		"Cancel task by id", Writer, aliasOpt("dl", "del", "rm"), docCategories("Task"))
 	AddBoolFlag(cmdRunTaskCancel, akrctl.ArgForce, akrctl.ArgShortForce, false, "Force task cancel")
 
 	//DCCN-CLI comput task update
-	cmdRunTaskUpdate := CmdBuilder(cmd, RunTaskUpdate, "update <task-id> [task-id ...]", "Update task by id", Writer,
-		aliasOpt("ud", "udt", "ch"), docCategories("Task"))
+	cmdRunTaskUpdate := CmdBuilder(cmd, RunTaskUpdate, "update <task-id> [task-id ...]",
+		"Update task by id", Writer, aliasOpt("ud", "udt", "ch"), docCategories("Task"))
 	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgImageSlug, "", "", "Task image")
 	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgReplicaSlug, "", "", "Task replica")
 	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgTypeSlug, "", "", "Task type")
-	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgDcidSlug, "", "", "Task data center id")
+	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgDcNameSlug, "", "", "Task data center name")
+	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgScheduleSlug, "", "", "Task schedule")
 
 	//DCCN-CLI task list
 	cmdRunTaskList := CmdBuilder(cmd, RunTaskList, "list [GLOB]", "list tasks", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Task{}), docCategories("task"))
-	_ = cmdRunTaskList
+	AddStringFlag(cmdRunTaskList, akrctl.ArgTaskIdSlug, "", "", "Task id")
 
-	//DCCN-CLI task detail
-	cmdRunTaskDetail := CmdBuilder(cmd, RunTaskDetail, "detail <task-id>", "list tasks detail", Writer,
-		aliasOpt("dt"), displayerType(&displayers.Task{}), docCategories("task"))
-	_ = cmdRunTaskDetail
+	//DCCN-CLI task leader
+	cmdRunTaskLeader := CmdBuilder(cmd, RunTaskLeader, "leader", "show tasks leaderboard", Writer,
+		aliasOpt("lb"), displayerType(&displayers.Task{}), docCategories("task"))
+	_ = cmdRunTaskLeader
+
+	//DCCN-CLI task overview
+	cmdRunTaskOverview := CmdBuilder(cmd, RunTaskOverview, "overview", "show tasks overview", Writer,
+		aliasOpt("ov"), displayerType(&displayers.Task{}), docCategories("task"))
+	_ = cmdRunTaskOverview
 
 	//DCCN-CLI comput task purge
-	cmdRunTaskPurge := CmdBuilder(cmd, RunTaskPurge, "purge <task-id> [task-id ...]", "Purge task by id", Writer,
-		aliasOpt("pg"), docCategories("Task"))
+	cmdRunTaskPurge := CmdBuilder(cmd, RunTaskPurge, "purge <task-id> [task-id ...]", "Purge task by id",
+		Writer, aliasOpt("pg"), docCategories("Task"))
 	AddBoolFlag(cmdRunTaskPurge, akrctl.ArgForce, akrctl.ArgShortForce, false, "Force task purge")
 
 	return cmd
@@ -109,33 +117,68 @@ func RunTaskCreate(c *CmdConfig) error {
 		return err
 	}
 
-	taskdcid, err := c.Ankr.GetString(c.NS, akrctl.ArgDcidSlug)
+	dcName, err := c.Ankr.GetString(c.NS, akrctl.ArgDcNameSlug)
 	if err != nil {
 		return err
 	}
 
-	tasktype, err := c.Ankr.GetString(c.NS, akrctl.ArgTypeSlug)
+	taskType, err := c.Ankr.GetString(c.NS, akrctl.ArgTypeSlug)
 	if err != nil {
 		return err
 	}
-	if tasktype == "" {
-		tasktype = "Default"
+	if taskType == "" {
+		taskType = "Deployment"
 	}
+	taskType = strings.ToUpper(taskType)
 
 	replica, err := c.Ankr.GetString(c.NS, akrctl.ArgReplicaSlug)
 	if err != nil {
 		return err
 	}
 
+	task := common_proto.Task{}
+	if dcName != "" {
+		task.DataCenterName = dcName
+	}
+
+	switch taskType {
+	case "DEPLOYMENT":
+		task.Type = common_proto.TaskType_DEPLOYMENT
+		task.TypeData = &common_proto.Task_TypeDeployment{TypeDeployment: &common_proto.TaskTypeDeployment{Image: image}}
+	case "JOB":
+		task.Type = common_proto.TaskType_JOB
+		task.TypeData = &common_proto.Task_TypeJob{TypeJob: &common_proto.TaskTypeJob{Image: image}}
+	case "CRONJOB":
+		task.Type = common_proto.TaskType_CRONJOB
+		schedule, err := c.Ankr.GetString(c.NS, akrctl.ArgScheduleSlug)
+		if err != nil {
+			return err
+		}
+		task.TypeData = &common_proto.Task_TypeCronJob{TypeCronJob: &common_proto.TaskTypeCronJob{Image: image, Schedule: schedule}}
+	default:
+		task.Type = common_proto.TaskType_DEPLOYMENT
+		task.TypeData = &common_proto.Task_TypeDeployment{TypeDeployment: &common_proto.TaskTypeDeployment{Image: image}}
+	}
+
+	if replica != "" {
+		r, err := strconv.Atoi(replica)
+		if err != nil {
+			return fmt.Errorf("replica count %s is not an int32", replica)
+		}
+		task.Attributes = &common_proto.TaskAttributes{Replica: int32(r)}
+	}
+
 	url := viper.GetString("hub-url")
 
-	token, userid := c.getContextAccessToken()
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
 
-	if token == "" {
-		return fmt.Errorf("Unable to read AnkrNetwork access token.")
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
 	}
+
 	md := metadata.New(map[string]string{
-		"token": token,
+		"token": authResult.AccessToken,
 	})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
@@ -145,37 +188,22 @@ func RunTaskCreate(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	dc := pb.NewTaskMgrClient(conn)
+	taskMgr := pb.NewTaskMgrClient(conn)
 	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
 	var wg sync.WaitGroup
-	errs := make(chan *common_proto.Error, len(c.Args))
+	errs := make(chan error, len(c.Args))
 	for _, name := range c.Args {
-		tcrq := &pb.CreateTaskRequest{
-			UserId: userid,
-			Task: &common_proto.Task{
-				Name:  name,
-				Image: image,
-				Type:  common_proto.TaskType(common_proto.TaskType_value[tasktype+"TaskType"]),
-			},
-		}
-		if taskdcid != "" {
-			tcrq.Task.DataCenterId = taskdcid
-		}
-		if replica != "" {
-			r, err := strconv.Atoi(replica)
-			if err != nil {
-				return fmt.Errorf("Replica count %s is not an int\n", replica)
-			}
-			tcrq.Task.Replica = int32(r)
-		}
+		task.Name = name
+		tcrq := &pb.CreateTaskRequest{Task: &task}
+
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			tcrp, err := dc.CreateTask(tokenctx, tcrq)
+			tcrp, err := taskMgr.CreateTask(tokenctx, tcrq)
 			if err != nil {
-				log.Fatal(err.Error())
+				errs <- err
 			} else {
 				if tcrp != nil {
 					fmt.Printf("Task %s Create Success. \n", tcrp.TaskId)
@@ -185,9 +213,10 @@ func RunTaskCreate(c *CmdConfig) error {
 	}
 	wg.Wait()
 	close(errs)
+
 	for err := range errs {
 		if err != nil {
-			return errors.New(err.Details)
+			return err
 		}
 	}
 
@@ -206,16 +235,19 @@ func RunTaskPurge(c *CmdConfig) error {
 		return akrctl.NewMissingArgsErr(c.NS)
 	}
 
-	token, userid := c.getContextAccessToken()
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
 
-	if token == "" {
-		return fmt.Errorf("Unable to read Ankr Network access token")
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
 	}
 
 	md := metadata.New(map[string]string{
-		"token": token,
+		"token": authResult.AccessToken,
 	})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
 
 	if force || AskForConfirm(fmt.Sprintf("Are you sure you want to Purge %d task(s) (y/N) ? ", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
@@ -226,20 +258,14 @@ func RunTaskPurge(c *CmdConfig) error {
 		}
 		defer conn.Close()
 		dc := pb.NewTaskMgrClient(conn)
-		tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-		defer cancel()
 
 		fn := func(ids []string) error {
 			for _, id := range ids {
-				ctr, err := dc.PurgeTask(tokenctx, &pb.Request{UserId: userid, TaskId: id})
+				_, err := dc.PurgeTask(tokenctx, &pb.TaskID{TaskId: id})
 				if err != nil {
 					return err
 				}
-				if ctr != nil && ctr.Status == common_proto.Status_FAILURE {
-					return fmt.Errorf("Unable to purge task %s: %v", id, ctr.Details)
-				} else {
-					fmt.Printf("Task %s Purge Success.\n", id)
-				}
+				fmt.Printf("Task %s Purge Success.\n", id)
 			}
 			return nil
 		}
@@ -253,6 +279,20 @@ func RunTaskPurge(c *CmdConfig) error {
 // RunTaskCancel destroy a task by id.
 func RunTaskCancel(c *CmdConfig) error {
 
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
 	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
 	if err != nil {
 		return err
@@ -261,17 +301,6 @@ func RunTaskCancel(c *CmdConfig) error {
 	if len(c.Args) < 1 {
 		return akrctl.NewMissingArgsErr(c.NS)
 	}
-
-	token, userid := c.getContextAccessToken()
-
-	if token == "" {
-		return fmt.Errorf("Unable to read AnkrNetwork access token")
-	}
-
-	md := metadata.New(map[string]string{
-		"token": token,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
 	if force || AskForConfirm(fmt.Sprintf("Are you sure you want to Cancel %d task(s) (y/N) ? ", len(c.Args))) == nil {
 		url := viper.GetString("hub-url")
@@ -282,21 +311,15 @@ func RunTaskCancel(c *CmdConfig) error {
 		}
 
 		defer conn.Close()
-		dc := pb.NewTaskMgrClient(conn)
-		tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-		defer cancel()
+		taskMgr := pb.NewTaskMgrClient(conn)
 
 		fn := func(ids []string) error {
 			for _, id := range ids {
-				ctr, err := dc.CancelTask(tokenctx, &pb.Request{UserId: userid, TaskId: id})
+				_, err := taskMgr.CancelTask(tokenctx, &pb.TaskID{TaskId: id})
 				if err != nil {
 					return err
 				}
-				if ctr != nil && ctr.Status == common_proto.Status_FAILURE {
-					return fmt.Errorf("Unable to cancel task %s: %v", id, ctr.Details)
-				} else {
-					fmt.Printf("Task %s Cancel Success.\n", id)
-				}
+				fmt.Printf("Task %s Cancel Success.\n", id)
 			}
 			return nil
 		}
@@ -310,6 +333,19 @@ func RunTaskCancel(c *CmdConfig) error {
 // RunTaskList returns a list of tasks.
 func RunTaskList(c *CmdConfig) error {
 
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
 	matches := []glob.Glob{}
 	for _, globStr := range c.Args {
 		g, err := glob.Compile(globStr)
@@ -321,41 +357,122 @@ func RunTaskList(c *CmdConfig) error {
 	}
 
 	url := viper.GetString("hub-url")
-
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Did not connect: %v", err)
 	}
-	token, userid := c.getContextAccessToken()
-
-	if token == "" {
-		return fmt.Errorf("Unable to read Ankr Network access token.")
-	}
-
-	md := metadata.New(map[string]string{
-		"token": token,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-
 	defer conn.Close()
-	dc := pb.NewTaskMgrClient(conn)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-	r, err := dc.TaskList(tokenctx, &pb.ID{UserId: userid})
+
+	taskMgr := pb.NewTaskMgrClient(conn)
+	tlr := pb.TaskListRequest{}
+	taskId, err := c.Ankr.GetString(c.NS, akrctl.ArgTaskIdSlug)
 	if err != nil {
 		return err
 	}
-	if r != nil && r.Error != nil && r.Error.Status == common_proto.Status_FAILURE {
-		log.Fatalf("Client: could not send: %v", r.Error.Details)
+	if taskId != "" {
+		tlr.TaskFilter = &pb.TaskFilter{TaskId: taskId}
+	}
+	r, err := taskMgr.TaskList(tokenctx, &tlr)
+	if err != nil {
+		return err
 	}
 
 	item := &displayers.Task{Tasks: r.Tasks}
 	return c.Display(item)
 }
 
+// RunTaskLeader returns a overview of tasks.
+func RunTaskLeader(c *CmdConfig) error {
+
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	url := viper.GetString("hub-url")
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	taskMgr := pb.NewTaskMgrClient(conn)
+	if err != nil {
+		return err
+	}
+	tlbr, err := taskMgr.TaskLeaderBoard(tokenctx, &common_proto.Empty{})
+	if err != nil {
+		return err
+	}
+	fmt.Println("Name\tNumber")
+	for _, d := range tlbr.List {
+		fmt.Printf("%s\t%v\n", d.Name, d.Number)
+	}
+
+	return nil
+}
+
+// RunTaskOverview returns a overview of tasks.
+func RunTaskOverview(c *CmdConfig) error {
+
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	url := viper.GetString("hub-url")
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	taskMgr := pb.NewTaskMgrClient(conn)
+	if err != nil {
+		return err
+	}
+	tor, err := taskMgr.TaskOverview(tokenctx, &common_proto.Empty{})
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Cluster Count:\t\t%v\nEnvironment Count:\t%v\nRegion Count:\t\t%v\nTotal Task Count:\t%v\nHealth Task Count:\t%v\n",
+		tor.ClusterCount, tor.EnvironmentCount, tor.RegionCount, tor.TotalTaskCount, tor.HealthTaskCount)
+
+	return nil
+}
+
 // RunTaskUpdate updates a task.
-//DCCN-CLI comput task update
 func RunTaskUpdate(c *CmdConfig) error {
+
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
 
 	if len(c.Args) < 1 {
 		return akrctl.NewMissingArgsErr(c.NS)
@@ -371,118 +488,87 @@ func RunTaskUpdate(c *CmdConfig) error {
 		return err
 	}
 
-	dcid, err := c.Ankr.GetString(c.NS, akrctl.ArgDcidSlug)
+	dcName, err := c.Ankr.GetString(c.NS, akrctl.ArgDcNameSlug)
 	if err != nil {
 		return err
 	}
 
-	tasktype, err := c.Ankr.GetString(c.NS, akrctl.ArgTypeSlug)
+	taskType, err := c.Ankr.GetString(c.NS, akrctl.ArgTypeSlug)
 	if err != nil {
 		return err
 	}
 
-	url := viper.GetString("hub-url")
+	task := common_proto.Task{}
 
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
+	if dcName != "" {
+		task.DataCenterName = dcName
 	}
 
-	token, userid := c.getContextAccessToken()
-
-	if token == "" {
-		return fmt.Errorf("Unable to read Ankr Network access token")
-	}
-
-	md := metadata.New(map[string]string{
-		"token": token,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-
-	defer conn.Close()
-	dc := pb.NewTaskMgrClient(conn)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-
-	fn := func(ids []string) error {
-		for _, id := range ids {
-			utrq := &pb.UpdateTaskRequest{
-				UserId: userid,
-				Task: &common_proto.Task{
-					Id: id,
-				},
-			}
-			if replica != "" {
-				replicaCount, err := strconv.Atoi(replica)
-				if err != nil {
-					return fmt.Errorf("Replica count %s is not an int", replica)
-				}
-				utrq.Task.Replica = int32(replicaCount)
-			}
+	if taskType != "" {
+		switch taskType {
+		case "DEPLOYMENT":
+			task.Type = common_proto.TaskType_DEPLOYMENT
+			taskDeploy := common_proto.TaskTypeDeployment{}
 			if image != "" {
-				utrq.Task.Image = image
+				taskDeploy.Image = image
 			}
-			if tasktype != "" {
-				utrq.Task.Type = common_proto.TaskType(common_proto.TaskType_value[tasktype+"TaskType"])
+			task.TypeData = &common_proto.Task_TypeDeployment{TypeDeployment: &taskDeploy}
+		case "JOB":
+			task.Type = common_proto.TaskType_JOB
+			taskDeploy := common_proto.TaskTypeJob{}
+			if image != "" {
+				taskDeploy.Image = image
 			}
-			if dcid != "" {
-				utrq.Task.DataCenterId = dcid
+			task.TypeData = &common_proto.Task_TypeJob{TypeJob: &taskDeploy}
+		case "CRONJOB":
+			task.Type = common_proto.TaskType_CRONJOB
+			taskDeploy := common_proto.TaskTypeCronJob{}
+			if image != "" {
+				taskDeploy.Image = image
 			}
-			utrp, err := dc.UpdateTask(tokenctx, utrq)
+			schedule, err := c.Ankr.GetString(c.NS, akrctl.ArgScheduleSlug)
 			if err != nil {
 				return err
 			}
-			if utrp != nil && utrp.Status == common_proto.Status_FAILURE {
-				return fmt.Errorf("Unable to update task %s: %v", id, utrp.Details)
-			} else {
-				fmt.Printf("Task %s Update Success.\n", id)
+			if schedule != "" {
+				taskDeploy.Schedule = schedule
 			}
+			task.TypeData = &common_proto.Task_TypeCronJob{TypeCronJob: &taskDeploy}
+		default:
+			task.Type = common_proto.TaskType_DEPLOYMENT
+			taskDeploy := common_proto.TaskTypeDeployment{}
+			if image != "" {
+				taskDeploy.Image = image
+			}
+			task.TypeData = &common_proto.Task_TypeDeployment{TypeDeployment: &taskDeploy}
 		}
-		return nil
 	}
-	return fn(c.Args)
-}
 
-// RunTaskDetail show a task detail by id.
-func RunTaskDetail(c *CmdConfig) error {
-
-	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+	if replica != "" {
+		r, err := strconv.Atoi(replica)
+		if err != nil {
+			return fmt.Errorf("replica count %s is not an int32", replica)
+		}
+		task.Attributes = &common_proto.TaskAttributes{Replica: int32(r)}
 	}
 
 	url := viper.GetString("hub-url")
-
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Did not connect: %v", err)
 	}
-
-	token, userid := c.getContextAccessToken()
-
-	if token == "" {
-		return fmt.Errorf("Unable to read Ankr Network access token")
-	}
-
-	md := metadata.New(map[string]string{
-		"token": token,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-
 	defer conn.Close()
-	dc := pb.NewTaskMgrClient(conn)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
+	taskMgr := pb.NewTaskMgrClient(conn)
+
 	fn := func(ids []string) error {
 		for _, id := range ids {
-			ctr, err := dc.TaskDetail(tokenctx, &pb.Request{UserId: userid, TaskId: id})
+			task.Id = id
+			utrq := &pb.UpdateTaskRequest{Task: &task}
+			_, err := taskMgr.UpdateTask(tokenctx, utrq)
 			if err != nil {
 				return err
 			}
-			if ctr.Error != nil && ctr.Error.Status == common_proto.Status_FAILURE {
-				return fmt.Errorf("Unable to get task %s detail: %v", id, ctr.Error.Details)
-			} else {
-				fmt.Printf("Task %s Detail Success.\n", ctr.Task.Id)
-			}
+			fmt.Printf("Task %s Update Success.\n", id)
 		}
 		return nil
 	}

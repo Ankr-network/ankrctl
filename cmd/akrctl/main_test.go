@@ -29,9 +29,6 @@ import (
 )
 
 const (
-	MockUserName      = "testuser"
-	MockUserEmail     = "@mailinator.com"
-	MockPassword      = "123456"
 	MockResultSuccess = "Success"
 	MockTaskid        = "100"
 	MockTaskName      = "task"
@@ -42,27 +39,51 @@ const (
 	MockTaskType      = "Deploy"
 )
 
+type mail struct {
+	From    string `json:"f"`
+	Subject string `json:"s"`
+	HTML    string `json:"html"`
+	Text    string `json:"text"`
+}
+
+type msg struct {
+	UID string `json:"uid"`
+}
+
+type inbox struct {
+	Msgs []msg `json:"msgs"`
+}
+
 func TestMockCommand_Run(t *testing.T) {
 
 	rand.Seed(time.Now().UnixNano())
-	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-		"abcdefghijklmnopqrstuvwxyz" +
-		"0123456789")
-	length := 8
+	charsA := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	charsa := []rune("abcdefghijklmnopqrstuvwxyz")
+	nums := []rune("0123456789")
 	var b strings.Builder
-	for i := 0; i < length; i++ {
-		b.WriteRune(chars[rand.Intn(len(chars))])
+	var c strings.Builder
+	for i := 0; i < 3; i++ {
+		b.WriteRune(charsA[rand.Intn(len(charsA))])
+		b.WriteRune(charsa[rand.Intn(len(charsa))])
+		b.WriteRune(nums[rand.Intn(len(nums))])
+		c.WriteRune(charsa[rand.Intn(len(charsa))])
+		c.WriteRune(charsa[rand.Intn(len(charsa))])
+		c.WriteRune(charsa[rand.Intn(len(charsa))])
 	}
-	randstr := b.String() // E.g. "ExcbsVQs"
+
+	MockPassword := b.String()
+	MockUserName := "test" + c.String()
 
 	var url = os.Getenv("URL_BRANCH")
 	fmt.Println("url: " + url + "\n")
 
 	lc := akrctl.NewLiveCommand("go")
 
+	MockUserEmail := MockUserName + "@mailinator.com"
+
 	fmt.Println("user register test..")
 	registerRes, err := lc.Run("run", "main.go", "user", "register", MockUserName,
-		"--email", MockUserName+"_"+randstr+MockUserEmail, "--password", MockPassword,
+		"--email", MockUserEmail, "--password", MockPassword,
 		"-u", url)
 	if err != nil {
 		t.Error(err.Error())
@@ -70,9 +91,12 @@ func TestMockCommand_Run(t *testing.T) {
 	fmt.Println(string(registerRes))
 	assert.True(t, strings.Contains(string(registerRes), MockResultSuccess))
 
+	MockUserName = "testabcd1234"
+	MockUserEmail = "testabcd1234@mailinator.com"
+	MockPassword = "abcd1234"
 	fmt.Println("user login test..")
 	loginRes, err := lc.Run("run", "main.go", "user", "login",
-		MockUserName+"_"+randstr+MockUserEmail, "--password", MockPassword, "-u", url)
+		MockUserEmail, "--password", MockPassword, "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -96,7 +120,7 @@ func TestMockCommand_Run(t *testing.T) {
 
 	fmt.Println("compute task create test..")
 	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create",
-		MockTaskName, "--image", MockTaskImage, "--dc-id", dcid, "--type", MockTaskType,
+		MockTaskName, "--image", MockTaskImage, "--dc-name", dcid, "--type", MockTaskType,
 		"--replica", MockReplica, "-u", url)
 	if err != nil {
 		t.Error(err.Error())
@@ -121,7 +145,6 @@ func TestMockCommand_Run(t *testing.T) {
 			assert.Equal(t, strings.Fields(task)[1], MockTaskName)
 			assert.Equal(t, strings.Fields(task)[3], MockTaskImage)
 			assert.Equal(t, strings.Fields(task)[6], MockReplica)
-			//assert.Equal(t, strings.Fields(task)[7], dcid)
 			taskFound = true
 		}
 	}
@@ -157,15 +180,6 @@ func TestMockCommand_Run(t *testing.T) {
 		}
 	}
 	assert.True(t, taskUpdateFound)
-
-	fmt.Println("compute task detail test..")
-	taskDetail, err := lc.Run("run", "main.go", "compute", "task", "detail", id, "-u", url)
-	if err != nil {
-		t.Error(err.Error())
-	}
-	fmt.Println(string(taskDetail))
-	assert.True(t, len(string(taskDetail)) > 0)
-	assert.True(t, strings.Contains(string(taskDetail), MockResultSuccess))
 
 	fmt.Println("compute task cancel test..")
 	taskCancel, err := lc.Run("run", "main.go", "compute", "task", "cancel", "-f", id, "-u", url)

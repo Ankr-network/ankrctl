@@ -32,14 +32,14 @@ func (d *Task) JSON(out io.Writer) error {
 
 func (d *Task) Cols() []string {
 	cols := []string{
-		"TaskId", "TaskName", "Type", "Image", "Uptime", "CreationDate", "Replica", "DataCenter", "Status",
+		"TaskId", "TaskName", "Type", "Image", "LastModifyDate", "CreationDate", "Replica", "DataCenter", "Status",
 	}
 	return cols
 }
 
 func (d *Task) ColMap() map[string]string {
 	return map[string]string{
-		"TaskId": "TaskId", "TaskName": "TaskName", "Type": "Type", "Image": "Image", "Uptime": "Uptime",
+		"TaskId": "TaskId", "TaskName": "TaskName", "Type": "Type", "Image": "Image", "LastModifyDate": "LastModifyDate",
 		"CreationDate": "CreationDate", "Replica": "Replica", "DataCenter": "DataCenter", "Status": "Status",
 	}
 }
@@ -47,9 +47,19 @@ func (d *Task) ColMap() map[string]string {
 func (d *Task) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	for _, d := range d.Tasks {
+		image := ""
+		switch d.Type {
+		case pb.TaskType_CRONJOB:
+			image = d.GetTypeCronJob().Image
+		case pb.TaskType_DEPLOYMENT:
+			image = d.GetTypeDeployment().Image
+		case pb.TaskType_JOB:
+			image = d.GetTypeJob().Image
+		}
+
 		m := map[string]interface{}{
-			"TaskId": d.Id, "TaskName": d.Name, "Type": d.Type, "Image": d.Image, "Uptime": d.Uptime,
-			"CreationDate": d.CreationDate, "Replica": d.Replica, "DataCenter": d.DataCenter, "Status": d.Status,
+			"TaskId": d.Id, "TaskName": d.Name, "Type": d.Type, "Image": image, "LastModifyDate": d.Attributes.LastModifiedDate,
+			"CreationDate": d.Attributes.CreationDate, "Replica": d.Attributes.Replica, "DataCenterName": d.DataCenterName, "Status": d.Status,
 		}
 		out = append(out, m)
 	}

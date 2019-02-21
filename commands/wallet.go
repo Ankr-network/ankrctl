@@ -57,31 +57,32 @@ func walletCmd() *Command {
 	}
 
 	//DCCN-CLI wallet genkey
-	cmdWalletGenkey := CmdBuilder(cmd, RunWalletGenkey, "genkey", "generate key pair on chain", Writer,
-		aliasOpt("gk"), docCategories("wallet"))
+	cmdWalletGenkey := CmdBuilder(cmd, RunWalletGenkey, "genkey", "generate key pair on chain",
+		Writer, aliasOpt("gk"), docCategories("wallet"))
 	_ = cmdWalletGenkey
 
 	//DCCN-CLI wallet importkey
-	cmdWalletImportkey := CmdBuilder(cmd, RunWalletImportkey, "importkey <filename>", "import key from key file", Writer,
-		aliasOpt("ik"), docCategories("wallet"))
+	cmdWalletImportkey := CmdBuilder(cmd, RunWalletImportkey, "importkey <filename>",
+		"import key from key file", Writer, aliasOpt("ik"), docCategories("wallet"))
 	_ = cmdWalletImportkey
 
 	//DCCN-CLI wallet exportkey
-	cmdWalletExportkey := CmdBuilder(cmd, RunWalletExportkey, "exportkey <filename>", "export key to key file", Writer,
-		aliasOpt("ek"), docCategories("wallet"))
+	cmdWalletExportkey := CmdBuilder(cmd, RunWalletExportkey, "exportkey <filename>",
+		"export key to key file", Writer, aliasOpt("ek"), docCategories("wallet"))
 	_ = cmdWalletExportkey
 
 	//DCCN-CLI wallet send token
-	cmdWalletSendtoken := CmdBuilder(cmd, RunWalletSendtoken, "sendtoken <token-amount>", "send token to address", Writer,
-		aliasOpt("st"), docCategories("wallet"))
-	AddStringFlag(cmdWalletSendtoken, akrctl.ArgTargetSlug, "", "", "send token to wallet address", requiredOpt())
+	cmdWalletSendtoken := CmdBuilder(cmd, RunWalletSendtoken, "sendtoken <token-amount>",
+		"send token to address", Writer, aliasOpt("st"), docCategories("wallet"))
+	AddStringFlag(cmdWalletSendtoken, akrctl.ArgTargetSlug, "", "", "send token to wallet address",
+		requiredOpt())
 	AddStringFlag(cmdWalletSendtoken, akrctl.ArgPublicKeySlug, "", "", "wallet public key")
 	AddStringFlag(cmdWalletSendtoken, akrctl.ArgPrivateKeySlug, "", "", "wallet private key")
 	AddStringFlag(cmdWalletSendtoken, akrctl.ArgAddressSlug, "", "", "wallet address")
 
 	//DCCN-CLI wallet get balance
-	cmdWalletGetbalance := CmdBuilder(cmd, RunWalletGetbalance, "getbal <address>", "get balance of wallet by address", Writer,
-		aliasOpt("gb"), docCategories("wallet"))
+	cmdWalletGetbalance := CmdBuilder(cmd, RunWalletGetbalance, "getbal <address>",
+		"get balance of wallet by address", Writer, aliasOpt("gb"), docCategories("wallet"))
 	_ = cmdWalletGetbalance
 
 	return cmd
@@ -155,7 +156,8 @@ func RunWalletImportkey(c *CmdConfig) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println("\nImporting...\nPrivate Key: ", key.PrivateKey, "\nPublic Key: ", key.PublicKey, "\nAddress: ", key.Address)
+		fmt.Println("\nImporting...\nPrivate Key: ", key.PrivateKey,
+			"\nPublic Key: ", key.PublicKey, "\nAddress: ", key.Address)
 
 		fmt.Println("\nUpdating wallet...")
 
@@ -289,9 +291,7 @@ func RunWalletSendtoken(c *CmdConfig) error {
 	if address == "" || publicKey == "" || privateKey == "" {
 
 		address = viper.GetString(akrctl.ArgAddressSlug)
-
 		publicKey = viper.GetString(akrctl.ArgPublicKeySlug)
-
 		privateKey = viper.GetString(akrctl.ArgPrivateKeySlug)
 
 		if address == "" || publicKey == "" || privateKey == "" {

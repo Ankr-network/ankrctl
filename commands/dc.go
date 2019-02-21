@@ -27,8 +27,9 @@ import (
 	"context"
 
 	ankr_const "github.com/Ankr-network/dccn-common"
-	common "github.com/Ankr-network/dccn-common/protos/common"
+	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	dcmgr "github.com/Ankr-network/dccn-common/protos/dcmgr/v1/grpc"
+	usermgr "github.com/Ankr-network/dccn-common/protos/usermgr/v1/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -52,17 +53,35 @@ func Dc() *Command {
 		aliasOpt("ls"), displayerType(&displayers.Dc{}), docCategories("dc"))
 	_ = cmdRunDcList
 
+	//DCCN-CLI dc network info
+	cmdRunNetworkInfo := CmdBuilder(cmd, RunNetworkInfo, "network", "list network info", Writer,
+		aliasOpt("ni"), docCategories("dc"))
+	_ = cmdRunNetworkInfo
+
+	//DCCN-CLI dc leader board
+	cmdRunDcLeader := CmdBuilder(cmd, RunDcLeader, "leader", "list dc leader board", Writer,
+		aliasOpt("lb"), docCategories("dc"))
+	_ = cmdRunDcLeader
+
 	return cmd
 }
 
 // RunDcList returns a list of dc.
 func RunDcList(c *CmdConfig) error {
 
-	token, _ := c.getContextAccessToken()
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
 
-	if token == "" {
-		return fmt.Errorf("unable to read AnkrNetwork access token")
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
 	}
+
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
 
 	matches := []glob.Glob{}
 	for _, globStr := range c.Args {
@@ -74,25 +93,17 @@ func RunDcList(c *CmdConfig) error {
 		matches = append(matches, g)
 	}
 
-	var matchedList []common.DataCenter
+	var matchedList []common_proto.DataCenter
 
 	url := viper.GetString("hub-url")
-
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-
-	md := metadata.New(map[string]string{
-		"token": token,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-
 	defer conn.Close()
 	dcClient := dcmgr.NewDCAPIClient(conn)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-	r, err := dcClient.DataCenterList(tokenctx, &dcmgr.DataCenterListRequest{})
+
+	r, err := dcClient.DataCenterList(tokenctx, &common_proto.Empty{})
 	if err != nil {
 		log.Fatalf("Client: could not send: %v", err)
 	}
@@ -110,10 +121,89 @@ func RunDcList(c *CmdConfig) error {
 		}
 
 		if !skip {
+			if dc.GeoLocation == nil {
+				dc.GeoLocation = &common_proto.GeoLocation{}
+			}
 			matchedList = append(matchedList, *dc)
 		}
 	}
-
+	fmt.Println(matchedList)
 	item := &displayers.Dc{Dcs: matchedList}
 	return c.Display(item)
+}
+
+// RunNetworkInfo returns a overview of tasks.
+func RunNetworkInfo(c *CmdConfig) error {
+
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	url := viper.GetString("hub-url")
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	dcMgr := dcmgr.NewDCAPIClient(conn)
+	if err != nil {
+		return err
+	}
+	resp, err := dcMgr.NetworkInfo(tokenctx, &common_proto.Empty{})
+	if err != nil {
+		return err
+	}
+	fmt.Printf("User Count:\t\t%v\nHost Count:\t\t%v\nEnvironment Count:\t%v\nContainer Count:\t%v\n",
+		resp.UserCount, resp.HostCount, resp.EnvironmentCount, resp.ContainerCount)
+
+	return nil
+}
+
+// RunDcLeader returns a overview of tasks.
+func RunDcLeader(c *CmdConfig) error {
+
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	url := viper.GetString("hub-url")
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	dcMgr := dcmgr.NewDCAPIClient(conn)
+	if err != nil {
+		return err
+	}
+	resp, err := dcMgr.DataCenterLeaderBoard(tokenctx, &common_proto.Empty{})
+	if err != nil {
+		return err
+	}
+	fmt.Println("Name\t\tNumber")
+	for _, d := range resp.List {
+		fmt.Printf("%s\t%v\n", d.Name, d.Number)
+	}
+
+	return nil
 }
