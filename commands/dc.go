@@ -127,7 +127,6 @@ func RunDcList(c *CmdConfig) error {
 			matchedList = append(matchedList, *dc)
 		}
 	}
-	fmt.Println(matchedList)
 	item := &displayers.Dc{Dcs: matchedList}
 	return c.Display(item)
 }
