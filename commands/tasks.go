@@ -85,16 +85,6 @@ func Task() *Command {
 		aliasOpt("ls"), displayerType(&displayers.Task{}), docCategories("task"))
 	AddStringFlag(cmdRunTaskList, akrctl.ArgTaskIdSlug, "", "", "Task id")
 
-	//DCCN-CLI task leader
-	cmdRunTaskLeader := CmdBuilder(cmd, RunTaskLeader, "leader", "show tasks leaderboard", Writer,
-		aliasOpt("lb"), displayerType(&displayers.Task{}), docCategories("task"))
-	_ = cmdRunTaskLeader
-
-	//DCCN-CLI task overview
-	cmdRunTaskOverview := CmdBuilder(cmd, RunTaskOverview, "overview", "show tasks overview", Writer,
-		aliasOpt("ov"), displayerType(&displayers.Task{}), docCategories("task"))
-	_ = cmdRunTaskOverview
-
 	//DCCN-CLI comput task purge
 	cmdRunTaskPurge := CmdBuilder(cmd, RunTaskPurge, "purge <task-id> [task-id ...]", "Purge task by id",
 		Writer, aliasOpt("pg"), docCategories("Task"))
@@ -379,82 +369,6 @@ func RunTaskList(c *CmdConfig) error {
 
 	item := &displayers.Task{Tasks: r.Tasks}
 	return c.Display(item)
-}
-
-// RunTaskLeader returns a overview of tasks.
-func RunTaskLeader(c *CmdConfig) error {
-
-	authResult := usermgr.AuthenticationResult{}
-	viper.UnmarshalKey("AuthResult", &authResult)
-
-	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
-	}
-	md := metadata.New(map[string]string{
-		"token": authResult.AccessToken,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-
-	url := viper.GetString("hub-url")
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
-	}
-	defer conn.Close()
-
-	taskMgr := pb.NewTaskMgrClient(conn)
-	if err != nil {
-		return err
-	}
-	tlbr, err := taskMgr.TaskLeaderBoard(tokenctx, &common_proto.Empty{})
-	if err != nil {
-		return err
-	}
-	fmt.Println("Name\tNumber")
-	for _, d := range tlbr.List {
-		fmt.Printf("%s\t%v\n", d.Name, d.Number)
-	}
-
-	return nil
-}
-
-// RunTaskOverview returns a overview of tasks.
-func RunTaskOverview(c *CmdConfig) error {
-
-	authResult := usermgr.AuthenticationResult{}
-	viper.UnmarshalKey("AuthResult", &authResult)
-
-	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
-	}
-	md := metadata.New(map[string]string{
-		"token": authResult.AccessToken,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-
-	url := viper.GetString("hub-url")
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
-	}
-	defer conn.Close()
-
-	taskMgr := pb.NewTaskMgrClient(conn)
-	if err != nil {
-		return err
-	}
-	tor, err := taskMgr.TaskOverview(tokenctx, &common_proto.Empty{})
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Cluster Count:\t\t%v\nEnvironment Count:\t%v\nRegion Count:\t\t%v\nTotal Task Count:\t%v\nHealth Task Count:\t%v\n",
-		tor.ClusterCount, tor.EnvironmentCount, tor.RegionCount, tor.TotalTaskCount, tor.HealthTaskCount)
-
-	return nil
 }
 
 // RunTaskUpdate updates a task.
