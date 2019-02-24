@@ -20,14 +20,8 @@ const (
 	ArgContext = "context"
 	// ArgUserID is a user id argument.
 	ArgUserID = "userid"
-	// ArgTaskID is a task id argument.
-	ArgTaskID = "task-id"
-	// ArgTaskIDs is a list of task IDs.
-	ArgTaskIDs = "task-ids"
-	// ArgTaskName is a task name argument.
-	ArgTaskName = "task-name"
-	// ArgDcSlug is a datacenter slug argument.
-	ArgDcidSlug = "dc-id"
+	// ArgDcNameSlug is a datacenter slug argument.
+	ArgDcNameSlug = "dc-name"
 	// ArgTypeSlug is a type slug argument.
 	ArgTypeSlug = "type"
 	// ArgFormat is columns to include in output argment.
@@ -38,18 +32,38 @@ const (
 	ArgOutput = "output"
 	// ArgForce forces confirmation on actions
 	ArgForce = "force"
-	// ArgNameSlug is a name slug argument.
-	ArgNameSlug = "name"
-	// ArgReplicaSlug is a replica slug argument.
-	ArgReplicaSlug = "replica"
-	// ArgReplicaSlug is a replica slug argument.
-	ArgNicknameSlug = "nickname"
-	// ArgReplicaSlug is a replica slug argument.
-	ArgPasswordSlug = "password"
-	// ArgReplicaSlug is a replica slug argument.
-	ArgEmailSlug = "email"
-	// ArgReplicaSlug is a replica slug argument.
-	ArgBalanceSlug = "balance"
-	// ArgReplicaSlug is a replica slug argument.
+	// ArgTaskIdSlug is a task id slug argument.
+	ArgTaskIdSlug = "task-id"
+	// ArgImageSlug is a task image slug argument.
 	ArgImageSlug = "image"
+	// ArgReplicaSlug is a rtask eplica slug argument.
+	ArgReplicaSlug = "replica"
+	// ArgScheduleSlug is a task schedule slug argument.
+	ArgScheduleSlug = "schedule"
+	// ArgPasswordSlug is a user password slug argument.
+	ArgPasswordSlug = "password"
+	// ArgEmailSlug is a user email slug argument.
+	ArgEmailSlug = "email"
+	// ArgAddressSlug is a wallet address slug argument.
+	ArgAddressSlug = "address"
+	// ArgTargetSlug is a wallet send token target address slug argument.
+	ArgTargetSlug = "target"
+	// ArgPrivateKeySlug is a wallet private key slug argument.
+	ArgPrivateKeySlug = "private-key"
+	// ArgPublicKeySlug is a wallet public key slug argument.
+	ArgPublicKeySlug = "public-key"
+	// ArgRegisterCodeSlug is a user registration confirmation code slug argument.
+	ArgRegisterCodeSlug = "register-code"
+	// ArgPasswordCodeSlug is a password registration confirmation code slug argument.
+	ArgPasswordCodeSlug = "password-code"
+	// ArgConfirmPasswordSlug is a password reset confirmation new password slug argument.
+	ArgConfirmPasswordSlug = "confirm-password"
+	// ArgNewPasswordSlug is a change new password slug argument.
+	ArgNewPasswordSlug = "new-password"
+	// ArgOldPasswordSlug is a change old password slug argument.
+	ArgOldPasswordSlug = "old-password"
+	// ArgUpdateKeySlug is a update user attribute key slug argument.
+	ArgUpdateKeySlug = "update-key"
+	// ArgUpdateValueSlug is a update user attribute value slug argument.
+	ArgUpdateValueSlug = "update-value"
 )

@@ -46,7 +46,7 @@ func (d *Dc) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
 	for _, d := range d.Dcs {
 		m := map[string]interface{}{
-			"Id": d.Id, "Name": d.Name, "Lat": d.Lat, "Lng": d.Lng, "Status": d.Status, "WalletAddress": d.WalletAddress,
+			"Id": d.Id, "Name": d.Name, "Lat": d.GeoLocation.Lat, "Lng": d.GeoLocation.Lng, "Status": d.Status, "WalletAddress": d.DcAttributes.WalletAddress,
 		}
 		out = append(out, m)
 	}
