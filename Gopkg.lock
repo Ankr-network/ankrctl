@@ -2,8 +2,8 @@
 
 
 [[projects]]
-  branch = "feature/SWDEV-149-dashboard"
-  digest = "1:c2cac4eb1aefabe183555d8b0551431f9a9bbb7f819d3ba69ca1d76d0c0f829c"
+  branch = "develop"
+  digest = "1:4f18efc9bb0433301151bea4208a2e39af4b298e224e4fecb9bbe152d018d5af"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
     ".",
@@ -14,7 +14,7 @@
     "wallet",
   ]
   pruneopts = "UT"
-  revision = "cdad9c339ec7ade136859e483debda8656ccde28"
+  revision = "5a92e1569791b1ef19bbea75749adad04cdaea35"
 
 [[projects]]
   branch = "master"

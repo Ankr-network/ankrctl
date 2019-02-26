@@ -66,4 +66,6 @@ const (
 	ArgUpdateKeySlug = "update-key"
 	// ArgUpdateValueSlug is a update user attribute value slug argument.
 	ArgUpdateValueSlug = "update-value"
+	// ArgEmailCodeSlug is a confirm email change slug argument.
+	ArgEmailCodeSlug = "email-code"
 )

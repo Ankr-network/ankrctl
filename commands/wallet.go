@@ -36,6 +36,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var tendermintURL string
+
 type Key struct {
 	PrivateKey string `json:"privatekey"`
 	PublicKey  string `json:"publickey"`
@@ -321,9 +323,11 @@ func RunWalletSendtoken(c *CmdConfig) error {
 	if address == "" || publicKey == "" || privateKey == "" {
 		return errors.New("Wrong wallet address, public key and private key")
 	}
-
+	if tendermintURL == "" {
+		tendermintURL = "chain-dev.dccn.ankr.network"
+	}
 	if AskForConfirm(fmt.Sprintf("About to send %s from wallet address %s to wallet address %s, Type 'yes' to confirm this action: ", tokenAmount.String(), address, target)) == nil {
-		if err := wallet.SendCoins("chain-dev.dccn.ankr.network", "26657", privateKey, address, target, tokenAmount.String(), publicKey); err != nil {
+		if err := wallet.SendCoins(tendermintURL, "26657", privateKey, address, target, tokenAmount.String(), publicKey); err != nil {
 			return err
 		}
 		fmt.Println("\nDone.")
@@ -347,7 +351,10 @@ func RunWalletGetbalance(c *CmdConfig) error {
 	}
 
 	fmt.Printf("Query balance by address %s\n", address)
-	balance, err := wallet.GetBalance("chain-dev.dccn.ankr.network", "26657", address)
+	if tendermintURL == "" {
+		tendermintURL = "chain-dev.dccn.ankr.network"
+	}
+	balance, err := wallet.GetBalance(tendermintURL, "26657", address)
 	if err != nil {
 		return err
 	}
