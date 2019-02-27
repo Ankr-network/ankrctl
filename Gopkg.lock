@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "develop"
-  digest = "1:4f18efc9bb0433301151bea4208a2e39af4b298e224e4fecb9bbe152d018d5af"
+  digest = "1:58d3b7ec62692541e5a7261898249c1fe872f43fe14e5b598f550467e557e8b2"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
     ".",
@@ -14,7 +14,8 @@
     "wallet",
   ]
   pruneopts = "UT"
-  revision = "5a92e1569791b1ef19bbea75749adad04cdaea35"
+  revision = "9e18aac090051542b5df84624e125c21d7653726"
+
 
 [[projects]]
   branch = "master"
@@ -225,12 +226,12 @@
   version = "v0.0.9"
 
 [[projects]]
-  digest = "1:0981502f9816113c9c8c4ac301583841855c8cf4da8c72f696b3ebedf6d0e4e5"
+  digest = "1:b5cf82c3199c040b82e2bb3fbcbcf6771c2759f9c6b839621b0714c822167581"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
   pruneopts = "UT"
-  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
-  version = "v0.0.4"
+  revision = "a6dda38a851a575e6799957cdd53ffe0b3fdd90f"
+  version = "v0.0.5"
 
 [[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
@@ -412,8 +413,7 @@
   version = "v1.3.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:685fdfea42d825ebd39ee0994354b46c374cf2c2b2d97a41a8dee1807c6a9b62"
+  digest = "1:5b180f17d5bc50b765f4dcf0d126c72979531cbbd7f7929bf3edd87fb801ea2d"
   name = "github.com/syndtr/goleveldb"
   packages = [
     "leveldb",
@@ -430,7 +430,8 @@
     "leveldb/util",
   ]
   pruneopts = "UT"
-  revision = "2f17a3356c6616cbfc4ae4c38147dc062a68fb0e"
+  revision = "9d007e481048296f09f59bd19bb7ae584563cd95"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:ad9c4c1a4e7875330b1f62906f2830f043a23edb5db997e3a5ac5d3e6eadf80a"
@@ -537,7 +538,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0e9b440ab194fa38b5b23dffcf270d6294d45ae763b8d92438328d8bf6253d0d"
+  digest = "1:bdec0cac19c2981f8962586869eab879a5abb7adde65f71715a40a66edcf37d9"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -545,7 +546,7 @@
     "windows",
   ]
   pruneopts = "UT"
-  revision = "629670e5acc5b3e069375d323404911dc8fe1d19"
+  revision = "cd391775e71e684db52b63df9affd58269495083"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"

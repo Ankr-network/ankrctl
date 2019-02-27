@@ -53,16 +53,6 @@ func Dc() *Command {
 		aliasOpt("ls"), displayerType(&displayers.Dc{}), docCategories("dc"))
 	_ = cmdRunDcList
 
-	//DCCN-CLI dc network info
-	cmdRunNetworkInfo := CmdBuilder(cmd, RunNetworkInfo, "network", "list network info", Writer,
-		aliasOpt("ni"), docCategories("dc"))
-	_ = cmdRunNetworkInfo
-
-	//DCCN-CLI dc leader board
-	cmdRunDcLeader := CmdBuilder(cmd, RunDcLeader, "leader", "list dc leader board", Writer,
-		aliasOpt("lb"), docCategories("dc"))
-	_ = cmdRunDcLeader
-
 	return cmd
 }
 
@@ -129,80 +119,4 @@ func RunDcList(c *CmdConfig) error {
 	}
 	item := &displayers.Dc{Dcs: matchedList}
 	return c.Display(item)
-}
-
-// RunNetworkInfo returns a overview of tasks.
-func RunNetworkInfo(c *CmdConfig) error {
-
-	authResult := usermgr.AuthenticationResult{}
-	viper.UnmarshalKey("AuthResult", &authResult)
-
-	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
-	}
-	md := metadata.New(map[string]string{
-		"token": authResult.AccessToken,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-
-	url := viper.GetString("hub-url")
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-
-	dcMgr := dcmgr.NewDCAPIClient(conn)
-	if err != nil {
-		return err
-	}
-	resp, err := dcMgr.NetworkInfo(tokenctx, &common_proto.Empty{})
-	if err != nil {
-		return err
-	}
-	fmt.Printf("User Count:\t\t%v\nHost Count:\t\t%v\nEnvironment Count:\t%v\nContainer Count:\t%v\n",
-		resp.UserCount, resp.HostCount, resp.EnvironmentCount, resp.ContainerCount)
-
-	return nil
-}
-
-// RunDcLeader returns a overview of tasks.
-func RunDcLeader(c *CmdConfig) error {
-
-	authResult := usermgr.AuthenticationResult{}
-	viper.UnmarshalKey("AuthResult", &authResult)
-
-	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
-	}
-	md := metadata.New(map[string]string{
-		"token": authResult.AccessToken,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-
-	url := viper.GetString("hub-url")
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
-	}
-	defer conn.Close()
-
-	dcMgr := dcmgr.NewDCAPIClient(conn)
-	if err != nil {
-		return err
-	}
-	resp, err := dcMgr.DataCenterLeaderBoard(tokenctx, &common_proto.Empty{})
-	if err != nil {
-		return err
-	}
-	fmt.Println("Name\t\tNumber")
-	for _, d := range resp.List {
-		fmt.Printf("%s\t%v\n", d.Name, d.Number)
-	}
-
-	return nil
 }
