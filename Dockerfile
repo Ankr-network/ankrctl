@@ -1,13 +1,25 @@
-FROM alpine:3.5
+FROM golang:1.10-alpine3.8 as builder
+ARG URL_BRANCH
+RUN apk update && \
+    apk add git && \
+    apk add --update bash && \
+    apk add openssh
+RUN go get github.com/golang/dep/cmd/dep
 
-ENV DOCTL_VERSION=1.11.0
+WORKDIR $GOPATH/src/github.com/Ankr-network/dccn-cli/
+COPY Gopkg.toml Gopkg.lock ./
+RUN dep ensure -vendor-only
+COPY . $GOPATH/src/github.com/Ankr-network/dccn-cli/
 
-RUN apk add --no-cache curl
+RUN CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64 \
+    go build -a \
+    -installsuffix cgo \
+    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=${URL_BRANCH}" \
+    -o /go/bin/akrctl \
+    $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/akrctl/main.go
 
-RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+FROM alpine:3.7
+COPY --from=builder /go/bin/akrctl /bin/akrctl
 
-WORKDIR /app
-
-RUN curl -L https://github.com/digitalocean/doctl/releases/download/v${DOCTL_VERSION}/doctl-${DOCTL_VERSION}-linux-amd64.tar.gz  | tar xz
-
-ENTRYPOINT ["./doctl"]

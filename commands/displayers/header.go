@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Doctl Authors All rights reserved.
+Copyright 2018 The Dccncli Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -16,11 +16,11 @@ package displayers
 import (
 	"strings"
 
-	"github.com/digitalocean/doctl"
+	"github.com/Ankr-network/dccn-cli"
 )
 
-func handleColumns(ns string, config doctl.Config) ([]string, error) {
-	colStr, err := config.GetString(ns, doctl.ArgFormat)
+func handleColumns(ns string, config akrctl.Config) ([]string, error) {
+	colStr, err := config.GetString(ns, akrctl.ArgFormat)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func handleColumns(ns string, config doctl.Config) ([]string, error) {
 		}
 	}
 
-	hh, err := config.GetBool(ns, doctl.ArgNoHeader)
+	hh, err := config.GetBool(ns, akrctl.ArgNoHeader)
 	if err != nil {
 		return nil, err
 	}

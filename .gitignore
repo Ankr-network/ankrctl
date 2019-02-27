@@ -1,20 +1,2 @@
-.goxc.local.json
 .DS_Store
-builds
-doit
-.vscode
-project.json
-.cover
-dist
-public
-docs/content
-
-_vendor-*
-
-/out
-
-# Snapcraft
-parts/
-prime/
-stage/
-*.snap
+/vendor
