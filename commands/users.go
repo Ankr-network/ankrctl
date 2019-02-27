@@ -16,9 +16,11 @@ package commands
 import (
 	"fmt"
 	"log"
+	"syscall"
 	"time"
 
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/ssh/terminal"
 
 	akrctl "github.com/Ankr-network/dccn-cli"
 
@@ -98,9 +100,9 @@ func userCmd() *Command {
 	AddStringFlag(cmdUserUpdate, akrctl.ArgUpdateValueSlug, "", "", "User attribute value", requiredOpt())
 
 	//DCCN-CLI user login
-	cmdUserLogin := CmdBuilder(cmd, RunUserLogin, "login <user-email>", "user login", Writer,
+	cmdUserLogin := CmdBuilder(cmd, RunUserLogin, "login", "user login", Writer,
 		aliasOpt("li"), docCategories("user"))
-	AddStringFlag(cmdUserLogin, akrctl.ArgPasswordSlug, "", "", "User password", requiredOpt())
+	_ = cmdUserLogin
 
 	//DCCN-CLI user logout
 	cmdUserLogout := CmdBuilder(cmd, RunUserLogout, "logout", "user logout", Writer,
@@ -163,11 +165,14 @@ func RunUserRegister(c *CmdConfig) error {
 // RunUserLogin login user by email and password.
 func RunUserLogin(c *CmdConfig) error {
 
-	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+	fmt.Print("\nEmail: ")
+	email, err := retrieveUserInput()
+	if err != nil {
+		return err
 	}
 
-	password, err := c.Ankr.GetString(c.NS, akrctl.ArgPasswordSlug)
+	fmt.Print("\nPassword: ")
+	password, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		return err
 	}
@@ -186,12 +191,12 @@ func RunUserLogin(c *CmdConfig) error {
 	defer cancel()
 
 	rsp, err := userClient.Login(ctx,
-		&usermgr.LoginRequest{Email: c.Args[0], Password: password})
+		&usermgr.LoginRequest{Email: email, Password: string(password)})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Printf("User %s Login Success\n", c.Args[0])
+	fmt.Printf("\n\nLogin Successful!\n\n")
 	viper.Set("UserDetail", rsp.User)
 	viper.Set("AuthResult", rsp.AuthenticationResult)
 	if err := writeConfig(); err != nil {
