@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "develop"
-  digest = "1:58d3b7ec62692541e5a7261898249c1fe872f43fe14e5b598f550467e557e8b2"
+  digest = "1:4f18efc9bb0433301151bea4208a2e39af4b298e224e4fecb9bbe152d018d5af"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
     ".",
@@ -14,7 +14,7 @@
     "wallet",
   ]
   pruneopts = "UT"
-  revision = "9e18aac090051542b5df84624e125c21d7653726"
+  revision = "5a92e1569791b1ef19bbea75749adad04cdaea35"
 
 [[projects]]
   branch = "master"
@@ -225,12 +225,12 @@
   version = "v0.0.9"
 
 [[projects]]
-  digest = "1:b5cf82c3199c040b82e2bb3fbcbcf6771c2759f9c6b839621b0714c822167581"
+  digest = "1:3bb9c8451d199650bfd303e0068d86f135952fead374ad87c09a9b8a2cc4bd7c"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
   pruneopts = "UT"
-  revision = "a6dda38a851a575e6799957cdd53ffe0b3fdd90f"
-  version = "v0.0.5"
+  revision = "369ecd8cea9851e459abb67eb171853e3986591e"
+  version = "v0.0.6"
 
 [[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
@@ -316,7 +316,7 @@
     "xfs",
   ]
   pruneopts = "UT"
-  revision = "e4d4a2206da023361ed100d85c5f2cf9c8364e9f"
+  revision = "6ed1f7e1041181781dd2826d3001075d011a80cc"
 
 [[projects]]
   digest = "1:c4556a44e350b50a490544d9b06e9fba9c286c21d6c0e47f54f3a9214597298c"
@@ -545,7 +545,7 @@
     "windows",
   ]
   pruneopts = "UT"
-  revision = "cd391775e71e684db52b63df9affd58269495083"
+  revision = "775f8194d0f9e65c46913c7be783d3d95a29333c"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -576,10 +576,10 @@
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = "UT"
-  revision = "082222b4a5c572e33e82ee9162d1352c7cf38682"
+  revision = "fc2db5cae922db113989ef87b5b859cc8a179f59"
 
 [[projects]]
-  digest = "1:9ab5a33d8cb5c120602a34d2e985ce17956a4e8c2edce7e6961568f95e40c09a"
+  digest = "1:cbc746de4662c66fd24a037501bd65aa0f8ad0bfca0c92576e0abb88864e3741"
   name = "google.golang.org/grpc"
   packages = [
     ".",
@@ -615,8 +615,8 @@
     "tap",
   ]
   pruneopts = "UT"
-  revision = "a02b0774206b209466313a0b525d2c738fe407eb"
-  version = "v1.18.0"
+  revision = "2fdaae294f38ed9a121193c51ec99fecd3b13eb7"
+  version = "v1.19.0"
 
 [[projects]]
   digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"

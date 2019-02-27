@@ -80,15 +80,16 @@ func userCmd() *Command {
 	AddStringFlag(cmdUserChangePassword, akrctl.ArgNewPasswordSlug,
 		"", "", "User new password", requiredOpt())
 
-	//DCCN-CLI user refresh session token
-	cmdUserTokenRefresh := CmdBuilder(cmd, RunUserTokenRefresh, "refresh", "user refresh session token",
-		Writer, aliasOpt("tr"), docCategories("user"))
-	_ = cmdUserTokenRefresh
-
 	//DCCN-CLI user change email
-	cmdUserChangeEmail := CmdBuilder(cmd, RunUserChangeEmail, "change-email <new-email>",
-		"user email change", Writer, aliasOpt("ce"), docCategories("user"))
+	cmdUserChangeEmail := CmdBuilder(cmd, RunUserChangeEmail, "email-change <new-email>",
+		"user email change", Writer, aliasOpt("ec"), docCategories("user"))
 	_ = cmdUserChangeEmail
+
+	//DCCN-CLI user cnfirm email
+	cmdUserConfirmEmail := CmdBuilder(cmd, RunUserConfirmEmail, "email-confirm <new-email>",
+		"user confirm email change", Writer, aliasOpt("ce"), docCategories("user"))
+	AddStringFlag(cmdUserConfirmEmail, akrctl.ArgEmailCodeSlug,
+		"", "", "User email change confirmation code", requiredOpt())
 
 	//DCCN-CLI user update attribute
 	cmdUserUpdate := CmdBuilder(cmd, RunUserUpdate, "update <user-email>", "user update attribute",
@@ -461,6 +462,51 @@ func RunUserChangeEmail(c *CmdConfig) error {
 	return nil
 }
 
+// RunUserConfirmEmail confirm user registration.
+func RunUserConfirmEmail(c *CmdConfig) error {
+
+	authResult := usermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+	user := usermgr.User{}
+	viper.UnmarshalKey("User", &user)
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	if len(c.Args) < 1 {
+		return akrctl.NewMissingArgsErr(c.NS)
+	}
+
+	confirmationCode, err := c.Ankr.GetString(c.NS, akrctl.ArgEmailCodeSlug)
+	if err != nil {
+		return err
+	}
+
+	url := viper.GetString("hub-url")
+
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	userClient := usermgr.NewUserMgrClient(conn)
+	if _, err := userClient.ConfirmEmail(tokenctx,
+		&usermgr.ConfirmEmailRequest{NewEmail: c.Args[0],
+			ConfirmationCode: confirmationCode}); err != nil {
+		return err
+	}
+	fmt.Println("Email Change Confirm Success.")
+
+	return nil
+}
+
 // RunUserUpdate update user attribute.
 func RunUserUpdate(c *CmdConfig) error {
 
@@ -498,6 +544,8 @@ func RunUserUpdate(c *CmdConfig) error {
 	case "pubkey":
 		task.Key = "PubKey"
 		task.Value = &usermgr.UserAttribute_StringValue{StringValue: updateValue}
+	default:
+		return fmt.Errorf("not correct user attribute for update")
 	}
 
 	taskarray = append(taskarray, task)

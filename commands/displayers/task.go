@@ -15,6 +15,7 @@ package displayers
 
 import (
 	"io"
+	"time"
 
 	pb "github.com/Ankr-network/dccn-common/protos/common"
 )
@@ -39,8 +40,8 @@ func (d *Task) Cols() []string {
 
 func (d *Task) ColMap() map[string]string {
 	return map[string]string{
-		"TaskId": "TaskId", "TaskName": "TaskName", "Type": "Type", "Image": "Image", "LastModifyDate": "LastModifyDate",
-		"CreationDate": "CreationDate", "Replica": "Replica", "DataCenter": "DataCenter", "Status": "Status",
+		"TaskId": "Task Id", "TaskName": "Task Name", "Type": "Type", "Image": "Image", "LastModifyDate": "Last Modify Date",
+		"CreationDate": "Creation Date", "Replica": "Replica", "DataCenter": "Data Center", "Status": "Status",
 	}
 }
 
@@ -58,8 +59,10 @@ func (d *Task) KV() []map[string]interface{} {
 		}
 
 		m := map[string]interface{}{
-			"TaskId": d.Id, "TaskName": d.Name, "Type": d.Type, "Image": image, "LastModifyDate": d.Attributes.LastModifiedDate,
-			"CreationDate": d.Attributes.CreationDate, "Replica": d.Attributes.Replica, "DataCenterName": d.DataCenterName, "Status": d.Status,
+			"TaskId": d.Id, "TaskName": d.Name, "Type": d.Type, "Image": image,
+			"LastModifyDate": time.Unix(int64(d.Attributes.LastModifiedDate), 0).Format(time.RFC822),
+			"CreationDate":   time.Unix(int64(d.Attributes.CreationDate), 0).Format(time.RFC822),
+			"Replica":        d.Attributes.Replica, "DataCenterName": d.DataCenterName, "Status": d.Status,
 		}
 		out = append(out, m)
 	}
