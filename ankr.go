@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package akrctl
+package ankrctl
 
 import (
 	"bytes"
@@ -26,7 +26,7 @@ import (
 
 const (
 	// NSRoot is a configuration key that signifies this value is at the root.
-	NSRoot = "akrctl"
+	NSRoot = "ankrctl"
 )
 
 var (
@@ -44,16 +44,16 @@ var (
 	// Build is ankr's build tag.
 	Build string
 
-	// Major is akrctl's major version.
+	// Major is ankrctl's major version.
 	Major string
 
-	// Minor is akrctl's minor version.
+	// Minor is ankrctl's minor version.
 	Minor string
 
-	// Patch is akrctl's patch version.
+	// Patch is ankrctl's patch version.
 	Patch string
 
-	// Label is akrctl's label.
+	// Label is ankrctl's label.
 	Label string
 )
 

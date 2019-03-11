@@ -23,7 +23,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	akrctl "github.com/Ankr-network/dccn-cli"
+	ankrctl "github.com/Ankr-network/dccn-cli"
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	usermgr "github.com/Ankr-network/dccn-common/protos/usermgr/v1/grpc"
@@ -60,30 +60,30 @@ func Task() *Command {
 	//DCCN-CLI comput task create
 	cmdRunTaskCreate := CmdBuilder(cmd, RunTaskCreate, "create <task-name> [task-name ...]",
 		"create task", Writer, aliasOpt("cr"), displayerType(&displayers.Task{}), docCategories("task"))
-	AddStringFlag(cmdRunTaskCreate, akrctl.ArgImageSlug, "", "", "Task image", requiredOpt())
-	AddStringFlag(cmdRunTaskCreate, akrctl.ArgTypeSlug, "", "", "Task type")
-	AddStringFlag(cmdRunTaskCreate, akrctl.ArgDcNameSlug, "", "", "Task data center name")
-	AddStringFlag(cmdRunTaskCreate, akrctl.ArgReplicaSlug, "", "", "Task replica")
-	AddStringFlag(cmdRunTaskCreate, akrctl.ArgScheduleSlug, "", "", "Task schedule")
+	AddStringFlag(cmdRunTaskCreate, ankrctl.ArgImageSlug, "", "", "Task image", requiredOpt())
+	AddStringFlag(cmdRunTaskCreate, ankrctl.ArgTypeSlug, "", "", "Task type")
+	AddStringFlag(cmdRunTaskCreate, ankrctl.ArgDcNameSlug, "", "", "Task data center name")
+	AddStringFlag(cmdRunTaskCreate, ankrctl.ArgReplicaSlug, "", "", "Task replica")
+	AddStringFlag(cmdRunTaskCreate, ankrctl.ArgScheduleSlug, "", "", "Task schedule")
 
 	//DCCN-CLI comput task cancel
 	cmdRunTaskCancel := CmdBuilder(cmd, RunTaskCancel, "cancel <task-id> [task-id ...]",
 		"Cancel task by id", Writer, aliasOpt("dl", "del", "rm"), docCategories("Task"))
-	AddBoolFlag(cmdRunTaskCancel, akrctl.ArgForce, akrctl.ArgShortForce, false, "Force task cancel")
+	AddBoolFlag(cmdRunTaskCancel, ankrctl.ArgForce, ankrctl.ArgShortForce, false, "Force task cancel")
 
 	//DCCN-CLI comput task update
 	cmdRunTaskUpdate := CmdBuilder(cmd, RunTaskUpdate, "update <task-id> [task-id ...]",
 		"Update task by id", Writer, aliasOpt("ud", "udt", "ch"), docCategories("Task"))
-	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgImageSlug, "", "", "Task image")
-	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgReplicaSlug, "", "", "Task replica")
-	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgTypeSlug, "", "", "Task type")
-	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgDcNameSlug, "", "", "Task data center name")
-	AddStringFlag(cmdRunTaskUpdate, akrctl.ArgScheduleSlug, "", "", "Task schedule")
+	AddStringFlag(cmdRunTaskUpdate, ankrctl.ArgImageSlug, "", "", "Task image")
+	AddStringFlag(cmdRunTaskUpdate, ankrctl.ArgReplicaSlug, "", "", "Task replica")
+	AddStringFlag(cmdRunTaskUpdate, ankrctl.ArgTypeSlug, "", "", "Task type")
+	AddStringFlag(cmdRunTaskUpdate, ankrctl.ArgDcNameSlug, "", "", "Task data center name")
+	AddStringFlag(cmdRunTaskUpdate, ankrctl.ArgScheduleSlug, "", "", "Task schedule")
 
 	//DCCN-CLI task list
 	cmdRunTaskList := CmdBuilder(cmd, RunTaskList, "list [GLOB]", "list tasks", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Task{}), docCategories("task"))
-	AddStringFlag(cmdRunTaskList, akrctl.ArgTaskIdSlug, "", "", "Task id")
+	AddStringFlag(cmdRunTaskList, ankrctl.ArgTaskIdSlug, "", "", "Task id")
 
 	//DCCN-CLI task leader
 	cmdRunTaskLeader := CmdBuilder(cmd, RunTaskLeader, "leader", "show tasks leaderboard", Writer,
@@ -98,7 +98,7 @@ func Task() *Command {
 	//DCCN-CLI comput task purge
 	cmdRunTaskPurge := CmdBuilder(cmd, RunTaskPurge, "purge <task-id> [task-id ...]", "Purge task by id",
 		Writer, aliasOpt("pg"), docCategories("Task"))
-	AddBoolFlag(cmdRunTaskPurge, akrctl.ArgForce, akrctl.ArgShortForce, false, "Force task purge")
+	AddBoolFlag(cmdRunTaskPurge, ankrctl.ArgForce, ankrctl.ArgShortForce, false, "Force task purge")
 
 	return cmd
 
@@ -109,20 +109,20 @@ func Task() *Command {
 func RunTaskCreate(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
-	image, err := c.Ankr.GetString(c.NS, akrctl.ArgImageSlug)
+	image, err := c.Ankr.GetString(c.NS, ankrctl.ArgImageSlug)
 	if err != nil {
 		return err
 	}
 
-	dcName, err := c.Ankr.GetString(c.NS, akrctl.ArgDcNameSlug)
+	dcName, err := c.Ankr.GetString(c.NS, ankrctl.ArgDcNameSlug)
 	if err != nil {
 		return err
 	}
 
-	taskType, err := c.Ankr.GetString(c.NS, akrctl.ArgTypeSlug)
+	taskType, err := c.Ankr.GetString(c.NS, ankrctl.ArgTypeSlug)
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func RunTaskCreate(c *CmdConfig) error {
 	}
 	taskType = strings.ToUpper(taskType)
 
-	replica, err := c.Ankr.GetString(c.NS, akrctl.ArgReplicaSlug)
+	replica, err := c.Ankr.GetString(c.NS, ankrctl.ArgReplicaSlug)
 	if err != nil {
 		return err
 	}
@@ -150,7 +150,7 @@ func RunTaskCreate(c *CmdConfig) error {
 		task.TypeData = &common_proto.Task_TypeJob{TypeJob: &common_proto.TaskTypeJob{Image: image}}
 	case "CRONJOB":
 		task.Type = common_proto.TaskType_CRONJOB
-		schedule, err := c.Ankr.GetString(c.NS, akrctl.ArgScheduleSlug)
+		schedule, err := c.Ankr.GetString(c.NS, ankrctl.ArgScheduleSlug)
 		if err != nil {
 			return err
 		}
@@ -226,13 +226,13 @@ func RunTaskCreate(c *CmdConfig) error {
 // RunTaskPurge purge a task from hub.
 func RunTaskPurge(c *CmdConfig) error {
 
-	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, ankrctl.ArgForce)
 	if err != nil {
 		return err
 	}
 
 	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := usermgr.AuthenticationResult{}
@@ -293,13 +293,13 @@ func RunTaskCancel(c *CmdConfig) error {
 	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
-	force, err := c.Ankr.GetBool(c.NS, akrctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, ankrctl.ArgForce)
 	if err != nil {
 		return err
 	}
 
 	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
 	if force || AskForConfirm(fmt.Sprintf("Are you sure you want to Cancel %d task(s) (y/N) ? ", len(c.Args))) == nil {
@@ -365,7 +365,7 @@ func RunTaskList(c *CmdConfig) error {
 
 	taskMgr := pb.NewTaskMgrClient(conn)
 	tlr := pb.TaskListRequest{}
-	taskId, err := c.Ankr.GetString(c.NS, akrctl.ArgTaskIdSlug)
+	taskId, err := c.Ankr.GetString(c.NS, ankrctl.ArgTaskIdSlug)
 	if err != nil {
 		return err
 	}
@@ -475,25 +475,25 @@ func RunTaskUpdate(c *CmdConfig) error {
 	defer cancel()
 
 	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
-	image, err := c.Ankr.GetString(c.NS, akrctl.ArgImageSlug)
+	image, err := c.Ankr.GetString(c.NS, ankrctl.ArgImageSlug)
 	if err != nil {
 		return err
 	}
 
-	replica, err := c.Ankr.GetString(c.NS, akrctl.ArgReplicaSlug)
+	replica, err := c.Ankr.GetString(c.NS, ankrctl.ArgReplicaSlug)
 	if err != nil {
 		return err
 	}
 
-	dcName, err := c.Ankr.GetString(c.NS, akrctl.ArgDcNameSlug)
+	dcName, err := c.Ankr.GetString(c.NS, ankrctl.ArgDcNameSlug)
 	if err != nil {
 		return err
 	}
 
-	taskType, err := c.Ankr.GetString(c.NS, akrctl.ArgTypeSlug)
+	taskType, err := c.Ankr.GetString(c.NS, ankrctl.ArgTypeSlug)
 	if err != nil {
 		return err
 	}
@@ -526,7 +526,7 @@ func RunTaskUpdate(c *CmdConfig) error {
 			if image != "" {
 				taskDeploy.Image = image
 			}
-			schedule, err := c.Ankr.GetString(c.NS, akrctl.ArgScheduleSlug)
+			schedule, err := c.Ankr.GetString(c.NS, ankrctl.ArgScheduleSlug)
 			if err != nil {
 				return err
 			}
