@@ -73,13 +73,13 @@ type Displayable interface {
 
 type Displayer struct {
 	NS     string
-	Config akrctl.Config
+	Config ankrctl.Config
 	Item   Displayable
 	Out    io.Writer
 }
 
 func (d *Displayer) Display() error {
-	output, err := akrctl.AnkrConfig.GetString(akrctl.NSRoot, "output")
+	output, err := ankrctl.AnkrConfig.GetString(ankrctl.NSRoot, "output")
 	if err != nil {
 		return nil
 	}
