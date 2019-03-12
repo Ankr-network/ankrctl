@@ -19,6 +19,6 @@ import (
 )
 
 func main() {
-	log.SetPrefix("akrctl: ")
+	log.SetPrefix("ankrctl: ")
 	commands.Execute()
 }

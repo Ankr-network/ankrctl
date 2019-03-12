@@ -30,7 +30,7 @@ import (
 
 	"golang.org/x/crypto/ssh/terminal"
 
-	akrctl "github.com/Ankr-network/dccn-cli"
+	ankrctl "github.com/Ankr-network/dccn-cli"
 	wallet "github.com/Ankr-network/dccn-common/wallet"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -76,11 +76,11 @@ func walletCmd() *Command {
 	//DCCN-CLI wallet send token
 	cmdWalletSendtoken := CmdBuilder(cmd, RunWalletSendtoken, "sendtoken <token-amount>",
 		"send token to address", Writer, aliasOpt("st"), docCategories("wallet"))
-	AddStringFlag(cmdWalletSendtoken, akrctl.ArgTargetSlug, "", "", "send token to wallet address",
+	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgTargetSlug, "", "", "send token to wallet address",
 		requiredOpt())
-	AddStringFlag(cmdWalletSendtoken, akrctl.ArgPublicKeySlug, "", "", "wallet public key")
-	AddStringFlag(cmdWalletSendtoken, akrctl.ArgPrivateKeySlug, "", "", "wallet private key")
-	AddStringFlag(cmdWalletSendtoken, akrctl.ArgAddressSlug, "", "", "wallet address")
+	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgPublicKeySlug, "", "", "wallet public key")
+	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgPrivateKeySlug, "", "", "wallet private key")
+	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgAddressSlug, "", "", "wallet address")
 
 	//DCCN-CLI wallet get balance
 	cmdWalletGetbalance := CmdBuilder(cmd, RunWalletGetbalance, "getbal <address>",
@@ -111,9 +111,9 @@ func RunWalletGenkey(c *CmdConfig) error {
 
 		fmt.Println("Updating wallet...\n")
 
-		viper.Set(akrctl.ArgPrivateKeySlug, privateKey)
-		viper.Set(akrctl.ArgPublicKeySlug, publicKey)
-		viper.Set(akrctl.ArgAddressSlug, address)
+		viper.Set(ankrctl.ArgPrivateKeySlug, privateKey)
+		viper.Set(ankrctl.ArgPublicKeySlug, publicKey)
+		viper.Set(ankrctl.ArgAddressSlug, address)
 		if err := writeConfig(); err != nil {
 			return fmt.Errorf(err.Error())
 		}
@@ -129,7 +129,7 @@ func RunWalletGenkey(c *CmdConfig) error {
 func RunWalletImportkey(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
 	if AskForConfirm(fmt.Sprintf(`About to import address, public key and private key from key file.
@@ -163,9 +163,9 @@ func RunWalletImportkey(c *CmdConfig) error {
 
 		fmt.Println("\nUpdating wallet...")
 
-		viper.Set(akrctl.ArgPrivateKeySlug, key.PrivateKey)
-		viper.Set(akrctl.ArgPublicKeySlug, key.PublicKey)
-		viper.Set(akrctl.ArgAddressSlug, key.Address)
+		viper.Set(ankrctl.ArgPrivateKeySlug, key.PrivateKey)
+		viper.Set(ankrctl.ArgPublicKeySlug, key.PublicKey)
+		viper.Set(ankrctl.ArgAddressSlug, key.Address)
 		if err := writeConfig(); err != nil {
 			return fmt.Errorf(err.Error())
 		}
@@ -182,16 +182,16 @@ func RunWalletImportkey(c *CmdConfig) error {
 func RunWalletExportkey(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
 	if AskForConfirm(fmt.Sprintf(`About to export privateKey/publicKey/address to key file.
 	Type 'yes' to confirm that you would save this key file: `)) == nil {
 
 		key := Key{}
-		key.PrivateKey = viper.GetString(akrctl.ArgPrivateKeySlug)
-		key.PublicKey = viper.GetString(akrctl.ArgPublicKeySlug)
-		key.Address = viper.GetString(akrctl.ArgAddressSlug)
+		key.PrivateKey = viper.GetString(ankrctl.ArgPrivateKeySlug)
+		key.PublicKey = viper.GetString(ankrctl.ArgPublicKeySlug)
+		key.Address = viper.GetString(ankrctl.ArgAddressSlug)
 
 		if key.PrivateKey == "" || key.PublicKey == "" || key.Address == "" {
 			return errors.New("No existing key to export")
@@ -247,10 +247,10 @@ func RunWalletExportkey(c *CmdConfig) error {
 func RunWalletSendtoken(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
-	target, err := c.Ankr.GetString(c.NS, akrctl.ArgTargetSlug)
+	target, err := c.Ankr.GetString(c.NS, ankrctl.ArgTargetSlug)
 	if err != nil {
 		return err
 	}
@@ -275,26 +275,26 @@ func RunWalletSendtoken(c *CmdConfig) error {
 	}
 	tokenAmount, _ := new(big.Int).SetString(amountInt, 10)
 	tokenAmount = tokenAmount.Mul(tokenAmount, big.NewInt(int64(math.Pow10(lenPow))))
-	address, err := c.Ankr.GetString(c.NS, akrctl.ArgAddressSlug)
+	address, err := c.Ankr.GetString(c.NS, ankrctl.ArgAddressSlug)
 	if err != nil {
 		return err
 	}
 
-	publicKey, err := c.Ankr.GetString(c.NS, akrctl.ArgPublicKeySlug)
+	publicKey, err := c.Ankr.GetString(c.NS, ankrctl.ArgPublicKeySlug)
 	if err != nil {
 		return err
 	}
 
-	privateKey, err := c.Ankr.GetString(c.NS, akrctl.ArgPrivateKeySlug)
+	privateKey, err := c.Ankr.GetString(c.NS, ankrctl.ArgPrivateKeySlug)
 	if err != nil {
 		return err
 	}
 
 	if address == "" || publicKey == "" || privateKey == "" {
 
-		address = viper.GetString(akrctl.ArgAddressSlug)
-		publicKey = viper.GetString(akrctl.ArgPublicKeySlug)
-		privateKey = viper.GetString(akrctl.ArgPrivateKeySlug)
+		address = viper.GetString(ankrctl.ArgAddressSlug)
+		publicKey = viper.GetString(ankrctl.ArgPublicKeySlug)
+		privateKey = viper.GetString(ankrctl.ArgPrivateKeySlug)
 
 		if address == "" || publicKey == "" || privateKey == "" {
 
@@ -341,13 +341,13 @@ func RunWalletSendtoken(c *CmdConfig) error {
 // RunWalletGetbalance get balance from chain.
 func RunWalletGetbalance(c *CmdConfig) error {
 
-	address := viper.GetString(akrctl.ArgAddressSlug)
+	address := viper.GetString(ankrctl.ArgAddressSlug)
 	if len(c.Args) > 0 {
 		address = c.Args[0]
 	}
 
 	if address == "" && len(c.Args) < 1 {
-		return akrctl.NewMissingArgsErr(c.NS)
+		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
 	fmt.Printf("Query balance by address %s\n", address)

@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	akrctl "github.com/Ankr-network/dccn-cli"
+	ankrctl "github.com/Ankr-network/dccn-cli"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	"github.com/stretchr/testify/assert"
 )
@@ -77,7 +77,7 @@ func TestMockCommand_Run(t *testing.T) {
 	var url = os.Getenv("URL_BRANCH")
 	fmt.Println("url: " + url + "\n")
 
-	lc := akrctl.NewLiveCommand("go")
+	lc := ankrctl.NewLiveCommand("go")
 
 	MockUserEmail := MockUserName + "@mailinator.com"
 
