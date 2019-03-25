@@ -326,7 +326,7 @@ func RunWalletSendtoken(c *CmdConfig) error {
 	if tendermintURL == "" {
 		tendermintURL = "chain-dev.dccn.ankr.network"
 	}
-	if AskForConfirm(fmt.Sprintf("About to send %s from wallet address %s to wallet address %s, Type 'yes' to confirm this action: ", tokenAmount.String(), address, target)) == nil {
+	if AskForConfirm(fmt.Sprintf("About to send %s from wallet address %s to wallet address %s, Type 'yes' to confirm this action: ", c.Args[0], address, target)) == nil {
 		if err := wallet.SendCoins(tendermintURL, "26657", privateKey, address, target, tokenAmount.String(), publicKey); err != nil {
 			return err
 		}
@@ -358,8 +358,8 @@ func RunWalletGetbalance(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Printf("The balance is: %s\n", balance)
+	balanceDecimal := balance[:len(balance)-18] + "." + balance[len(balance)-18:]
+	fmt.Printf("The balance is: %s\n", balanceDecimal)
 
 	return nil
 }

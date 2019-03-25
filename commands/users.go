@@ -157,7 +157,7 @@ func RunUserRegister(c *CmdConfig) error {
 		return err
 	}
 
-	fmt.Printf("User %s Register Success.\n", email)
+	fmt.Printf("User %s Register Requested, Please Check Your Email Box.\n", email)
 
 	return nil
 }
@@ -295,7 +295,7 @@ func RunUserForgotPassword(c *CmdConfig) error {
 		return err
 	}
 
-	fmt.Println("Forgot Password Request Success.")
+	fmt.Println("Forgot Password Requested, Please Check Your Email Box.")
 
 	return nil
 }
@@ -462,7 +462,7 @@ func RunUserChangeEmail(c *CmdConfig) error {
 		return err
 	}
 
-	fmt.Println("Change Email Success.")
+	fmt.Println("Change Email Requested, Please Check Your Email Box.")
 
 	return nil
 }
