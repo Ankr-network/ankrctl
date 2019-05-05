@@ -58,6 +58,7 @@ func namespaceCmd() *Command {
 	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit", requiredOpt())
 	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit", requiredOpt())
 	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit", requiredOpt())
+	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsClusterIDSlug, "", "", "Namespace Cluster Id")
 
 	//DCCN-CLI namespace list
 	cmdRunNamespaceList := CmdBuilder(cmd, RunNamespaceList, "list [GLOB]", "list namespace", Writer,
@@ -140,10 +141,16 @@ func RunNamespaceCreate(c *CmdConfig) error {
 		return err
 	}
 
+	nsClusterId, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsClusterIDSlug)
+	if err != nil {
+		return err
+	}
+
 	createNamespaceRequest := &gwtaskmgr.CreateNamespaceRequest{
 		NsCpuLimit:     uint32(nsCpuLimit),
 		NsMemLimit:     uint32(nsMemLimit),
 		NsStorageLimit: uint32(nsStorageLimit),
+		ClusterId:      nsClusterId,
 	}
 
 	var wg sync.WaitGroup

@@ -46,6 +46,8 @@ const (
 	ArgNsMemLimitSlug = "mem-limit"
 	// ArgNsStorageLimitSlug is a namespace storage limit slug argument.
 	ArgNsStorageLimitSlug = "storage-limit"
+	// ArgNsClusterIdSlug is a namespace cluster id slug argument.
+	ArgNsClusterIDSlug = "ns-cluster-id"
 	// ArgChartRepoSlug is a chart repo slug argument.
 	ArgChartRepoSlug = "chart-repo"
 	// ArgListRepoSlug is a chart list repo slug argument.
