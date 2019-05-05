@@ -20,8 +20,8 @@ const (
 	ArgContext = "context"
 	// ArgUserID is a user id argument.
 	ArgUserID = "userid"
-	// ArgDcNameSlug is a datacenter slug argument.
-	ArgDcNameSlug = "dc-name"
+	// ArgClusterNameSlug is a datacenter slug argument.
+	ArgClusterNameSlug = "cluster-name"
 	// ArgTypeSlug is a type slug argument.
 	ArgTypeSlug = "type"
 	// ArgFormat is columns to include in output argment.
@@ -32,26 +32,78 @@ const (
 	ArgOutput = "output"
 	// ArgForce forces confirmation on actions
 	ArgForce = "force"
-	// ArgTaskIdSlug is a task id slug argument.
-	ArgTaskIdSlug = "task-id"
-	// ArgImageSlug is a task image slug argument.
-	ArgImageSlug = "image"
-	// ArgReplicaSlug is a rtask eplica slug argument.
-	ArgReplicaSlug = "replica"
-	// ArgScheduleSlug is a task schedule slug argument.
-	ArgScheduleSlug = "schedule"
+	// ArgAppIDSlug is a id slug argument.
+	ArgAppIDSlug = "app-id"
+	// ArgAppNameSlug is a name slug argument.
+	ArgAppNameSlug = "app-name"
+	// ArgNsIDSlug is a namespace id slug argument.
+	ArgNsIDSlug = "ns-id"
+	// ArgNsNameSlug is a namespace name slug argument.
+	ArgNsNameSlug = "ns-name"
+	// ArgNsCpuLimitSlug is a namespace cpu limit slug argument.
+	ArgNsCpuLimitSlug = "cpu-limit"
+	// ArgNsMemLimitSlug is a namespace mem limit slug argument.
+	ArgNsMemLimitSlug = "mem-limit"
+	// ArgNsStorageLimitSlug is a namespace storage limit slug argument.
+	ArgNsStorageLimitSlug = "storage-limit"
+	// ArgChartRepoSlug is a chart repo slug argument.
+	ArgChartRepoSlug = "chart-repo"
+	// ArgListRepoSlug is a chart list repo slug argument.
+	ArgListRepoSlug = "list-repo"
+	// ArgDetailRepoSlug is a chart detail repo slug argument.
+	ArgDetailRepoSlug = "detail-repo"
+	// ArgSourceRepoSlug is a saveas chart source repo slug argument.
+	ArgSourceRepoSlug = "source-repo"
+	// ArgSaveRepoSlug is a saveas chart save repo slug argument.
+	ArgSaveRepoSlug = "save-repo"
+	// ArgDownloadRepoSlug is a download chart repo slug argument.
+	ArgDownloadRepoSlug = "download-repo"
+	// ArgChartNameSlug is a chart image slug argument.
+	ArgChartNameSlug = "chart-name"
+	// ArgUploadVersionSlug is a chart upload version slug argument.
+	ArgUploadVersionSlug = "upload-version"
+	// ArgSourceNameSlug is a chart source image slug argument.
+	ArgSourceNameSlug = "source-name"
+	// ArgChartVersionSlug is a chart version slug argument.
+	ArgChartVersionSlug = "chart-version"
+	// ArgUpdateVersionSlug is a update app chart version slug argument.
+	ArgUpdateVersionSlug = "update-version"
+	// ArgDownloadVersionSlug is a download chart version slug argument.
+	ArgDownloadVersionSlug = "download-version"
+	// ArgDeleteVersionSlug is a download chart version slug argument.
+	ArgDeleteVersionSlug = "delete-version"
+	// ArgSourceVersionSlug is a saveas chart source version slug argument.
+	ArgSourceVersionSlug = "source-version"
+	// ArgSaveasVersionSlug is a chart saveas version slug argument.
+	ArgSaveasVersionSlug = "saveas-version"
+	// ArgShowVersionSlug is a chart detail show version slug argument.
+	ArgShowVersionSlug = "show-version"
+	// ArgChartFileSlug is a chart file slug argument.
+	ArgChartFileSlug = "chart-file"
+	// ArgUploadFileSlug is a chart file slug argument.
+	ArgUploadFileSlug = "upload-file"
+	// ArgValuesYamlSlug is a values file slug argument.
+	ArgValuesYamlSlug = "values-yaml"
 	// ArgPasswordSlug is a user password slug argument.
 	ArgPasswordSlug = "password"
 	// ArgEmailSlug is a user email slug argument.
 	ArgEmailSlug = "email"
 	// ArgAddressSlug is a wallet address slug argument.
 	ArgAddressSlug = "address"
-	// ArgTargetSlug is a wallet send token target address slug argument.
-	ArgTargetSlug = "target"
+	// ArgTargetAddressSlug is a wallet send token target address slug argument.
+	ArgTargetAddressSlug = "target-address"
 	// ArgPrivateKeySlug is a wallet private key slug argument.
 	ArgPrivateKeySlug = "private-key"
 	// ArgPublicKeySlug is a wallet public key slug argument.
 	ArgPublicKeySlug = "public-key"
+	// ArgAddressTypeSlug is a wallet address type slug argument.
+	ArgAddressTypeSlug = "type"
+	// ArgAddressPurposeSlug is a wallet address purpose slug argument.
+	ArgAddressPurposeSlug = "purpose"
+	// ArgSearchDepositStartSlug is a wallet search deposit start date slug argument.
+	ArgSearchDepositStartSlug = "deposit-startdate"
+	// ArgSearchDepositEndSlug is a wallet search deposit end date slug argument.
+	ArgSearchDepositEndSlug = "deposit-enddate"
 	// ArgRegisterCodeSlug is a user registration confirmation code slug argument.
 	ArgRegisterCodeSlug = "register-code"
 	// ArgPasswordCodeSlug is a password registration confirmation code slug argument.

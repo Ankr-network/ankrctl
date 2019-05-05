@@ -23,8 +23,8 @@ import (
 	common "github.com/Ankr-network/dccn-common/protos/common"
 )
 
-type Dc struct {
-	Dcs []common.DataCenter
+type Cluster struct {
+	Clusters []common.DataCenterStatus
 }
 
 type Metrics struct {
@@ -39,37 +39,37 @@ type Metrics struct {
 	NetworkIO     int64
 }
 
-var _ Displayable = &Dc{}
+var _ Displayable = &Cluster{}
 
-func (d *Dc) JSON(out io.Writer) error {
-	return writeJSON(d.Dcs, out)
+func (c *Cluster) JSON(out io.Writer) error {
+	return writeJSON(c.Clusters, out)
 }
 
-func (d *Dc) Cols() []string {
+func (c *Cluster) Cols() []string {
 	cols := []string{
-		"Id", "Name", "CPU", "RAM", "HDD", "Lat", "Lng", "Status", "WalletAddress",
+		"ID", "Name", "CPU", "MEM", "Storage", "Lat", "Lng", "Status", "WalletAddress",
 	}
 	return cols
 }
 
-func (d *Dc) ColMap() map[string]string {
+func (c *Cluster) ColMap() map[string]string {
 	return map[string]string{
-		"Id": "Id", "Name": "Name", "CPU": "CPU", "RAM": "RAM", "HDD": "HDD",
+		"ID": "ID", "Name": "Name", "CPU": "CPU", "MEM": "Memory", "Storage": "Storage",
 		"Lat": "Latitude", "Lng": "Longitude", "Status": "Status", "WalletAddress": "WalletAddress",
 	}
 }
 
-func (d *Dc) KV() []map[string]interface{} {
+func (c *Cluster) KV() []map[string]interface{} {
 	out := []map[string]interface{}{}
-	for _, d := range d.Dcs {
+	for _, c := range c.Clusters {
 		metrics := Metrics{}
-		_ = json.Unmarshal([]byte(d.DcHeartbeatReport.Metrics), &metrics)
+		_ = json.Unmarshal([]byte(c.DcHeartbeatReport.Metrics), &metrics)
 		m := map[string]interface{}{
-			"Id": d.Id, "Name": d.Name, "CPU": strconv.Itoa(int(metrics.TotalCPU)) + "CPU(s)",
-			"RAM": fmt.Sprintf("%.2f", float64(metrics.TotalMemory)/1073741824) + "GB",
-			"HDD": fmt.Sprintf("%.2f", float64(metrics.TotalStorage)/1073741824) + "GB",
-			"Lat": d.GeoLocation.Lat, "Lng": d.GeoLocation.Lng, "Status": strings.ToLower(d.Status.String()),
-			"WalletAddress": d.DcAttributes.WalletAddress,
+			"ID": c.DcId, "Name": c.DcName, "CPU": strconv.Itoa(int(metrics.TotalCPU)) + "CPU(s)",
+			"MEM":     fmt.Sprintf("%.2f", float64(metrics.TotalMemory)/1073741824) + "GB",
+			"Storage": fmt.Sprintf("%.2f", float64(metrics.TotalStorage)/1073741824) + "GB",
+			"Lat":     c.GeoLocation.Lat, "Lng": c.GeoLocation.Lng, "Status": strings.ToLower(c.DcStatus.String()),
+			"WalletAddress": c.DcAttributes.WalletAddress,
 		}
 		out = append(out, m)
 	}

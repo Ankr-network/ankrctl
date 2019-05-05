@@ -29,7 +29,8 @@ import (
 	"context"
 
 	ankr_const "github.com/Ankr-network/dccn-common"
-	usermgr "github.com/Ankr-network/dccn-common/protos/usermgr/v1/grpc"
+	common_proto "github.com/Ankr-network/dccn-common/protos/common"
+	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -87,7 +88,7 @@ func userCmd() *Command {
 		"user email change", Writer, aliasOpt("ec"), docCategories("user"))
 	_ = cmdUserChangeEmail
 
-	//DCCN-CLI user cnfirm email
+	//DCCN-CLI user confirm email
 	cmdUserConfirmEmail := CmdBuilder(cmd, RunUserConfirmEmail, "email-confirm <new-email>",
 		"user confirm email change", Writer, aliasOpt("ce"), docCategories("user"))
 	AddStringFlag(cmdUserConfirmEmail, ankrctl.ArgEmailCodeSlug,
@@ -108,6 +109,11 @@ func userCmd() *Command {
 	cmdUserLogout := CmdBuilder(cmd, RunUserLogout, "logout", "user logout", Writer,
 		aliasOpt("lo"), docCategories("user"))
 	_ = cmdUserLogout
+
+	//DCCN-CLI get user detail with wallet address
+	cmdUserDetail := CmdBuilder(cmd, RunUserDetail, "detail",
+		"get user detail with wallet address", Writer, aliasOpt("ud"), docCategories("user"))
+	_ = cmdUserDetail
 
 	return cmd
 
@@ -132,25 +138,20 @@ func RunUserRegister(c *CmdConfig) error {
 	}
 
 	url := viper.GetString("hub-url")
-
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
-	urr := &usermgr.RegisterRequest{
+	urr := &gwusermgr.RegisterRequest{
 		Password: password,
-		User: &usermgr.User{
-			Email: email,
-			Attributes: &usermgr.UserAttributes{
-				Name: c.Args[0],
-			},
-		},
+		Email:    email,
+		Name:     c.Args[0],
 	}
 
 	if _, err := userClient.Register(ctx, urr); err != nil {
@@ -185,13 +186,13 @@ func RunUserLogin(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(),
 		ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
 	rsp, err := userClient.Login(ctx,
-		&usermgr.LoginRequest{Email: email, Password: string(password)})
+		&gwusermgr.LoginRequest{Email: email, Password: string(password)})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -209,7 +210,7 @@ func RunUserLogin(c *CmdConfig) error {
 // RunUserLogout logout user.
 func RunUserLogout(c *CmdConfig) error {
 
-	authResult := usermgr.AuthenticationResult{}
+	authResult := gwusermgr.AuthenticationResult{}
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
@@ -227,11 +228,11 @@ func RunUserLogout(c *CmdConfig) error {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	tokenContext, cancel := context.WithTimeout(ctx, 180*time.Second)
 	defer cancel()
 	if _, err := userClient.Logout(tokenContext,
-		&usermgr.RefreshToken{RefreshToken: authResult.RefreshToken}); err != nil {
+		&gwusermgr.RefreshToken{RefreshToken: authResult.RefreshToken}); err != nil {
 		return err
 	}
 	viper.Set("UserDetail", "")
@@ -263,9 +264,9 @@ func RunUserConfirmRegistration(c *CmdConfig) error {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ConfirmRegistration(context.Background(),
-		&usermgr.ConfirmRegistrationRequest{Email: c.Args[0],
+		&gwusermgr.ConfirmRegistrationRequest{Email: c.Args[0],
 			ConfirmationCode: confirmationCode}); err != nil {
 		return err
 	}
@@ -289,9 +290,9 @@ func RunUserForgotPassword(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ForgotPassword(context.Background(),
-		&usermgr.ForgotPasswordRequest{Email: c.Args[0]}); err != nil {
+		&gwusermgr.ForgotPasswordRequest{Email: c.Args[0]}); err != nil {
 		return err
 	}
 
@@ -325,9 +326,9 @@ func RunUserConfirmPassword(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ConfirmPassword(context.Background(),
-		&usermgr.ConfirmPasswordRequest{Email: c.Args[0], ConfirmationCode: confirmationCode,
+		&gwusermgr.ConfirmPasswordRequest{Email: c.Args[0], ConfirmationCode: confirmationCode,
 			NewPassword: confirmPassword}); err != nil {
 		return err
 	}
@@ -340,7 +341,7 @@ func RunUserConfirmPassword(c *CmdConfig) error {
 // RunUserChangePassword change password with new password.
 func RunUserChangePassword(c *CmdConfig) error {
 
-	authResult := usermgr.AuthenticationResult{}
+	authResult := gwusermgr.AuthenticationResult{}
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
@@ -371,9 +372,9 @@ func RunUserChangePassword(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ChangePassword(tokenctx,
-		&usermgr.ChangePasswordRequest{NewPassword: newPassword, OldPassword: oldPassword}); err != nil {
+		&gwusermgr.ChangePasswordRequest{NewPassword: newPassword, OldPassword: oldPassword}); err != nil {
 		return err
 	}
 
@@ -385,7 +386,7 @@ func RunUserChangePassword(c *CmdConfig) error {
 // RunUserTokenRefresh refresh token with new one.
 func RunUserTokenRefresh(c *CmdConfig) error {
 
-	authResult := usermgr.AuthenticationResult{}
+	authResult := gwusermgr.AuthenticationResult{}
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
@@ -406,9 +407,9 @@ func RunUserTokenRefresh(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	rsp, err := userClient.RefreshSession(tokenctx,
-		&usermgr.RefreshToken{RefreshToken: authResult.RefreshToken})
+		&gwusermgr.RefreshToken{RefreshToken: authResult.RefreshToken})
 	if err != nil {
 		return err
 	}
@@ -424,9 +425,9 @@ func RunUserTokenRefresh(c *CmdConfig) error {
 // RunUserChangeEmail change password with new password.
 func RunUserChangeEmail(c *CmdConfig) error {
 
-	authResult := usermgr.AuthenticationResult{}
+	authResult := gwusermgr.AuthenticationResult{}
 	viper.UnmarshalKey("AuthResult", &authResult)
-	user := usermgr.User{}
+	user := gwusermgr.User{}
 	viper.UnmarshalKey("User", &user)
 	if authResult.AccessToken == "" {
 		return fmt.Errorf("no ankr network access token found")
@@ -451,9 +452,9 @@ func RunUserChangeEmail(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ChangeEmail(tokenctx,
-		&usermgr.ChangeEmailRequest{NewEmail: c.Args[0]}); err != nil {
+		&gwusermgr.ChangeEmailRequest{NewEmail: c.Args[0]}); err != nil {
 		return err
 	}
 	user.Email = c.Args[0]
@@ -470,9 +471,9 @@ func RunUserChangeEmail(c *CmdConfig) error {
 // RunUserConfirmEmail confirm user registration.
 func RunUserConfirmEmail(c *CmdConfig) error {
 
-	authResult := usermgr.AuthenticationResult{}
+	authResult := gwusermgr.AuthenticationResult{}
 	viper.UnmarshalKey("AuthResult", &authResult)
-	user := usermgr.User{}
+	user := gwusermgr.User{}
 	viper.UnmarshalKey("User", &user)
 	if authResult.AccessToken == "" {
 		return fmt.Errorf("no ankr network access token found")
@@ -501,9 +502,9 @@ func RunUserConfirmEmail(c *CmdConfig) error {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ConfirmEmail(tokenctx,
-		&usermgr.ConfirmEmailRequest{NewEmail: c.Args[0],
+		&gwusermgr.ConfirmEmailRequest{NewEmail: c.Args[0],
 			ConfirmationCode: confirmationCode}); err != nil {
 		return err
 	}
@@ -515,7 +516,7 @@ func RunUserConfirmEmail(c *CmdConfig) error {
 // RunUserUpdate update user attribute.
 func RunUserUpdate(c *CmdConfig) error {
 
-	authResult := usermgr.AuthenticationResult{}
+	authResult := gwusermgr.AuthenticationResult{}
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
@@ -539,21 +540,21 @@ func RunUserUpdate(c *CmdConfig) error {
 		return err
 	}
 
-	taskarray := []*usermgr.UserAttribute{}
-	task := &usermgr.UserAttribute{}
+	attributeArray := []*gwusermgr.UserAttribute{}
+	attribute := &gwusermgr.UserAttribute{}
 
 	switch updateKey {
 	case "name":
-		task.Key = "Name"
-		task.Value = &usermgr.UserAttribute_StringValue{StringValue: updateValue}
+		attribute.Key = "Name"
+		attribute.Value = updateValue
 	case "pubkey":
-		task.Key = "PubKey"
-		task.Value = &usermgr.UserAttribute_StringValue{StringValue: updateValue}
+		attribute.Key = "PubKey"
+		attribute.Value = updateValue
 	default:
 		return fmt.Errorf("not correct user attribute for update")
 	}
 
-	taskarray = append(taskarray, task)
+	attributeArray = append(attributeArray, attribute)
 
 	url := viper.GetString("hub-url")
 
@@ -563,9 +564,9 @@ func RunUserUpdate(c *CmdConfig) error {
 	}
 
 	defer conn.Close()
-	userClient := usermgr.NewUserMgrClient(conn)
+	userClient := gwusermgr.NewUserMgrClient(conn)
 	rsp, err := userClient.UpdateAttributes(tokenctx,
-		&usermgr.UpdateAttributesRequest{UserAttributes: taskarray})
+		&gwusermgr.UpdateAttributesRequest{UserAttributes: attributeArray})
 	if err != nil {
 		return err
 	}
@@ -578,4 +579,53 @@ func RunUserUpdate(c *CmdConfig) error {
 	fmt.Println("User Update Attribute Success.")
 
 	return nil
+}
+
+// RunUserDetail get user tail with wallet address.
+func RunUserDetail(c *CmdConfig) error {
+
+	authResult := gwusermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	url := viper.GetString("hub-url")
+
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	defer conn.Close()
+	userClient := gwusermgr.NewUserMgrClient(conn)
+	rsp, err := userClient.UserDetail(tokenctx, &common_proto.Empty{})
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("ID: %s \n", rsp.Id)
+	fmt.Printf("Name: %s \n", rsp.Attributes.Name)
+	fmt.Printf("Email: %s \n", rsp.Email)
+	fmt.Printf("Status: %s \n", rsp.Status.String())
+	fmt.Printf("Creation Date: %s \n",
+		time.Unix(int64(rsp.Attributes.CreationDate), 0).Format("Mon Jan 2 15:04:05 MST 2006"))
+	fmt.Printf("Last Modified Date: %s \n",
+		time.Unix(int64(rsp.Attributes.LastModifiedDate), 0).Format("Mon Jan 2 15:04:05 MST 2006"))
+	fmt.Printf("Pubkey: %s \n", rsp.Attributes.PubKey)
+
+	for _, a := range rsp.Attributes.ExtraFields {
+		fmt.Printf("%s: %s \n", a.Key, a.Value)
+	}
+
+	return nil
+
 }

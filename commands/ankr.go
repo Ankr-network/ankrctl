@@ -157,24 +157,12 @@ func Execute() {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	AnkrCmd.AddCommand(computeCmd())
+	AnkrCmd.AddCommand(appCmd())
+	AnkrCmd.AddCommand(namespaceCmd())
+	AnkrCmd.AddCommand(clusterCmd())
+	AnkrCmd.AddCommand(chartCmd())
 	AnkrCmd.AddCommand(userCmd())
 	AnkrCmd.AddCommand(walletCmd())
-}
-
-func computeCmd() *Command {
-	//DCCN-CLI compute
-	cmd := &Command{
-		Command: &cobra.Command{
-			Use:   "compute",
-			Short: "compute commands",
-			Long:  "compute commands are for controlling and managing infrastructure",
-		},
-	}
-
-	cmd.AddCommand(Task())
-	cmd.AddCommand(Dc())
-	return cmd
 }
 
 type flagOpt func(c *Command, name, key string)

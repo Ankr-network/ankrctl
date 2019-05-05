@@ -77,3 +77,11 @@ EbFYxejnqf9OhM4= --private-key=wmyZZoMedWlsPUDVCOy+TiVcrIBPcn3WJN8k5cPQgIvC8cbcR
 Warning: About to send 123.56789 from wallet address B508ED0D54597D516A680E7951F18CAD24C7EC9F to wallet address 0D1A90135B1F327FC34BC6515B401A6B19B79125, Type 'yes' to confirm this action: yes
 
 Done.
+```
+
+## Generate Wallet Address for deposit between MAINNET/ERC20/BEP2
+To use Wallet Address for deposit between MAINNET/ERC20/BEP2, use type and purpose to specify these address to generate:
+```
+go run cmd/ankrctl/main.go -u client-dev.dccn.ankr.com wallet genaddr --type BEP2 --purpose ERC20
+Generated Address type BEP2 tbnb15sssy7680ac4726txpzgpzg5tl0v7hh5cxyafj for Purpose ERC20
+```
