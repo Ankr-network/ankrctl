@@ -16,7 +16,7 @@ WU1OTU2ZDg4OTZkMCIsImlzcyI6ImFua3IubmV0d29yayJ9.n6InDb5RhwOduTc9-Vo-1rS6CVhqYAF2
 Confirm Registration Success.
 ```
 ## Login User Account
-Login to user account before using other function such as `compute` and `wallet`, you should provide user email and password when prompted.
+Login to user account before using other function such as `app` and `wallet`, you should provide user email and password when prompted.
 
 ```
 $ ankrctl user login
@@ -79,6 +79,29 @@ b3JrIn0.DCJAxhryv_kkLOmJLmTWEQrvH1WVOlER0HEJW9CVSj4 --confirm-password=passw0rd
 
 Confirm Password Success.
 ```
+
+## List User Detail
+
+```
+$ ankrctl user detail
+ID:
+Name: test12345
+Email: test12345@mailinator.com
+Status: CONFIRMING
+Creation Date: Wed Dec 31 16:00:00 PST 1969
+Last Modified Date: Wed Dec 31 16:00:00 PST 1969
+Pubkey: mw92f7JLrcnoaRFhtP1jAyT4DR7sjEkI+gvS6/gtDJ8=
+AvatarBackgroundColor: 0
+MainnetToErcAddr: 253008631B2AFB42127C6294F0D6CC0255CE5317
+ErcToMainnetAddr:
+MainnetToBepAddr:
+ErcToBepAddr:
+BepToErcAddr: tbnb1lskckkudd9dn2hxkc6n6mwd5teymrzr0wc682q
+BepToMainnetAddr:
+BepPubKey:
+ErcPubKey:
+```
+
 ## Logout User Account
 
 ```

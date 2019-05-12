@@ -38,17 +38,17 @@ jobs:
             if [[ ($BRANCH_NAME == "master") ]]
             then
               BRANCH_NAME="stage"
-              URL_BRANCH="client.dccn.ankr.network"
-              TENDERMINT_URL="chain.dccn.ankr.network"
+              URL_BRANCH="client.dccn.ankr.com"
+              TENDERMINT_URL="chain.dccn.ankr.com"
             elif [[ ($BRANCH_NAME == "develop") ]]
             then
               BRANCH_NAME="dev"
-              URL_BRANCH="client-stage.dccn.ankr.network"
-              TENDERMINT_URL="chain-stage.dccn.ankr.network"
+              URL_BRANCH="client-stage.dccn.ankr.com"
+              TENDERMINT_URL="chain-stage.dccn.ankr.com"
             else 
               BRANCH_NAME="feat"
-              URL_BRANCH="client-dev.dccn.ankr.network"
-              TENDERMINT_URL="chain-dev.dccn.ankr.network"
+              URL_BRANCH="client-dev.dccn.ankr.com"
+              TENDERMINT_URL="chain-dev.dccn.ankr.com"
             fi
             export URL_BRANCH
             

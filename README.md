@@ -1,13 +1,19 @@
 # Introduction
 
 ```
-ankrctl is a command line interface for the Ankr's distributed cloud computing network to provide access to most account and task commands.
+ankrctl is a command line interface for the Ankr's distributed cloud computing network to provide access to most account and app commands.
 
 Usage:
   ankrctl [command]
 
 Available Commands:
-  compute     compute commands
+  app         app commands
+  chart       chart commands
+  cluster     cluster commands
+  help        Help about any command
+  namespace   namespace commands
+  user        user commands
+  wallet      wallet commands
 
 Flags:
   -u, --hub-url string        Override default Ankr Hub endpoint
@@ -28,6 +34,9 @@ In ankrctl individual features are invoked by giving the utility a command, one 
 
 * [user](doc/user.md) for user account operation and authentication
 * [wallet](doc/wallet.md) for managing user's keys and tokens
-* [compute](doc/compute.md) for managing user's application
+* [app](doc/app.md) for managing user's application
+* [cluster](doc/cluster.md) for managing user's cluster
+* [chart](doc/chart.md) for managing user's chart
+* [namespace](doc/namespace.md) for managing user's chart
 
-To see an overview of all commands, you can invoke ankrctl by itself. To see all available commands under one of the three main categories, you can use ankrctl category, like ankrctl compute. For a usage guide on a specific command, enter the command with the --help flag, i.e. ankrctl compute --help.
+To see an overview of all commands, you can invoke ankrctl by itself. To see all available commands under one of the three main categories, you can use ankrctl category, like ankrctl app. For a usage guide on a specific command, enter the command with the --help flag, i.e. ankrctl app --help.
