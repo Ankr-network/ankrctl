@@ -31,17 +31,17 @@ import (
 	"syscall"
 	"time"
 
-	"golang.org/x/crypto/ssh/terminal"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
-
 	ankrctl "github.com/Ankr-network/dccn-cli"
 	ankr_const "github.com/Ankr-network/dccn-common"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
 	wallet "github.com/Ankr-network/dccn-common/wallet"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/ssh/terminal"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 var tendermintURL string
@@ -557,8 +557,12 @@ func RunWalletSearchDeposit(c *CmdConfig) error {
 
 	rsp, err := userClient.SearchDeposit(tokenctx,
 		&gwusermgr.SearchDepositRequest{
-			Start: startTime.Unix(),
-			End:   endTime.Unix(),
+			Start: &timestamp.Timestamp{
+				Seconds: startTime.Unix(),
+			},
+			End: &timestamp.Timestamp{
+				Seconds: endTime.Unix(),
+			},
 		})
 	if err != nil {
 		return err

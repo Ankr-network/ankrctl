@@ -3,10 +3,11 @@
 
 [[projects]]
   branch = "develop"
-  digest = "1:9fd5aaa6950b5c0930910212948c6fdd895170a2a2a83ecaf8e8408e3e4bae7f"
+  digest = "1:d789686c76518f133e3af2c137ba08490f9972a30738136aa944f48330b3d615"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
     ".",
+    "cert/sign",
     "protos/common",
     "protos/gateway/dcmgr/v1",
     "protos/gateway/taskmgr/v1",
@@ -14,7 +15,7 @@
     "wallet",
   ]
   pruneopts = "UT"
-  revision = "3d4a7731064750e147b7e4eb5502db2d9972cdde"
+  revision = "f49b1b2d029f47840c4c6da93fd863bc2eb04ffb"
 
 [[projects]]
   digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
@@ -198,7 +199,7 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:d99022a1f51cb2223bf227388c8d8260c8e593dac415584964fe6865bfcf7525"
+  digest = "1:4f30fff718a459f9be272e7aa87463cdf4ba27bb8bd7f586ac34c36d670aada4"
   name = "github.com/grpc-ecosystem/grpc-gateway"
   packages = [
     "internal",
@@ -206,8 +207,8 @@
     "utilities",
   ]
   pruneopts = "UT"
-  revision = "15c7b2ea9d896c07d9b28eca57050b1ee0aea4d6"
-  version = "v1.8.6"
+  revision = "8fd5fd9d19ce68183a6b0934519dfe7fe6269612"
+  version = "v1.9.0"
 
 [[projects]]
   digest = "1:c0d19ab64b32ce9fe5cf4ddceba78d5bc9807f0016db6b1183599da3dcc24d10"
@@ -317,7 +318,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:93a746f1060a8acbcf69344862b2ceced80f854170e1caae089b2834c5fbf7f4"
+  digest = "1:0de31727c88e9f4a4ae70c28b6caa27f39b25788daf2dc4f7406013421228144"
   name = "github.com/prometheus/client_golang"
   packages = [
     "prometheus",
@@ -325,8 +326,8 @@
     "prometheus/promhttp",
   ]
   pruneopts = "UT"
-  revision = "505eaef017263e299324067d40ca2c48f6a2cf50"
-  version = "v0.9.2"
+  revision = "50c4339db732beb2165735d2cde0bff78eb3c5a5"
+  version = "v0.9.3"
 
 [[projects]]
   branch = "master"
@@ -350,14 +351,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9d62e12429921bbbdc2d1e3c81c6a2c128cc07046633ff92fb6d17376f74261d"
+  digest = "1:21399272d01010030a98271ab88bacf76491c8685c92bd105383451d5166a29a"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
     "internal/fs",
   ]
   pruneopts = "UT"
-  revision = "5867b95ac084bbfee6ea16595c4e05ab009021da"
+  revision = "51af30a78b0ecb1d67793630dbf35d664092e6ad"
 
 [[projects]]
   branch = "master"
@@ -569,11 +570,11 @@
     "ssh/terminal",
   ]
   pruneopts = "UT"
-  revision = "cbcb750295291b33242907a04be40e80801d0cfc"
+  revision = "22d7a77e9e5f409e934ed268692e56707cd169e5"
 
 [[projects]]
   branch = "master"
-  digest = "1:738050588b3b31a8975a622403f3dc284cb4c581458d54e86c0bd77d46d09b86"
+  digest = "1:ddd2c4b580cb75cf12861081aed3a68c87fa9ba9e1dc4406ececb759ad84d651"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -586,11 +587,11 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "a4d6f7feada510cc50e69a37b484cb0fdc6b7876"
+  revision = "3ec19112720433827bbce8be9342797f5a6aaaf9"
 
 [[projects]]
   branch = "master"
-  digest = "1:ed3d25dee9c9d77611e5ce1bd3a5a078930e8efb31afac120ccb1fbba7ec08d1"
+  digest = "1:8dfe1b520917d87d38e31224a3dbd78f969e8e850c63c857112d1c08c239b83d"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -598,7 +599,7 @@
     "windows",
   ]
   pruneopts = "UT"
-  revision = "a5b02f93d862f065920dd6a40dddc66b60d0dec4"
+  revision = "61b9204099cb1bebc803c9ffb9b2d3acd9d457d9"
 
 [[projects]]
   digest = "1:8d8faad6b12a3a4c819a3f9618cb6ee1fa1cfc33253abeeea8b55336721e3405"
@@ -627,7 +628,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1ee838281bf624e20f7c8a0ff6d691a44a15a2f17db62097a71ed6de4856e815"
+  digest = "1:1233ed1b527b0ff66c3df5879f7e80b1d8631e030cc45821b77fc25acd0d72a6"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -636,7 +637,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = "UT"
-  revision = "b515fa19cec88c32f305a962f34ae60068947aea"
+  revision = "bb713bdc0e5239f2b68e560efbe1c701a6fe78f9"
 
 [[projects]]
   digest = "1:707c3a5d10ed430ea767d73df122d9eb3dfb6312bbacc9f2e39204390686d1d0"
@@ -693,10 +694,10 @@
   name = "k8s.io/apimachinery"
   packages = ["pkg/version"]
   pruneopts = "UT"
-  revision = "5b67e417bf6177666bcf9bdca82ce371606de4d1"
+  revision = "b74e4c97951f106696db86d7593effcb1463ca30"
 
 [[projects]]
-  digest = "1:2f5dfa28c0ca9eb38083d4b782d427647f30a9bf3429f8a644358184408fdf45"
+  digest = "1:41198414a032fc59a14d19d85e88f9f50c873c149422278d9e7f6c0786cf074f"
   name = "k8s.io/helm"
   packages = [
     "pkg/chartutil",
@@ -707,8 +708,8 @@
     "pkg/version",
   ]
   pruneopts = "UT"
-  revision = "618447cbf203d147601b4b9bd7f8c37a5d39fbb4"
-  version = "v2.13.1"
+  revision = "05811b84a3f93603dd6c2fcfe57944dfa7ab7fd0"
+  version = "v2.14.0"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -722,6 +723,7 @@
     "github.com/Ankr-network/dccn-common/wallet",
     "github.com/fatih/color",
     "github.com/gobwas/glob",
+    "github.com/golang/protobuf/ptypes/timestamp",
     "github.com/shiena/ansicolor",
     "github.com/spf13/cobra",
     "github.com/spf13/cobra/doc",
