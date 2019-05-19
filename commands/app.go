@@ -63,6 +63,7 @@ func appCmd() *Command {
 	AddStringFlag(cmdRunAppCreate, ankrctl.ArgChartRepoSlug, "", "", "Chart repo", requiredOpt())
 	AddStringFlag(cmdRunAppCreate, ankrctl.ArgChartVersionSlug, "", "", "Chart version", requiredOpt())
 	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsIDSlug, "", "", "Namespace ID")
+	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsClusterIDSlug, "", "", "Namespace Cluster ID")
 	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsNameSlug, "", "", "Namespace Name")
 	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (mCPUs)")
 	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (MBs)")
@@ -181,11 +182,17 @@ func RunAppCreate(c *CmdConfig) error {
 			return fmt.Errorf("Storage Limit %s is not a valid number", storageLimit)
 		}
 
+		nsClusterID, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsClusterIDSlug)
+		if err != nil {
+			return err
+		}
+
 		createAppRequest.Namespace = &gwtaskmgr.Namespace{
 			NsName:         nsname,
 			NsCpuLimit:     uint32(nsCpuLimit),
 			NsMemLimit:     uint32(nsMemLimit),
 			NsStorageLimit: uint32(nsStorageLimit),
+			ClusterId:      nsClusterID,
 		}
 	}
 
@@ -226,7 +233,7 @@ func RunAppCreate(c *CmdConfig) error {
 				errs <- err
 			} else {
 				if rsp != nil {
-					fmt.Printf("App %s create success. \n", rsp.AppId)
+					fmt.Printf("App create success with id: %s, please use 'app list' and 'app detail' to check the current status.\n", rsp.AppId)
 				}
 			}
 		}()

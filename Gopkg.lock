@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "develop"
-  digest = "1:d789686c76518f133e3af2c137ba08490f9972a30738136aa944f48330b3d615"
+  digest = "1:08cf7c916c1e40277ff6396f593e1835a29730e85a0523af5a82598d2cdad9ca"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
     ".",
@@ -15,7 +15,7 @@
     "wallet",
   ]
   pruneopts = "UT"
-  revision = "f49b1b2d029f47840c4c6da93fd863bc2eb04ffb"
+  revision = "696593cbe327915ebe8be91704ca80344e7e0ad2"
 
 [[projects]]
   digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
@@ -420,15 +420,15 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:e01b05ba901239c783dfe56450bcde607fc858908529868259c9a8765dc176d0"
+  digest = "1:2e72f9cdc8b6f94a145fa1c97e305e1654d40507d04d2fbb0c37bf461a4b85f7"
   name = "github.com/spf13/cobra"
   packages = [
     ".",
     "doc",
   ]
   pruneopts = "UT"
-  revision = "ef82de70bb3f60c65fb8eebacbb2d122ef517385"
-  version = "v0.0.3"
+  revision = "67fc4837d267bc9bfd6e47f77783fcc3dffc68de"
+  version = "v0.0.4"
 
 [[projects]]
   digest = "1:1b753ec16506f5864d26a28b43703c58831255059644351bbcb019b843950900"
