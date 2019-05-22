@@ -12,15 +12,16 @@ COPY Gopkg.toml Gopkg.lock ./
 RUN dep ensure -vendor-only
 COPY . $GOPATH/src/github.com/Ankr-network/dccn-cli/
 
+RUN echo ${URL_BRANCH}
+RUN echo ${TENDERMINT_URL}
 RUN CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
     go build -a \
     -installsuffix cgo \
-    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=${URL_BRANCH}" \
-    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.tendermintURL=${TENDERMINT_URL}" \
+    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=${URL_BRANCH} -X github.com/Ankr-network/dccn-cli/commands.tendermintURL=${TENDERMINT_URL}" \
     -o /go/bin/ankrctl \
-    $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/ankrctl/main.go
+    cmd/ankrctl/main.go
 
 FROM alpine:3.7
 COPY --from=builder /go/bin/ankrctl /bin/ankrctl
