@@ -34,7 +34,7 @@ func (d *AppReport) JSON(out io.Writer) error {
 func (d *AppReport) Cols() []string {
 	cols := []string{
 		"ID", "Name", "ChartRepo", "ChartName", "ChartVersion", "AppVersion", "Namespace",
-		"Cluster", "LastModifyDate", "CreationDate", "Status", "Event",
+		"Cluster", "LastModifyDate", "CreationDate", "Status", "Event", "Endpoint",
 	}
 	return cols
 }
@@ -44,7 +44,7 @@ func (d *AppReport) ColMap() map[string]string {
 		"ID": "ID", "Name": "Name", "ChartRepo": "Chart Repo", "ChartName": "Chart Name",
 		"ChartVersion": "Chart Version", "AppVersion": "App Version", "Namespace": "Namespace",
 		"Cluster": "Cluster", "LastModifyDate": "Last Modify Date", "CreationDate": "Creation Date",
-		"Status": "Status", "Event": "Event",
+		"Status": "Status", "Event": "Event", "Endpoint": "Endpoint",
 	}
 }
 
@@ -59,6 +59,7 @@ func (d *AppReport) KV() []map[string]interface{} {
 			"LastModifyDate": time.Unix(int64(d.AppDeployment.Attributes.LastModifiedDate.Seconds), 0).Format(time.RFC822),
 			"CreationDate":   time.Unix(int64(d.AppDeployment.Attributes.CreationDate.Seconds), 0).Format(time.RFC822),
 			"Status":         strings.ToLower(d.AppStatus.String()), "Event": strings.ToLower(d.AppEvent.String()),
+			"Endpoint": d.Endpoint,
 		}
 		out = append(out, m)
 	}

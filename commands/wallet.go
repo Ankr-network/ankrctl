@@ -36,6 +36,7 @@ import (
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
 	wallet "github.com/Ankr-network/dccn-common/wallet"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -98,8 +99,8 @@ func walletCmd() *Command {
 	//DCCN-CLI wallet generate erc address
 	cmdWalletGenAddress := CmdBuilder(cmd, RunWalletGenAddress, "genaddr",
 		"generate wallet address for deposit and withdraw", Writer, aliasOpt("ga"), docCategories("wallet"))
-	AddStringFlag(cmdWalletGenAddress, ankrctl.ArgAddressTypeSlug, "", "", "wallet address type (MAINNET/ERC20/BEP)", requiredOpt())
-	AddStringFlag(cmdWalletGenAddress, ankrctl.ArgAddressPurposeSlug, "", "", "wallet address purpose (MAINNET/ERC20/BEP)", requiredOpt())
+	AddStringFlag(cmdWalletGenAddress, ankrctl.ArgAddressTypeSlug, "", "", "wallet address type (MAINNET/ERC20/BEP2)", requiredOpt())
+	AddStringFlag(cmdWalletGenAddress, ankrctl.ArgAddressPurposeSlug, "", "", "wallet address purpose (MAINNET/ERC20/BEP2)", requiredOpt())
 
 	//DCCN-CLI wallet search deposit in a period
 	cmdWalletSearchDeposit := CmdBuilder(cmd, RunWalletSearchDeposit, "search",
@@ -359,7 +360,10 @@ func RunWalletSendtoken(c *CmdConfig) error {
 		amountInt = amountInt + amountDecimal
 		lenPow = lenPow - len(amountDecimal)
 	}
-	tokenAmount, _ := new(big.Int).SetString(amountInt, 10)
+	tokenAmount, ok := new(big.Int).SetString(amountInt, 10)
+	if !ok {
+		return fmt.Errorf("Parsing amount format error: %s", amountInt)
+	}
 	tokenAmount = tokenAmount.Mul(tokenAmount, big.NewInt(int64(math.Pow10(lenPow))))
 	address, err := c.Ankr.GetString(c.NS, ankrctl.ArgAddressSlug)
 	if err != nil {
@@ -505,7 +509,7 @@ func RunWalletGenAddress(c *CmdConfig) error {
 		return err
 	}
 
-	fmt.Printf("Generated Address type %s %s for Purpose %s \n",
+	fmt.Printf("Generated Address Type %s %s for Purpose %s \n",
 		addressType, rsp.Typeaddress, addressPurpose)
 
 	return nil
@@ -569,8 +573,12 @@ func RunWalletSearchDeposit(c *CmdConfig) error {
 	}
 
 	for _, v := range rsp.Deposits {
-		fmt.Println("Time: %s\nHash: %s\nState: %s\nConfirmed Block Height: %s\nFrom Account Address Type: %s\nFrom Account Address: %s\nTo Account Address Type: %s\nToAccountAddress: %s\nAmount: %s\n",
-			v.Time, v.TxHash, v.TxState, v.ConfirmedBlockHeight, v.FromAccountAddressType, v.FromAccountAddress, v.ToAccountAddressType, v.ToAccountAddress, v.Amount)
+		amount, ok := new(big.Float).SetString(v.Amount)
+		if !ok {
+			return fmt.Errorf("Parsing amount format error: %s", v.Amount)
+		}
+		fmt.Printf("Time: %s\nHash: %s\nState: %s\nConfirmed Block Height: %s\nFrom Account Address Type: %s\nFrom Account Address: %s\nTo Account Address Type: %s\nTo Account Address: %s\nAmount: %v\n\n",
+			ptypes.TimestampString(v.Time), v.TxHash, v.TxState, v.ConfirmedBlockHeight, v.FromAccountAddressType, v.FromAccountAddress, v.ToAccountAddressType, v.ToAccountAddress, new(big.Float).Quo(amount, big.NewFloat(float64(1000000000000000000.0))).String())
 	}
 
 	return nil
@@ -609,8 +617,12 @@ func RunWalletDepositHistory(c *CmdConfig) error {
 	}
 
 	for _, v := range rsp.Deposits {
-		fmt.Println("Time: %s\nHash: %s\nState: %s\nConfirmed Block Height: %s\nFrom Account Address Type: %s\nFrom Account Address: %s\nTo Account Address Type: %s\nToAccountAddress: %s\nAmount: %s\n",
-			v.Time, v.TxHash, v.TxState, v.ConfirmedBlockHeight, v.FromAccountAddressType, v.FromAccountAddress, v.ToAccountAddressType, v.ToAccountAddress, v.Amount)
+		amount, ok := new(big.Float).SetString(v.Amount)
+		if !ok {
+			return fmt.Errorf("Parsing amount format error: %s", v.Amount)
+		}
+		fmt.Printf("Time: %s\nHash: %s\nState: %s\nConfirmed Block Height: %s\nFrom Account Address Type: %s\nFrom Account Address: %s\nTo Account Address Type: %s\nTo Account Address: %s\nAmount: %v\n\n",
+			ptypes.TimestampString(v.Time), v.TxHash, v.TxState, v.ConfirmedBlockHeight, v.FromAccountAddressType, v.FromAccountAddress, v.ToAccountAddressType, v.ToAccountAddress, new(big.Float).Quo(amount, big.NewFloat(float64(1000000000000000000.0))).String())
 	}
 
 	return nil

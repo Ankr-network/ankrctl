@@ -17,7 +17,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 
 	common "github.com/Ankr-network/dccn-common/protos/common"
@@ -65,9 +64,9 @@ func (c *Cluster) KV() []map[string]interface{} {
 		metrics := Metrics{}
 		_ = json.Unmarshal([]byte(c.DcHeartbeatReport.Metrics), &metrics)
 		m := map[string]interface{}{
-			"ID": c.DcId, "Name": c.DcName, "CPU": strconv.Itoa(int(metrics.TotalCPU)) + "CPU(s)",
-			"MEM":     fmt.Sprintf("%.2f", float64(metrics.TotalMemory)/1073741824) + "GB",
-			"Storage": fmt.Sprintf("%.2f", float64(metrics.TotalStorage)/1073741824) + "GB",
+			"ID": c.DcId, "Name": c.DcName, "CPU": fmt.Sprintf("%.2f", float64(metrics.TotalCPU)/1000) + "vCPU(s)",
+			"MEM":     fmt.Sprintf("%.2f", float64(metrics.TotalMemory)/1024) + "GiB",
+			"Storage": fmt.Sprintf("%.2f", float64(metrics.TotalStorage)/1024) + "GiB",
 			"Lat":     c.GeoLocation.Lat, "Lng": c.GeoLocation.Lng, "Status": strings.ToLower(c.DcStatus.String()),
 			"WalletAddress": c.DcAttributes.WalletAddress,
 		}

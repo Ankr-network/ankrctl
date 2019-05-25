@@ -51,8 +51,8 @@ func (n *Namespace) KV() []map[string]interface{} {
 		m := map[string]interface{}{
 			"ID": n.Namespace.NsId, "Name": n.Namespace.NsName,
 			"CpuLimit":     fmt.Sprintf("%v vCPU(s)", float64(n.Namespace.NsCpuLimit)/1000),
-			"MemLimit":     fmt.Sprintf("%v GB", float64(n.Namespace.NsMemLimit)/1000),
-			"StorageLimit": fmt.Sprintf("%v GB", float64(n.Namespace.NsStorageLimit)),
+			"MemLimit":     fmt.Sprintf("%v GB", float64(n.Namespace.NsMemLimit)/1024),
+			"StorageLimit": fmt.Sprintf("%v GB", float64(n.Namespace.NsStorageLimit)/1024),
 			"ClusterID":    n.Namespace.ClusterId, "ClusterName": n.Namespace.ClusterName,
 			"Status": n.NsStatus.String(), "Event": n.NsEvent,
 		}
