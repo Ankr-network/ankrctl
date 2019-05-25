@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  branch = "develop"
+  branch = "master"
   digest = "1:a80f451f6dafa84b549a7ac88e49ae786ce32e7af251dd0c86585f99e94c4259"
   name = "github.com/Ankr-network/dccn-common"
   packages = [
@@ -15,7 +15,7 @@
     "wallet",
   ]
   pruneopts = "UT"
-  revision = "f34dda5ede1e8d70c75f39024878d6321080efea"
+  revision = "374ecff1a3cb88a995d0ffad20b54f7b1d2b6a91"
 
 [[projects]]
   digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
@@ -697,7 +697,7 @@
   revision = "b74e4c97951f106696db86d7593effcb1463ca30"
 
 [[projects]]
-  digest = "1:41198414a032fc59a14d19d85e88f9f50c873c149422278d9e7f6c0786cf074f"
+  digest = "1:094f472cc3b91a97ea03ed1523b56acf1ff43fb550c51ecd223c88a6204a9045"
   name = "k8s.io/helm"
   packages = [
     "pkg/chartutil",
