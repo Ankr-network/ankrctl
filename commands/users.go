@@ -95,7 +95,7 @@ func userCmd() *Command {
 		"", "", "User email change confirmation code", requiredOpt())
 
 	//DCCN-CLI user update attribute
-	cmdUserUpdate := CmdBuilder(cmd, RunUserUpdate, "update <user-email>", "user update attribute",
+	cmdUserUpdate := CmdBuilder(cmd, RunUserUpdate, "update", "user update attribute",
 		Writer, aliasOpt("ua"), docCategories("user"))
 	AddStringFlag(cmdUserUpdate, ankrctl.ArgUpdateKeySlug, "", "", "User attribute key", requiredOpt())
 	AddStringFlag(cmdUserUpdate, ankrctl.ArgUpdateValueSlug, "", "", "User attribute value", requiredOpt())
@@ -543,16 +543,27 @@ func RunUserUpdate(c *CmdConfig) error {
 	attributeArray := []*gwusermgr.UserAttribute{}
 	attribute := &gwusermgr.UserAttribute{}
 
-	switch updateKey {
-	case "name":
-		attribute.Key = "Name"
-		attribute.Value = updateValue
-	case "pubkey":
-		attribute.Key = "PubKey"
-		attribute.Value = updateValue
-	default:
+	keys := map[string]bool{
+		"AvatarBackgroundColor": true,
+		"MainnetToErcAddr":      true,
+		"ErcToMainnetAddr":      true,
+		"MainnetToBepAddr":      true,
+		"ErcToBepAddr":          true,
+		"BepToErcAddr":          true,
+		"BepToMainnetAddr":      true,
+		"BepPubKey":             true,
+		"ErcPubKey":             true,
+		"BepToMainnetMemo":      true,
+		"Avatar":                true,
+		"Name":                  true,
+		"PubKey":                true,
+	}
+
+	if _, ok := keys[updateKey]; !ok {
 		return fmt.Errorf("not correct user attribute for update")
 	}
+	attribute.Key = updateKey
+	attribute.Value = updateValue
 
 	attributeArray = append(attributeArray, attribute)
 
@@ -612,7 +623,6 @@ func RunUserDetail(c *CmdConfig) error {
 		return err
 	}
 
-	fmt.Printf("ID: %s \n", rsp.Id)
 	fmt.Printf("Name: %s \n", rsp.Attributes.Name)
 	fmt.Printf("Email: %s \n", rsp.Email)
 	fmt.Printf("Status: %s \n", rsp.Status.String())

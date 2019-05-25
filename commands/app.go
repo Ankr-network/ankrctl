@@ -157,7 +157,7 @@ func RunAppCreate(c *CmdConfig) error {
 			return err
 		}
 
-		nsCpuLimit, err := strconv.ParseUint(cpuLimit, 10, 32)
+		nsCpuLimit, err := strconv.ParseFloat(cpuLimit, 32)
 		if nsCpuLimit == 0 || err != nil {
 			return fmt.Errorf("Cpu Limit %s is not a valid number", cpuLimit)
 		}
@@ -167,7 +167,7 @@ func RunAppCreate(c *CmdConfig) error {
 			return err
 		}
 
-		nsMemLimit, err := strconv.ParseUint(memLimit, 10, 32)
+		nsMemLimit, err := strconv.ParseFloat(memLimit, 32)
 		if nsMemLimit == 0 || err != nil {
 			return fmt.Errorf("Mem Limit %s is not a valid number", memLimit)
 		}
@@ -177,7 +177,7 @@ func RunAppCreate(c *CmdConfig) error {
 			return err
 		}
 
-		nsStorageLimit, err := strconv.ParseUint(storageLimit, 10, 32)
+		nsStorageLimit, err := strconv.ParseFloat(storageLimit, 32)
 		if nsStorageLimit == 0 || err != nil {
 			return fmt.Errorf("Storage Limit %s is not a valid number", storageLimit)
 		}
@@ -189,9 +189,9 @@ func RunAppCreate(c *CmdConfig) error {
 
 		createAppRequest.Namespace = &gwtaskmgr.Namespace{
 			NsName:         nsname,
-			NsCpuLimit:     uint32(nsCpuLimit),
-			NsMemLimit:     uint32(nsMemLimit),
-			NsStorageLimit: uint32(nsStorageLimit),
+			NsCpuLimit:     uint32(nsCpuLimit * 1000),
+			NsMemLimit:     uint32(nsMemLimit * 1024),
+			NsStorageLimit: uint32(nsStorageLimit * 1024),
 			ClusterId:      nsClusterID,
 		}
 	}

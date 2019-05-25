@@ -55,9 +55,9 @@ func namespaceCmd() *Command {
 	//DCCN-CLI namespace create
 	cmdRunNamespaceCreate := CmdBuilder(cmd, RunNamespaceCreate, "create <ns-name> [ns-name ...]", "create namespace", Writer,
 		aliasOpt("cr"), docCategories("namespace"))
-	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit", requiredOpt())
-	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit", requiredOpt())
-	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit", requiredOpt())
+	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (in vCPUs)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (in GiB)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit (in GiB)", requiredOpt())
 	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsClusterIDSlug, "", "", "Namespace Cluster Id")
 
 	//DCCN-CLI namespace list
@@ -68,9 +68,9 @@ func namespaceCmd() *Command {
 	//DCCN-CLI namespace update
 	cmdRunNamespaceUpdate := CmdBuilder(cmd, RunNamespaceUpdate, "update <namespace-id> [namespace-id ...]", "update namespace", Writer,
 		aliasOpt("ud"), docCategories("namespace"))
-	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit", requiredOpt())
-	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit", requiredOpt())
-	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit", requiredOpt())
+	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (in vCPUs)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (in GiB)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit (in GiB)", requiredOpt())
 
 	//DCCN-CLI namespace delete
 	cmdRunNamespaceDelete := CmdBuilder(cmd, RunNamespaceDelete, "delete <namespace-id> [namespace-id ...]", "delete namespace",
@@ -117,7 +117,7 @@ func RunNamespaceCreate(c *CmdConfig) error {
 		return err
 	}
 
-	nsCpuLimit, err := strconv.ParseUint(cpuLimit, 10, 32)
+	nsCpuLimit, err := strconv.ParseFloat(cpuLimit, 32)
 	if err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func RunNamespaceCreate(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
-	nsMemLimit, err := strconv.ParseUint(memLimit, 10, 32)
+	nsMemLimit, err := strconv.ParseFloat(memLimit, 32)
 	if err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func RunNamespaceCreate(c *CmdConfig) error {
 		return err
 	}
 
-	nsStorageLimit, err := strconv.ParseUint(storageLimit, 10, 32)
+	nsStorageLimit, err := strconv.ParseFloat(storageLimit, 32)
 	if err != nil {
 		return err
 	}
@@ -147,9 +147,9 @@ func RunNamespaceCreate(c *CmdConfig) error {
 	}
 
 	createNamespaceRequest := &gwtaskmgr.CreateNamespaceRequest{
-		NsCpuLimit:     uint32(nsCpuLimit),
-		NsMemLimit:     uint32(nsMemLimit),
-		NsStorageLimit: uint32(nsStorageLimit),
+		NsCpuLimit:     uint32(nsCpuLimit * 1000),
+		NsMemLimit:     uint32(nsMemLimit * 1024),
+		NsStorageLimit: uint32(nsStorageLimit * 1024),
 		ClusterId:      nsClusterId,
 	}
 
