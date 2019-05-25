@@ -1,11 +1,19 @@
+# Introduction
+
 ```
-ankrctl is a command line interface for the Ankr Network distributed cloud computing network.
+ankrctl is a command line interface for the Ankr's distributed cloud computing network to provide access to most account and app commands.
 
 Usage:
   ankrctl [command]
 
 Available Commands:
-  compute     compute commands
+  app         app commands
+  chart       chart commands
+  cluster     cluster commands
+  help        Help about any command
+  namespace   namespace commands
+  user        user commands
+  wallet      wallet commands
 
 Flags:
   -u, --hub-url string        Override default Ankr Hub endpoint
@@ -14,94 +22,21 @@ Flags:
 Use `ankrctl [command] --help` for more information about a command.
 ```
 
-## Installing `ankrctl`
+# Prerequisites
 
-There are two ways to install `ankrctl`:  
-* Building a development version from source.
-* Building it with Docker.
+You will need a local computer with ankrctl installed by following the project's [installation instructions](doc/install.md).
 
-### Option 1 — Building the Development Version from Source
+This reference is for the typical ankrctl's operations. 
 
-If you have a Go environment configured, you can install the development version of `ankrctl` from the source.(below procedure tested in go version `go1.11.2 darwin/amd64`)
+# Invoking Commands
 
-```
-git clone -b feat/swdev-79-dccncli https://github.com/Ankr-network/dccn-cli.git $GOPATH/src/github.com/Ankr-network/dccncli
-cd $GOPATH/src/github.com/Ankr-network/dccncli
-dep ensure
-go build -o akrcli cmd/dccncli/main.go
-./ankrctl any_ankrctl_command
-```
+In ankrctl individual features are invoked by giving the utility a command, one or more sub-commands, and sometimes one or more options specifying particular values. Commands are grouped under three main categories:
 
-### Option 2 — Building with Docker
+* [user](doc/user.md) for user account operation and authentication
+* [wallet](doc/wallet.md) for managing user's keys and tokens
+* [app](doc/app.md) for managing user's application
+* [cluster](doc/cluster.md) for managing user's cluster
+* [chart](doc/chart.md) for managing user's chart
+* [namespace](doc/namespace.md) for managing user's chart
 
-If you have Docker configured, you can build a Docker image using `akrcli`'s and run `ankrctl` within a container. 
-First, get the source as in Option 1 and then build docker image using the `Dockerfile.dep` file: 
-
-```
-docker build -t ankrctl .
-```
-
-Then you can run it within a container: 
-
-```
-docker run -it ankrctl:latest
-/ # ankrctl <any_ankrctl_command>
-```
-
-## Run with Docker Image on the ECR repository
-If you are able to login AWS ECR you can run it within docker environment. (below procedure tested on Docker version 18.09.0)
-
-* Command for login AWS ECR: 
-```
-eval $(aws ecr get-login --no-include-email --region us-west-2)
-```
-* Run ankrctl with docker as following example:
-```
-docker run -it 815280425737.dkr.ecr.us-west-2.amazonaws.com/ankrctl:feat
-/ # ankrctl <any_ankrctl_command>
-```
-
-## Examples
-
-`ankrctl` is able to interact with all of your Ankr Network distributed cloud computing network resources. 
-Below are a few common usage examples: 
-
-* List all Tasks:
-```
-ankrctl compute task list -u <addr_of_hub>
-```
-* Create a Task:
-```
-ankrctl compute task create <task-name> --image <image-name> --replica <replica> --dc-id <dc-id> -u <addr_of_hub>
-```
-* Delete a Task:
-```
-ankrctl compute task delete <taskid> -f -u <addr_of_hub>
-```
-* Purge a Task:
-```
-ankrctl compute task purge <taskid> -f -u <addr_of_hub>
-```
-* Update a Task:
-```
-ankrctl compute task update <taskid> --image <image-name> --replica <replica> --dc-id <dc-id> -u <addr_of_hub>
-```
-## Building and dependencies
-
-`akrcli`'s dependencies are managed with [`dep`](https://github.com/golang/dep). 
-To add dependencies, use [`dep ensure -add github.com/foo/bar`](https://github.com/golang/dep#adding-a-dependency)
-
-* Initialize the dependency in vendor folder and create `Gopkg.toml` and `Gopkg.lock`:
-```
-dep init
-```
-
-* If any dependency like branch and version changed in `Gopkg.toml`, update the `Gopkg.lock` and vendor:
-```
-dep ensure -update
-```
-
-* Checking the dependency:
-```
-dep status
-```
+To see an overview of all commands, you can invoke ankrctl by itself. To see all available commands under one of the three main categories, you can use ankrctl category, like ankrctl app. For a usage guide on a specific command, enter the command with the --help flag, i.e. ankrctl app --help.

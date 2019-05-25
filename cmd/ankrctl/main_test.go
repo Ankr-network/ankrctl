@@ -30,13 +30,13 @@ import (
 
 const (
 	MockResultSuccess = "Success"
-	MockTaskid        = "100"
-	MockTaskName      = "task"
-	MockTaskImage     = "nginx:1.12"
+	MockAppid        = "100"
+	MockAppName      = "app"
+	MockAppImage     = "nginx:1.12"
 	MockReplica       = "2"
 	MockUpdateImage   = "nginx:1.13"
 	MockUpdateReplica = "3"
-	MockTaskType      = "Deploy"
+	MockAppType      = "Deploy"
 )
 
 type mail struct {
@@ -118,120 +118,120 @@ func TestMockCommand_Run(t *testing.T) {
 		dcid = strings.Fields(dcInfo[1])[0]
 	}
 
-	fmt.Println("compute task create test..")
-	taskCreate, err := lc.Run("run", "main.go", "compute", "task", "create",
-		MockTaskName, "--image", MockTaskImage, "--dc-name", dcid, "--type", MockTaskType,
+	fmt.Println("compute app create test..")
+	appCreate, err := lc.Run("run", "main.go", "compute", "app", "create",
+		MockAppName, "--image", MockAppImage, "--dc-name", dcid, "--type", MockAppType,
 		"--replica", MockReplica, "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	fmt.Println(string(taskCreate))
-	assert.True(t, len(string(taskCreate)) > 0)
-	assert.True(t, strings.Contains(string(taskCreate), MockResultSuccess))
-	id := strings.Fields(string(taskCreate))[1]
+	fmt.Println(string(appCreate))
+	assert.True(t, len(string(appCreate)) > 0)
+	assert.True(t, strings.Contains(string(appCreate), MockResultSuccess))
+	id := strings.Fields(string(appCreate))[1]
 	assert.True(t, len(id) > 0)
 
-	fmt.Println("compute task list test..")
-	taskList, err := lc.Run("run", "main.go", "compute", "task", "list", "-u", url)
+	fmt.Println("compute app list test..")
+	appList, err := lc.Run("run", "main.go", "compute", "app", "list", "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	fmt.Println(string(taskList))
-	assert.True(t, len(string(taskList)) > 1)
-	taskInfo := strings.Split(string(taskList), "\n")
-	taskFound := false
-	for _, task := range taskInfo {
-		if task != "" && id == strings.Fields(task)[0] {
-			assert.Equal(t, strings.Fields(task)[1], MockTaskName)
-			assert.Equal(t, strings.Fields(task)[3], MockTaskImage)
-			assert.Equal(t, strings.Fields(task)[6], MockReplica)
-			taskFound = true
+	fmt.Println(string(appList))
+	assert.True(t, len(string(appList)) > 1)
+	appInfo := strings.Split(string(appList), "\n")
+	appFound := false
+	for _, app := range appInfo {
+		if app != "" && id == strings.Fields(app)[0] {
+			assert.Equal(t, strings.Fields(app)[1], MockAppName)
+			assert.Equal(t, strings.Fields(app)[3], MockAppImage)
+			assert.Equal(t, strings.Fields(app)[6], MockReplica)
+			appFound = true
 		}
 	}
-	assert.True(t, taskFound)
+	assert.True(t, appFound)
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Println("compute task update test..")
-	taskUpdate, err := lc.Run("run", "main.go", "compute", "task", "update", id,
+	fmt.Println("compute app update test..")
+	appUpdate, err := lc.Run("run", "main.go", "compute", "app", "update", id,
 		"--image", MockUpdateImage, "--replica", MockUpdateReplica, "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	fmt.Println(string(taskUpdate))
-	assert.True(t, strings.Contains(string(taskUpdate), MockResultSuccess))
+	fmt.Println(string(appUpdate))
+	assert.True(t, strings.Contains(string(appUpdate), MockResultSuccess))
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Println("compute task list after update test..")
-	taskUpdateList, err := lc.Run("run", "main.go", "compute", "task", "list", "-u", url)
+	fmt.Println("compute app list after update test..")
+	appUpdateList, err := lc.Run("run", "main.go", "compute", "app", "list", "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	fmt.Println(string(taskUpdateList))
-	assert.True(t, len(string(taskList)) > 1)
-	taskUpdateInfo := strings.Split(string(taskUpdateList), "\n")
-	taskUpdateFound := false
-	for _, task := range taskUpdateInfo {
-		if task != "" && id == strings.Fields(task)[0] {
-			assert.Equal(t, strings.Fields(task)[3], MockUpdateImage)
-			assert.Equal(t, strings.Fields(task)[6], MockUpdateReplica)
-			taskUpdateFound = true
+	fmt.Println(string(appUpdateList))
+	assert.True(t, len(string(appList)) > 1)
+	appUpdateInfo := strings.Split(string(appUpdateList), "\n")
+	appUpdateFound := false
+	for _, app := range appUpdateInfo {
+		if app != "" && id == strings.Fields(app)[0] {
+			assert.Equal(t, strings.Fields(app)[3], MockUpdateImage)
+			assert.Equal(t, strings.Fields(app)[6], MockUpdateReplica)
+			appUpdateFound = true
 		}
 	}
-	assert.True(t, taskUpdateFound)
+	assert.True(t, appUpdateFound)
 
-	fmt.Println("compute task cancel test..")
-	taskCancel, err := lc.Run("run", "main.go", "compute", "task", "cancel", "-f", id, "-u", url)
+	fmt.Println("compute app cancel test..")
+	appCancel, err := lc.Run("run", "main.go", "compute", "app", "cancel", "-f", id, "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	fmt.Println(string(taskCancel))
-	assert.True(t, len(string(taskCancel)) > 0)
-	assert.True(t, strings.Contains(string(taskCancel), MockResultSuccess))
+	fmt.Println(string(appCancel))
+	assert.True(t, len(string(appCancel)) > 0)
+	assert.True(t, strings.Contains(string(appCancel), MockResultSuccess))
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Println("compute task list after cancel test..")
-	taskCancelList, err := lc.Run("run", "main.go", "compute", "task", "list", "-u", url)
+	fmt.Println("compute app list after cancel test..")
+	appCancelList, err := lc.Run("run", "main.go", "compute", "app", "list", "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	fmt.Println(string(taskCancelList))
-	assert.True(t, len(string(taskList)) > 1)
-	taskCancelInfo := strings.Split(string(taskCancelList), "\n")
-	taskCancelFound := false
-	for _, task := range taskCancelInfo {
-		if task != "" && id == strings.Fields(task)[0] {
-			assert.True(t, strings.Contains(task, common_proto.TaskStatus_CANCELLED.String()))
-			taskCancelFound = true
+	fmt.Println(string(appCancelList))
+	assert.True(t, len(string(appList)) > 1)
+	appCancelInfo := strings.Split(string(appCancelList), "\n")
+	appCancelFound := false
+	for _, app := range appCancelInfo {
+		if app != "" && id == strings.Fields(app)[0] {
+			assert.True(t, strings.Contains(app, common_proto.AppStatus_CANCELLED.String()))
+			appCancelFound = true
 		}
 	}
-	assert.True(t, taskCancelFound)
+	assert.True(t, appCancelFound)
 
-	fmt.Println("compute task purge test..")
-	taskPurge, err := lc.Run("run", "main.go", "compute", "task", "purge", "-f", id, "-u", url)
+	fmt.Println("compute app purge test..")
+	appPurge, err := lc.Run("run", "main.go", "compute", "app", "purge", "-f", id, "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	fmt.Println(string(taskPurge))
-	assert.True(t, len(string(taskPurge)) > 0)
-	assert.True(t, strings.Contains(string(taskPurge), MockResultSuccess))
+	fmt.Println(string(appPurge))
+	assert.True(t, len(string(appPurge)) > 0)
+	assert.True(t, strings.Contains(string(appPurge), MockResultSuccess))
 
-	fmt.Println("compute task list after purge test..")
-	taskPurgeList, err := lc.Run("run", "main.go", "compute", "task", "list", "-u", url)
+	fmt.Println("compute app list after purge test..")
+	appPurgeList, err := lc.Run("run", "main.go", "compute", "app", "list", "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	fmt.Println(string(taskPurgeList))
-	assert.True(t, len(string(taskList)) > 1)
-	taskPurgeInfo := strings.Split(string(taskPurgeList), "\n")
-	taskPurgeFound := false
-	for _, task := range taskPurgeInfo {
-		if task != "" && id == strings.Fields(task)[0] {
-			taskPurgeFound = true
+	fmt.Println(string(appPurgeList))
+	assert.True(t, len(string(appList)) > 1)
+	appPurgeInfo := strings.Split(string(appPurgeList), "\n")
+	appPurgeFound := false
+	for _, app := range appPurgeInfo {
+		if app != "" && id == strings.Fields(app)[0] {
+			appPurgeFound = true
 		}
 	}
-	assert.False(t, taskPurgeFound)
+	assert.False(t, appPurgeFound)
 
 }

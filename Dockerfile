@@ -1,5 +1,6 @@
 FROM golang:1.10-alpine3.8 as builder
 ARG URL_BRANCH
+ARG TENDERMINT_URL
 RUN apk update && \
     apk add git && \
     apk add --update bash && \
@@ -17,6 +18,7 @@ RUN CGO_ENABLED=0 \
     go build -a \
     -installsuffix cgo \
     -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=${URL_BRANCH}" \
+    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.tendermintURL=${TENDERMINT_URL}" \
     -o /go/bin/ankrctl \
     $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/ankrctl/main.go
 

@@ -1,5 +1,5 @@
 [[constraint]]
-  branch = "develop"
+  branch = "master"
   name = "github.com/Ankr-network/dccn-common"
 
 [[constraint]]

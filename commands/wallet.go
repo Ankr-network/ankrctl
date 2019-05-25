@@ -15,6 +15,7 @@ package commands
 
 import (
 	"bytes"
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/json"
@@ -22,18 +23,26 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"math"
 	"math/big"
 	"os"
 	"strings"
 	"syscall"
-
-	"golang.org/x/crypto/ssh/terminal"
+	"time"
 
 	ankrctl "github.com/Ankr-network/dccn-cli"
+	ankr_const "github.com/Ankr-network/dccn-common"
+	common_proto "github.com/Ankr-network/dccn-common/protos/common"
+	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
 	wallet "github.com/Ankr-network/dccn-common/wallet"
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/ssh/terminal"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 var tendermintURL string
@@ -59,7 +68,7 @@ func walletCmd() *Command {
 	}
 
 	//DCCN-CLI wallet genkey
-	cmdWalletGenkey := CmdBuilder(cmd, RunWalletGenkey, "genkey", "generate key pair on chain",
+	cmdWalletGenkey := CmdBuilder(cmd, RunWalletGenkey, "genkey", "generate key pair for Mainnet",
 		Writer, aliasOpt("gk"), docCategories("wallet"))
 	_ = cmdWalletGenkey
 
@@ -76,16 +85,33 @@ func walletCmd() *Command {
 	//DCCN-CLI wallet send token
 	cmdWalletSendtoken := CmdBuilder(cmd, RunWalletSendtoken, "sendtoken <token-amount>",
 		"send token to address", Writer, aliasOpt("st"), docCategories("wallet"))
-	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgTargetSlug, "", "", "send token to wallet address",
+	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgTargetAddressSlug, "", "", "send token to wallet address",
 		requiredOpt())
 	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgPublicKeySlug, "", "", "wallet public key")
 	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgPrivateKeySlug, "", "", "wallet private key")
 	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgAddressSlug, "", "", "wallet address")
 
 	//DCCN-CLI wallet get balance
-	cmdWalletGetbalance := CmdBuilder(cmd, RunWalletGetbalance, "getbal <address>",
+	cmdWalletGetbalance := CmdBuilder(cmd, RunWalletGetbalance, "getbalance <address>",
 		"get balance of wallet by address", Writer, aliasOpt("gb"), docCategories("wallet"))
 	_ = cmdWalletGetbalance
+
+	//DCCN-CLI wallet generate erc address
+	cmdWalletGenAddress := CmdBuilder(cmd, RunWalletGenAddress, "genaddr",
+		"generate wallet address for deposit and withdraw", Writer, aliasOpt("ga"), docCategories("wallet"))
+	AddStringFlag(cmdWalletGenAddress, ankrctl.ArgAddressTypeSlug, "", "", "wallet address type (MAINNET/ERC20/BEP2)", requiredOpt())
+	AddStringFlag(cmdWalletGenAddress, ankrctl.ArgAddressPurposeSlug, "", "", "wallet address purpose (MAINNET/ERC20/BEP2)", requiredOpt())
+
+	//DCCN-CLI wallet search deposit in a period
+	cmdWalletSearchDeposit := CmdBuilder(cmd, RunWalletSearchDeposit, "search",
+		"wallet search deposit in a period", Writer, aliasOpt("sd"), docCategories("wallet"))
+	AddStringFlag(cmdWalletSearchDeposit, ankrctl.ArgSearchDepositStartSlug, "", "", "wallet search deposit start date (format: `mm/dd/yyyy`)", requiredOpt())
+	AddStringFlag(cmdWalletSearchDeposit, ankrctl.ArgSearchDepositEndSlug, "", "", "wallet address deposit end date (format: `mm/dd/yyyy`)", requiredOpt())
+
+	//DCCN-CLI wallet get deposit history
+	cmdWalletDepositHistory := CmdBuilder(cmd, RunWalletDepositHistory, "history",
+		"retrieve wallet deposit history", Writer, aliasOpt("dh"), docCategories("wallet"))
+	_ = cmdWalletDepositHistory
 
 	return cmd
 
@@ -93,6 +119,13 @@ func walletCmd() *Command {
 
 // RunWalletGenkey generate wallet key.
 func RunWalletGenkey(c *CmdConfig) error {
+
+	authResult := gwusermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found, cannot update key to ankr network")
+	}
 
 	if AskForConfirm(fmt.Sprintf(`About to generate wallet address, public key and private key..
 	Please record and backup wallet address and keys once generated!! 
@@ -117,7 +150,33 @@ func RunWalletGenkey(c *CmdConfig) error {
 		if err := writeConfig(); err != nil {
 			return fmt.Errorf(err.Error())
 		}
-		// Todo: update user with publicKey/address
+
+		md := metadata.New(map[string]string{
+			"token": authResult.AccessToken,
+		})
+		ctx := metadata.NewOutgoingContext(context.Background(), md)
+		tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+		defer cancel()
+
+		url := viper.GetString("hub-url")
+
+		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+
+		defer conn.Close()
+		userClient := gwusermgr.NewUserMgrClient(conn)
+		userAttributes := []*gwusermgr.UserAttribute{}
+		attribute := &gwusermgr.UserAttribute{Key: "PubKey", Value: publicKey}
+		userAttributes = append(userAttributes, attribute)
+		rsp, err := userClient.UpdateAttributes(tokenctx,
+			&gwusermgr.UpdateAttributesRequest{UserAttributes: userAttributes})
+		if err != nil {
+			return err
+		}
+
+		log.Printf("update user %s with generated pubkey: %s", rsp.Id, rsp.Attributes.PubKey)
 
 		fmt.Println("Private Key: ", privateKey, "\nPublic Key: ", publicKey, "\nAddress: ", address)
 	}
@@ -130,6 +189,13 @@ func RunWalletImportkey(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
 		return ankrctl.NewMissingArgsErr(c.NS)
+	}
+
+	authResult := gwusermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found, cannot update key to ankr network")
 	}
 
 	if AskForConfirm(fmt.Sprintf(`About to import address, public key and private key from key file.
@@ -170,8 +236,29 @@ func RunWalletImportkey(c *CmdConfig) error {
 			return fmt.Errorf(err.Error())
 		}
 
-		// Todo: update user with publicKey/address
+		md := metadata.New(map[string]string{
+			"token": authResult.AccessToken,
+		})
+		ctx := metadata.NewOutgoingContext(context.Background(), md)
+		tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+		defer cancel()
 
+		url := viper.GetString("hub-url")
+
+		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+
+		defer conn.Close()
+		userClient := gwusermgr.NewUserMgrClient(conn)
+		userAttributes := []*gwusermgr.UserAttribute{}
+		attribute := &gwusermgr.UserAttribute{Key: "PubKey", Value: key.PublicKey}
+		userAttributes = append(userAttributes, attribute)
+		rsp, err := userClient.UpdateAttributes(tokenctx,
+			&gwusermgr.UpdateAttributesRequest{UserAttributes: userAttributes})
+
+		log.Printf("update user %s with imported pubkey: %s", rsp.Id, rsp.Attributes.PubKey)
 		fmt.Println("\nDone.")
 	}
 
@@ -250,7 +337,7 @@ func RunWalletSendtoken(c *CmdConfig) error {
 		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
-	target, err := c.Ankr.GetString(c.NS, ankrctl.ArgTargetSlug)
+	target, err := c.Ankr.GetString(c.NS, ankrctl.ArgTargetAddressSlug)
 	if err != nil {
 		return err
 	}
@@ -273,7 +360,10 @@ func RunWalletSendtoken(c *CmdConfig) error {
 		amountInt = amountInt + amountDecimal
 		lenPow = lenPow - len(amountDecimal)
 	}
-	tokenAmount, _ := new(big.Int).SetString(amountInt, 10)
+	tokenAmount, ok := new(big.Int).SetString(amountInt, 10)
+	if !ok {
+		return fmt.Errorf("Parsing amount format error: %s", amountInt)
+	}
 	tokenAmount = tokenAmount.Mul(tokenAmount, big.NewInt(int64(math.Pow10(lenPow))))
 	address, err := c.Ankr.GetString(c.NS, ankrctl.ArgAddressSlug)
 	if err != nil {
@@ -324,9 +414,9 @@ func RunWalletSendtoken(c *CmdConfig) error {
 		return errors.New("Wrong wallet address, public key and private key")
 	}
 	if tendermintURL == "" {
-		tendermintURL = "chain-dev.dccn.ankr.network"
+		tendermintURL = "chain-dev.dccn.ankr.com"
 	}
-	if AskForConfirm(fmt.Sprintf("About to send %s from wallet address %s to wallet address %s, Type 'yes' to confirm this action: ", tokenAmount.String(), address, target)) == nil {
+	if AskForConfirm(fmt.Sprintf("About to send %s from wallet address %s to wallet address %s, Type 'yes' to confirm this action: ", c.Args[0], address, target)) == nil {
 		if err := wallet.SendCoins(tendermintURL, "26657", privateKey, address, target, tokenAmount.String(), publicKey); err != nil {
 			return err
 		}
@@ -352,14 +442,188 @@ func RunWalletGetbalance(c *CmdConfig) error {
 
 	fmt.Printf("Query balance by address %s\n", address)
 	if tendermintURL == "" {
-		tendermintURL = "chain-dev.dccn.ankr.network"
+		tendermintURL = "chain-dev.dccn.ankr.com"
 	}
 	balance, err := wallet.GetBalance(tendermintURL, "26657", address)
 	if err != nil {
 		return err
 	}
+	balanceDecimal := balance[:len(balance)-18] + "." + balance[len(balance)-18:]
+	fmt.Printf("The balance is: %s\n", balanceDecimal)
 
-	fmt.Printf("The balance is: %s\n", balance)
+	return nil
+}
+
+// RunWalletGenAddress generate wallet key for deposit/withdraw.
+func RunWalletGenAddress(c *CmdConfig) error {
+
+	s := map[string]bool{"MAINNET": true, "ERC20": true, "BEP2": true}
+
+	addressType, err := c.Ankr.GetString(c.NS, ankrctl.ArgAddressTypeSlug)
+	if err != nil {
+		return err
+	}
+
+	addressPurpose, err := c.Ankr.GetString(c.NS, ankrctl.ArgAddressPurposeSlug)
+	if err != nil {
+		return err
+	}
+
+	_, typeOk := s[addressType]
+	_, purposeOk := s[addressPurpose]
+
+	if !typeOk || !purposeOk {
+		return fmt.Errorf("type or purpose not one of MAINNET/ERC20/BEP2..")
+	}
+
+	authResult := gwusermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	url := viper.GetString("hub-url")
+
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	defer conn.Close()
+	userClient := gwusermgr.NewUserMgrClient(conn)
+
+	rsp, err := userClient.CreateAddress(tokenctx,
+		&gwusermgr.GenerateAddressRequest{
+			Type:    addressType,
+			Purpose: addressPurpose,
+		})
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Generated Address Type %s %s for Purpose %s \n",
+		addressType, rsp.Typeaddress, addressPurpose)
+
+	return nil
+}
+
+// RunWalletSearchDeposit search deposit for certain period.
+func RunWalletSearchDeposit(c *CmdConfig) error {
+
+	start, err := c.Ankr.GetString(c.NS, ankrctl.ArgSearchDepositStartSlug)
+	if err != nil {
+		return err
+	}
+	startTime, err := time.Parse("01/02/2006", start)
+	if err != nil {
+		return err
+	}
+	end, err := c.Ankr.GetString(c.NS, ankrctl.ArgSearchDepositEndSlug)
+	if err != nil {
+		return err
+	}
+	endTime, err := time.Parse("01/02/2006", end)
+	if err != nil {
+		return err
+	}
+
+	authResult := gwusermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	url := viper.GetString("hub-url")
+
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	defer conn.Close()
+	userClient := gwusermgr.NewUserMgrClient(conn)
+
+	rsp, err := userClient.SearchDeposit(tokenctx,
+		&gwusermgr.SearchDepositRequest{
+			Start: &timestamp.Timestamp{
+				Seconds: startTime.Unix(),
+			},
+			End: &timestamp.Timestamp{
+				Seconds: endTime.Unix(),
+			},
+		})
+	if err != nil {
+		return err
+	}
+
+	for _, v := range rsp.Deposits {
+		amount, ok := new(big.Float).SetString(v.Amount)
+		if !ok {
+			return fmt.Errorf("Parsing amount format error: %s", v.Amount)
+		}
+		fmt.Printf("Time: %s\nHash: %s\nState: %s\nConfirmed Block Height: %s\nFrom Account Address Type: %s\nFrom Account Address: %s\nTo Account Address Type: %s\nTo Account Address: %s\nAmount: %v\n\n",
+			ptypes.TimestampString(v.Time), v.TxHash, v.TxState, v.ConfirmedBlockHeight, v.FromAccountAddressType, v.FromAccountAddress, v.ToAccountAddressType, v.ToAccountAddress, new(big.Float).Quo(amount, big.NewFloat(float64(1000000000000000000.0))).String())
+	}
+
+	return nil
+}
+
+// RunWalletDepositHistory return deposit history for certain period.
+func RunWalletDepositHistory(c *CmdConfig) error {
+
+	authResult := gwusermgr.AuthenticationResult{}
+	viper.UnmarshalKey("AuthResult", &authResult)
+
+	if authResult.AccessToken == "" {
+		return fmt.Errorf("no ankr network access token found")
+	}
+
+	md := metadata.New(map[string]string{
+		"token": authResult.AccessToken,
+	})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
+	defer cancel()
+
+	url := viper.GetString("hub-url")
+
+	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	defer conn.Close()
+	userClient := gwusermgr.NewUserMgrClient(conn)
+
+	rsp, err := userClient.DepositHistory(tokenctx, &common_proto.Empty{})
+	if err != nil {
+		return err
+	}
+
+	for _, v := range rsp.Deposits {
+		amount, ok := new(big.Float).SetString(v.Amount)
+		if !ok {
+			return fmt.Errorf("Parsing amount format error: %s", v.Amount)
+		}
+		fmt.Printf("Time: %s\nHash: %s\nState: %s\nConfirmed Block Height: %s\nFrom Account Address Type: %s\nFrom Account Address: %s\nTo Account Address Type: %s\nTo Account Address: %s\nAmount: %v\n\n",
+			ptypes.TimestampString(v.Time), v.TxHash, v.TxState, v.ConfirmedBlockHeight, v.FromAccountAddressType, v.FromAccountAddress, v.ToAccountAddressType, v.ToAccountAddress, new(big.Float).Quo(amount, big.NewFloat(float64(1000000000000000000.0))).String())
+	}
 
 	return nil
 }

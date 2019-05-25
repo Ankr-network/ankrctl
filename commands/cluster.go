@@ -28,48 +28,44 @@ import (
 
 	ankr_const "github.com/Ankr-network/dccn-common"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
-	dcmgr "github.com/Ankr-network/dccn-common/protos/dcmgr/v1/grpc"
-	usermgr "github.com/Ankr-network/dccn-common/protos/usermgr/v1/grpc"
+	gwdcmgr "github.com/Ankr-network/dccn-common/protos/gateway/dcmgr/v1"
+	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
-// Dc creates the dc command.
-func Dc() *Command {
-	//DCCN-CLI dc
+// Cluster creates the cluster command.
+func clusterCmd() *Command {
+	//DCCN-CLI cluster
 	cmd := &Command{
 		Command: &cobra.Command{
-			Use:     "dc",
-			Aliases: []string{"d"},
-			Short:   "dc commands",
-			Long:    "dc is used to access datacenter commands",
+			Use:     "cluster",
+			Aliases: []string{"c"},
+			Short:   "cluster commands",
+			Long:    "cluster is used to access datacenter commands",
 		},
-		DocCategories: []string{"dc"},
+		DocCategories: []string{"cluster"},
 		IsIndex:       true,
 	}
 
-	//DCCN-CLI dc list
-	cmdRunDcList := CmdBuilder(cmd, RunDcList, "list [GLOB]", "list dc", Writer,
-		aliasOpt("ls"), displayerType(&displayers.Dc{}), docCategories("dc"))
-	_ = cmdRunDcList
+	//DCCN-CLI cluster list
+	cmdRunClusterList := CmdBuilder(cmd, RunClusterList, "list [GLOB]", "list cluster", Writer,
+		aliasOpt("ls"), displayerType(&displayers.Cluster{}), docCategories("cluster"))
+	_ = cmdRunClusterList
 
-	//DCCN-CLI dc network info
+	//DCCN-CLI cluster network info
 	cmdRunNetworkInfo := CmdBuilder(cmd, RunNetworkInfo, "network", "list network info", Writer,
-		aliasOpt("ni"), docCategories("dc"))
+		aliasOpt("ni"), docCategories("cluster"))
 	_ = cmdRunNetworkInfo
-
-	//DCCN-CLI dc leader board
-	cmdRunDcLeader := CmdBuilder(cmd, RunDcLeader, "leader", "list dc leader board", Writer,
-		aliasOpt("lb"), docCategories("dc"))
-	_ = cmdRunDcLeader
 
 	return cmd
 }
 
-// RunDcList returns a list of dc.
-func RunDcList(c *CmdConfig) error {
+// RunClusterList returns a list of cluster.
+func RunClusterList(c *CmdConfig) error {
 
-	authResult := usermgr.AuthenticationResult{}
+	authResult := gwusermgr.AuthenticationResult{}
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
@@ -93,7 +89,7 @@ func RunDcList(c *CmdConfig) error {
 		matches = append(matches, g)
 	}
 
-	var matchedList []common_proto.DataCenter
+	var matchedList []common_proto.DataCenterStatus
 
 	url := viper.GetString("hub-url")
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
@@ -101,40 +97,40 @@ func RunDcList(c *CmdConfig) error {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	dcClient := dcmgr.NewDCAPIClient(conn)
+	dcMgr := gwdcmgr.NewDCAPIClient(conn)
 
-	r, err := dcClient.DataCenterList(tokenctx, &common_proto.Empty{})
+	r, err := dcMgr.DataCenterList(tokenctx, &common_proto.Empty{})
 	if err != nil {
-		log.Fatalf("Client: could not send: %v", err)
+		return fmt.Errorf("Status Code: %s  Message: %s", status.Code(err), err.Error())
 	}
 
-	for _, dc := range r.DcList {
+	for _, cluster := range r.DcList {
 		var skip = true
 		if len(matches) == 0 {
 			skip = false
 		} else {
 			for _, m := range matches {
-				if m.Match(dc.Name) {
+				if m.Match(cluster.DcName) {
 					skip = false
 				}
 			}
 		}
 
 		if !skip {
-			if dc.GeoLocation == nil {
-				dc.GeoLocation = &common_proto.GeoLocation{}
+			if cluster.GeoLocation == nil {
+				cluster.GeoLocation = &common_proto.GeoLocation{}
 			}
-			matchedList = append(matchedList, *dc)
+			matchedList = append(matchedList, *cluster)
 		}
 	}
-	item := &displayers.Dc{Dcs: matchedList}
+	item := &displayers.Cluster{Clusters: matchedList}
 	return c.Display(item)
 }
 
-// RunNetworkInfo returns a overview of tasks.
+// RunNetworkInfo returns a overview of apps.
 func RunNetworkInfo(c *CmdConfig) error {
 
-	authResult := usermgr.AuthenticationResult{}
+	authResult := gwusermgr.AuthenticationResult{}
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
@@ -154,55 +150,16 @@ func RunNetworkInfo(c *CmdConfig) error {
 	}
 	defer conn.Close()
 
-	dcMgr := dcmgr.NewDCAPIClient(conn)
+	dcMgr := gwdcmgr.NewDCAPIClient(conn)
 	if err != nil {
 		return err
 	}
 	resp, err := dcMgr.NetworkInfo(tokenctx, &common_proto.Empty{})
 	if err != nil {
-		return err
+		return fmt.Errorf("Status Code: %s  Message: %s", status.Code(err), err.Error())
 	}
-	fmt.Printf("User Count:\t\t%v\nHost Count:\t\t%v\nEnvironment Count:\t%v\nContainer Count:\t%v\n",
-		resp.UserCount, resp.HostCount, resp.EnvironmentCount, resp.ContainerCount)
-
-	return nil
-}
-
-// RunDcLeader returns a overview of tasks.
-func RunDcLeader(c *CmdConfig) error {
-
-	authResult := usermgr.AuthenticationResult{}
-	viper.UnmarshalKey("AuthResult", &authResult)
-
-	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
-	}
-	md := metadata.New(map[string]string{
-		"token": authResult.AccessToken,
-	})
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-
-	url := viper.GetString("hub-url")
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
-	}
-	defer conn.Close()
-
-	dcMgr := dcmgr.NewDCAPIClient(conn)
-	if err != nil {
-		return err
-	}
-	resp, err := dcMgr.DataCenterLeaderBoard(tokenctx, &common_proto.Empty{})
-	if err != nil {
-		return err
-	}
-	fmt.Println("Name\t\tNumber")
-	for _, d := range resp.List {
-		fmt.Printf("%s\t%v\n", d.Name, d.Number)
-	}
+	fmt.Printf("User Count:\t\t%v\nHost Count:\t\t%v\nNamespace Count:\t%v\nContainer Count:\t%v\nTraffic:\t%v\n",
+		resp.UserCount, resp.HostCount, resp.NsCount, resp.ContainerCount, resp.Traffic)
 
 	return nil
 }
