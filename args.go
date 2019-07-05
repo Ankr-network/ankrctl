@@ -94,6 +94,8 @@ const (
 	ArgAddressSlug = "address"
 	// ArgTargetAddressSlug is a wallet send token target address slug argument.
 	ArgTargetAddressSlug = "target-address"
+	// ArgKeyStoreSlug is a wallet keystore slug argument.
+	ArgKeyStoreSlug = "keystore"
 	// ArgPrivateKeySlug is a wallet private key slug argument.
 	ArgPrivateKeySlug = "private-key"
 	// ArgPublicKeySlug is a wallet public key slug argument.
