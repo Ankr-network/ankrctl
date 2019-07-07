@@ -1,5 +1,5 @@
 [[constraint]]
-  branch = "master"
+  branch = "develop"
   name = "github.com/Ankr-network/dccn-common"
 
 [[constraint]]
@@ -37,6 +37,15 @@
 [[constraint]]
   name = "gopkg.in/yaml.v2"
   version = "2.2.2"
+
+[[override]]
+  name = "github.com/tendermint/tendermint"
+  branch = "develop"
+  source = "github.com/Ankr-network/dccn-tendermint"
+
+[[prune.project]]
+  name = "github.com/zondax/hid"
+  unused-packages = false
 
 [prune]
   go-tests = true
