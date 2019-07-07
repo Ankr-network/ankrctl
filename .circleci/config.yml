@@ -11,6 +11,9 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - add_ssh_keys:
+          fingerprints:
+            - "91:de:2e:da:16:ab:18:de:71:0f:e2:bf:5f:44:5c:55"
       - run:
           name: Copy ssh key in the circleci build context
           command: |

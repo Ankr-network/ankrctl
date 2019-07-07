@@ -14,19 +14,14 @@ limitations under the License.
 package commands
 
 import (
-	"bytes"
 	"context"
-	"crypto/aes"
-	"crypto/cipher"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"math"
 	"math/big"
-	"os"
 	"strings"
 	"syscall"
 	"time"
@@ -46,12 +41,6 @@ import (
 )
 
 var tendermintURL string
-
-type Key struct {
-	PrivateKey string `json:"privatekey"`
-	PublicKey  string `json:"publickey"`
-	Address    string `json:"address"`
-}
 
 // walletCmd creates the wallet command.
 func walletCmd() *Command {
@@ -73,23 +62,21 @@ func walletCmd() *Command {
 	_ = cmdWalletGenkey
 
 	//DCCN-CLI wallet importkey
-	cmdWalletImportkey := CmdBuilder(cmd, RunWalletImportkey, "importkey <filename>",
-		"import key from key file", Writer, aliasOpt("ik"), docCategories("wallet"))
+	cmdWalletImportkey := CmdBuilder(cmd, RunWalletImportkey, "importkey <keystore>",
+		"import key from keystore", Writer, aliasOpt("ik"), docCategories("wallet"))
 	_ = cmdWalletImportkey
 
-	//DCCN-CLI wallet exportkey
+	/*DCCN-CLI wallet exportkey
 	cmdWalletExportkey := CmdBuilder(cmd, RunWalletExportkey, "exportkey <filename>",
-		"export key to key file", Writer, aliasOpt("ek"), docCategories("wallet"))
+		"export key to keystore", Writer, aliasOpt("ek"), docCategories("wallet"))
 	_ = cmdWalletExportkey
-
-	//DCCN-CLI wallet send token
-	cmdWalletSendtoken := CmdBuilder(cmd, RunWalletSendtoken, "sendtoken <token-amount>",
+	*/
+	//DCCN-CLI wallet send coins
+	cmdWalletSendCoins := CmdBuilder(cmd, RunWalletSendCoins, "sendcoins <coins-amount>",
 		"send token to address", Writer, aliasOpt("st"), docCategories("wallet"))
-	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgTargetAddressSlug, "", "", "send token to wallet address",
+	AddStringFlag(cmdWalletSendCoins, ankrctl.ArgTargetAddressSlug, "", "", "send token to wallet address",
 		requiredOpt())
-	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgPublicKeySlug, "", "", "wallet public key")
-	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgPrivateKeySlug, "", "", "wallet private key")
-	AddStringFlag(cmdWalletSendtoken, ankrctl.ArgAddressSlug, "", "", "wallet address")
+	AddStringFlag(cmdWalletSendCoins, ankrctl.ArgKeyStoreSlug, "", "", "wallet keystore", requiredOpt())
 
 	//DCCN-CLI wallet get balance
 	cmdWalletGetbalance := CmdBuilder(cmd, RunWalletGetbalance, "getbalance <address>",
@@ -120,65 +107,70 @@ func walletCmd() *Command {
 // RunWalletGenkey generate wallet key.
 func RunWalletGenkey(c *CmdConfig) error {
 
-	authResult := gwusermgr.AuthenticationResult{}
-	viper.UnmarshalKey("AuthResult", &authResult)
+	if AskForConfirm(fmt.Sprintf(`please record and backup keystore once it is generated, we don’t store your private key! 
+	 type 'yes' to confirm that you understood the result of this action: `)) == nil {
 
-	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found, cannot update key to ankr network")
-	}
-
-	if AskForConfirm(fmt.Sprintf(`About to generate wallet address, public key and private key..
-	Please record and backup wallet address and keys once generated!! 
-	Note: If these keys lost, you will lost access to your tokens in the wallet!!
-	Note: If you have previously generated these keys, the former ones will be replaced!!  
-	
-	Type 'yes' to confirm that you understood the result of this action: `)) == nil {
-
-		fmt.Println("\n\nGenerating keys...\n")
+		fmt.Println("\ngenerating keys...\n")
 
 		privateKey, publicKey, address := wallet.GenerateKeys()
 
 		if privateKey == "" || publicKey == "" || address == "" {
-			return fmt.Errorf("Generated keys error, empty secrets..")
+			return fmt.Errorf("generated keys error: empty secrets")
 		}
 
-		fmt.Println("Updating wallet...\n")
+		fmt.Println("private key: ", privateKey, "\npublic key: ", publicKey, "\naddress: ", address)
 
-		viper.Set(ankrctl.ArgPrivateKeySlug, privateKey)
-		viper.Set(ankrctl.ArgPublicKeySlug, publicKey)
-		viper.Set(ankrctl.ArgAddressSlug, address)
-		if err := writeConfig(); err != nil {
-			return fmt.Errorf(err.Error())
-		}
-
-		md := metadata.New(map[string]string{
-			"token": authResult.AccessToken,
-		})
-		ctx := metadata.NewOutgoingContext(context.Background(), md)
-		tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-		defer cancel()
-
-		url := viper.GetString("hub-url")
-
-		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
+		fmt.Print("\nabout to export to keystore..\nplease input the keystore encryption password: ")
+		password, err := terminal.ReadPassword(int(syscall.Stdin))
 		if err != nil {
-			log.Fatalf("did not connect: %v", err)
+			return nil
 		}
 
-		defer conn.Close()
-		userClient := gwusermgr.NewUserMgrClient(conn)
-		userAttributes := []*gwusermgr.UserAttribute{}
-		attribute := &gwusermgr.UserAttribute{Key: "PubKey", Value: publicKey}
-		userAttributes = append(userAttributes, attribute)
-		rsp, err := userClient.UpdateAttributes(tokenctx,
-			&gwusermgr.UpdateAttributesRequest{UserAttributes: userAttributes})
+		fmt.Print("\nplease input password again: ")
+		confirmPassword, err := terminal.ReadPassword(int(syscall.Stdin))
 		if err != nil {
 			return err
 		}
 
-		log.Printf("update user %s with generated pubkey: %s", rsp.Id, rsp.Attributes.PubKey)
+		if string(password) != string(confirmPassword) {
+			return errors.New("\npassword and confirm password not match")
+		}
 
-		fmt.Println("Private Key: ", privateKey, "\nPublic Key: ", publicKey, "\nAddress: ", address)
+		cryptoStruct, err := EncryptDataV3([]byte(privateKey), []byte(password), StandardScryptN, StandardScryptP)
+		if err != nil {
+			return err
+		}
+
+		encryptedKeyJSONV3 := encryptedKeyJSONV3{
+			address,
+			publicKey,
+			cryptoStruct,
+			keyJSONVersion,
+		}
+
+		jsonKey, err := json.Marshal(encryptedKeyJSONV3)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("\n\nexporting to keystore...")
+
+		ts := time.Now().UTC()
+
+		kfw, err := KeyFileWriter(fmt.Sprintf("UTC--%s--%s", toISO8601(ts), address))
+		if err != nil {
+			return err
+		}
+
+		defer kfw.Close()
+
+		_, err = kfw.Write(jsonKey)
+		if err != nil {
+			return errors.New("unable to write keystore")
+		}
+
+		fmt.Printf("\nkeystore: UTC--%s--%s\n\n", toISO8601(ts), address)
+
 	}
 
 	return nil
@@ -198,38 +190,24 @@ func RunWalletImportkey(c *CmdConfig) error {
 		return fmt.Errorf("no ankr network access token found, cannot update key to ankr network")
 	}
 
-	if AskForConfirm(fmt.Sprintf(`About to import address, public key and private key from key file.
-	Note: If you have previously generated or imported these keys, the former ones will be replaced!
-	Type 'yes' to confirm that you understood the result of this action: `)) == nil {
+	if AskForConfirm(fmt.Sprintf(`if you have previously generated or imported wallet address, the former ones will be replaced!
+	 type 'yes' to confirm that you understood the result of this action: `)) == nil {
 
 		kf, err := ioutil.ReadFile(c.Args[0])
 		if err != nil {
 			return err
 		}
 
-		fmt.Print("\nPlease input the keyfile secret: ")
-		secret, err := terminal.ReadPassword(int(syscall.Stdin))
-		if err != nil {
-			return nil
-		}
+		var key encryptedKeyJSONV3
 
-		dkf, err := AesDecrypt(kf, []byte(secret))
+		err = json.Unmarshal(kf, &key)
 		if err != nil {
 			return err
 		}
+		fmt.Println("\nimporting...\nwallet address: ", key.Address)
 
-		var key Key
+		fmt.Println("\nupdating wallet...")
 
-		err = json.Unmarshal(dkf, &key)
-		if err != nil {
-			return err
-		}
-		fmt.Println("\nImporting...\nPrivate Key: ", key.PrivateKey,
-			"\nPublic Key: ", key.PublicKey, "\nAddress: ", key.Address)
-
-		fmt.Println("\nUpdating wallet...")
-
-		viper.Set(ankrctl.ArgPrivateKeySlug, key.PrivateKey)
 		viper.Set(ankrctl.ArgPublicKeySlug, key.PublicKey)
 		viper.Set(ankrctl.ArgAddressSlug, key.Address)
 		if err := writeConfig(); err != nil {
@@ -253,30 +231,31 @@ func RunWalletImportkey(c *CmdConfig) error {
 		defer conn.Close()
 		userClient := gwusermgr.NewUserMgrClient(conn)
 		userAttributes := []*gwusermgr.UserAttribute{}
-		attribute := &gwusermgr.UserAttribute{Key: "PubKey", Value: key.PublicKey}
+		attribute := &gwusermgr.UserAttribute{Key: "PubKey", Value: key.Address}
 		userAttributes = append(userAttributes, attribute)
 		rsp, err := userClient.UpdateAttributes(tokenctx,
 			&gwusermgr.UpdateAttributesRequest{UserAttributes: userAttributes})
+		if err != nil {
+			return err
+		}
+		fmt.Printf("updated user %s with wallet address: %s\n", rsp.Email, rsp.Attributes.PubKey)
 
-		log.Printf("update user %s with imported pubkey: %s", rsp.Id, rsp.Attributes.PubKey)
-		fmt.Println("\nDone.")
 	}
 
 	return nil
 }
 
-// RunWalletExportkey export wallet key.
+/* RunWalletExportkey export wallet key.
 func RunWalletExportkey(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
 		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
-	if AskForConfirm(fmt.Sprintf(`About to export privateKey/publicKey/address to key file.
+	if AskForConfirm(fmt.Sprintf(`About to export privateKey/publicKey/address to keystore.
 	Type 'yes' to confirm that you would save this key file: `)) == nil {
 
-		key := Key{}
-		key.PrivateKey = viper.GetString(ankrctl.ArgPrivateKeySlug)
+		key := encryptedKeyJSONV3{}
 		key.PublicKey = viper.GetString(ankrctl.ArgPublicKeySlug)
 		key.Address = viper.GetString(ankrctl.ArgAddressSlug)
 
@@ -289,6 +268,7 @@ func RunWalletExportkey(c *CmdConfig) error {
 		if err != nil {
 			return nil
 		}
+
 		fmt.Print("\nPlease input passcode again to confirm: ")
 		confirmSecret, err := terminal.ReadPassword(int(syscall.Stdin))
 		if err != nil {
@@ -299,7 +279,7 @@ func RunWalletExportkey(c *CmdConfig) error {
 			return errors.New("\nSecret and confirm secret not match")
 		}
 
-		fmt.Println("\n\nExporting keys...")
+		fmt.Println("\n\nexporting keystore...")
 
 		kfw, err := KeyFileWriter(c.Args[0])
 		if err != nil {
@@ -329,9 +309,10 @@ func RunWalletExportkey(c *CmdConfig) error {
 
 	return nil
 }
+*/
 
 // RunWalletSendtoken send token to other wallet address.
-func RunWalletSendtoken(c *CmdConfig) error {
+func RunWalletSendCoins(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
 		return ankrctl.NewMissingArgsErr(c.NS)
@@ -365,48 +346,56 @@ func RunWalletSendtoken(c *CmdConfig) error {
 		return fmt.Errorf("Parsing amount format error: %s", amountInt)
 	}
 	tokenAmount = tokenAmount.Mul(tokenAmount, big.NewInt(int64(math.Pow10(lenPow))))
-	address, err := c.Ankr.GetString(c.NS, ankrctl.ArgAddressSlug)
+
+	keystore, err := c.Ankr.GetString(c.NS, ankrctl.ArgKeyStoreSlug)
+	if err != nil {
+		return err
+	}
+	ks, err := ioutil.ReadFile(keystore)
 	if err != nil {
 		return err
 	}
 
-	publicKey, err := c.Ankr.GetString(c.NS, ankrctl.ArgPublicKeySlug)
-	if err != nil {
-		return err
-	}
+	var key encryptedKeyJSONV3
 
-	privateKey, err := c.Ankr.GetString(c.NS, ankrctl.ArgPrivateKeySlug)
+	err = json.Unmarshal(ks, &key)
 	if err != nil {
 		return err
 	}
+	address := key.Address
+	publicKey := key.PublicKey
+
+	fmt.Print("Please input the keystore password: ")
+	password, err := terminal.ReadPassword(int(syscall.Stdin))
+	if err != nil {
+		return nil
+	}
+	privateKeyDecrypt, err := DecryptDataV3(key.Crypto, string(password))
+	if err != nil {
+		return err
+	}
+	privateKey := string(privateKeyDecrypt)
 
 	if address == "" || publicKey == "" || privateKey == "" {
 
-		address = viper.GetString(ankrctl.ArgAddressSlug)
-		publicKey = viper.GetString(ankrctl.ArgPublicKeySlug)
-		privateKey = viper.GetString(ankrctl.ArgPrivateKeySlug)
+		fmt.Println("\nNo key found, please approve this transaction with your wallet address, public key and private key!")
 
-		if address == "" || publicKey == "" || privateKey == "" {
+		fmt.Print("\nAddress: ")
+		address, err = retrieveUserInput()
+		if err != nil {
+			return err
+		}
 
-			fmt.Println("\nPlease approve this transaction with your wallet address, public key and private key!")
+		fmt.Print("\nPublic key: ")
+		publicKey, err = retrieveUserInput()
+		if err != nil {
+			return err
+		}
 
-			fmt.Print("\nAddress: ")
-			address, err = retrieveUserInput()
-			if err != nil {
-				return err
-			}
-
-			fmt.Print("\nPublic key: ")
-			publicKey, err = retrieveUserInput()
-			if err != nil {
-				return err
-			}
-
-			fmt.Print("\nPrivate key: ")
-			privateKey, err = retrieveUserInput()
-			if err != nil {
-				return err
-			}
+		fmt.Print("\nPrivate key: ")
+		privateKey, err = retrieveUserInput()
+		if err != nil {
+			return err
 		}
 	}
 
@@ -416,13 +405,15 @@ func RunWalletSendtoken(c *CmdConfig) error {
 	if tendermintURL == "" {
 		tendermintURL = "chain-dev.dccn.ankr.com"
 	}
+	fmt.Println("")
 	if AskForConfirm(fmt.Sprintf("About to send %s from wallet address %s to wallet address %s, Type 'yes' to confirm this action: ", c.Args[0], address, target)) == nil {
-		if err := wallet.SendCoins(tendermintURL, "26657", privateKey, address, target, tokenAmount.String(), publicKey); err != nil {
+		txhash, err := wallet.SendCoins(tendermintURL, "26657", privateKey, address, target, tokenAmount.String())
+		if err != nil {
 			return err
 		}
-		fmt.Println("\nDone.")
+		fmt.Printf("\ndone. tx hash: %s\n", txhash)
 	} else {
-		fmt.Println("\nAbort.")
+		fmt.Println("\nabort.")
 	}
 
 	return nil
@@ -626,56 +617,4 @@ func RunWalletDepositHistory(c *CmdConfig) error {
 	}
 
 	return nil
-}
-
-func PKCS7Padding(ciphertext []byte, blockSize int) []byte {
-	padding := blockSize - len(ciphertext)%blockSize
-	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
-	return append(ciphertext, padtext...)
-}
-
-func PKCS7UnPadding(origData []byte) []byte {
-	length := len(origData)
-	unpadding := int(origData[length-1])
-	return origData[:(length - unpadding)]
-}
-
-func AesEncrypt(origData, key []byte) ([]byte, error) {
-	keyPatch := []byte(fmt.Sprintf("%16s", string(key)))
-	block, err := aes.NewCipher(keyPatch)
-	if err != nil {
-		return nil, err
-	}
-	blockSize := block.BlockSize()
-	origData = PKCS7Padding(origData, blockSize)
-	blockMode := cipher.NewCBCEncrypter(block, keyPatch[:blockSize])
-	crypted := make([]byte, len(origData))
-	blockMode.CryptBlocks(crypted, origData)
-	return crypted, nil
-}
-
-func AesDecrypt(crypted, key []byte) ([]byte, error) {
-	keyPatch := []byte(fmt.Sprintf("%16s", string(key)))
-	block, err := aes.NewCipher(keyPatch)
-	if err != nil {
-		return nil, err
-	}
-	blockSize := block.BlockSize()
-	blockMode := cipher.NewCBCDecrypter(block, keyPatch[:blockSize])
-	origData := make([]byte, len(crypted))
-	blockMode.CryptBlocks(origData, crypted)
-	origData = PKCS7UnPadding(origData)
-	return origData, nil
-}
-
-func KeyFileWriter(keyFile string) (io.WriteCloser, error) {
-	f, err := os.Create(keyFile)
-	if err != nil {
-		return nil, err
-	}
-	if err := os.Chmod(keyFile, 0600); err != nil {
-		return nil, err
-	}
-
-	return f, nil
 }
