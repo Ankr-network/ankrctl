@@ -56,7 +56,8 @@ type cipherparamsJSON struct {
 	IV string `json:"iv"`
 }
 
-type encryptedKeyJSONV3 struct {
+type EncryptedKeyJSONV3 struct {
+	Name           string     `json:"name,omitempty"`
 	Address        string     `json:"address"`
 	PublicKey      string     `json:"publickey"`
 	Crypto         CryptoJSON `json:"crypto"`
@@ -64,11 +65,12 @@ type encryptedKeyJSONV3 struct {
 }
 
 func KeyFileWriter(keyFile string) (io.WriteCloser, error) {
-	f, err := os.Create(keyFile)
+	kf := configHome() + "/" + keyFile
+	f, err := os.Create(kf)
 	if err != nil {
 		return nil, err
 	}
-	if err := os.Chmod(keyFile, 0600); err != nil {
+	if err := os.Chmod(kf, 0600); err != nil {
 		return nil, err
 	}
 
@@ -144,21 +146,25 @@ func DecryptDataV3(cryptoJson CryptoJSON, auth string) ([]byte, error) {
 	}
 	mac, err := hex.DecodeString(cryptoJson.MAC)
 	if err != nil {
+		fmt.Printf("DecodeString MAC error: %s", err)
 		return nil, err
 	}
 
 	iv, err := hex.DecodeString(cryptoJson.CipherParams.IV)
 	if err != nil {
+		fmt.Printf("DecodeString CipherParams error: %s", err)
 		return nil, err
 	}
 
 	cipherText, err := hex.DecodeString(cryptoJson.CipherText)
 	if err != nil {
+		fmt.Printf("DecodeString CipherText error: %s", err)
 		return nil, err
 	}
 
 	derivedKey, err := getKDFKey(cryptoJson, auth)
 	if err != nil {
+		fmt.Printf("getKDFKey error: %s", err)
 		return nil, err
 	}
 
@@ -169,6 +175,7 @@ func DecryptDataV3(cryptoJson CryptoJSON, auth string) ([]byte, error) {
 
 	plainText, err := aesCTRXOR(derivedKey[:16], cipherText, iv)
 	if err != nil {
+		fmt.Printf("aesCTRXOR error: %s", err)
 		return nil, err
 	}
 	return plainText, err

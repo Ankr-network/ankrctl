@@ -22,11 +22,16 @@ import (
 	"log"
 	"math"
 	"math/big"
+	"math/rand"
+	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
 
 	ankrctl "github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/dccn-cli/commands/displayers"
 	ankr_const "github.com/Ankr-network/dccn-common"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
@@ -41,6 +46,7 @@ import (
 )
 
 var tendermintURL string
+var tendermintPort string
 
 // walletCmd creates the wallet command.
 func walletCmd() *Command {
@@ -57,20 +63,25 @@ func walletCmd() *Command {
 	}
 
 	//DCCN-CLI wallet genkey
-	cmdWalletGenkey := CmdBuilder(cmd, RunWalletGenkey, "genkey", "generate key pair for Mainnet",
+	cmdWalletGenkey := CmdBuilder(cmd, RunWalletGenkey, "genkey <keyname>", "generate key pair for Mainnet",
 		Writer, aliasOpt("gk"), docCategories("wallet"))
 	_ = cmdWalletGenkey
 
-	//DCCN-CLI wallet importkey
-	cmdWalletImportkey := CmdBuilder(cmd, RunWalletImportkey, "importkey <keystore>",
-		"import key from keystore", Writer, aliasOpt("ik"), docCategories("wallet"))
-	_ = cmdWalletImportkey
+	//DCCN-CLI wallet keylist
+	cmdWalletKeylist := CmdBuilder(cmd, RunWalletKeylist, "keylist", "list key pair for Mainnet",
+		Writer, aliasOpt("kl"), docCategories("wallet"))
+	_ = cmdWalletKeylist
 
-	/*DCCN-CLI wallet exportkey
-	cmdWalletExportkey := CmdBuilder(cmd, RunWalletExportkey, "exportkey <filename>",
-		"export key to keystore", Writer, aliasOpt("ek"), docCategories("wallet"))
-	_ = cmdWalletExportkey
-	*/
+	//DCCN-CLI wallet importkey
+	cmdWalletImportkey := CmdBuilder(cmd, RunWalletImportkey, "importkey <keyname>",
+		"import key from keystore", Writer, aliasOpt("ik"), docCategories("wallet"))
+	AddStringFlag(cmdWalletImportkey, ankrctl.ArgKeyStoreSlug, "", "", "wallet keystore", requiredOpt())
+
+	//DCCN-CLI wallet deletekey
+	cmdWalletDeletekey := CmdBuilder(cmd, RunWalletDeletekey, "deletekey <keyname>",
+		"delete key to keystore", Writer, aliasOpt("dk"), docCategories("wallet"))
+	_ = cmdWalletDeletekey
+
 	//DCCN-CLI wallet send coins
 	cmdWalletSendCoins := CmdBuilder(cmd, RunWalletSendCoins, "sendcoins <coins-amount>",
 		"send token to address", Writer, aliasOpt("st"), docCategories("wallet"))
@@ -107,6 +118,38 @@ func walletCmd() *Command {
 // RunWalletGenkey generate wallet key.
 func RunWalletGenkey(c *CmdConfig) error {
 
+	if len(c.Args) < 1 {
+		return ankrctl.NewMissingArgsErr(c.NS)
+	}
+
+	files, err := ioutil.ReadDir(configHome())
+	if err != nil {
+		return err
+	}
+
+	path := configHome() + "/"
+
+	for _, f := range files {
+		matched, err := filepath.Match("UTC*", f.Name())
+		if err != nil {
+			return err
+		}
+		if matched {
+			kf, err := ioutil.ReadFile(path + f.Name())
+			if err != nil {
+				return err
+			}
+			var key EncryptedKeyJSONV3
+			err = json.Unmarshal(kf, &key)
+			if err != nil {
+				return err
+			}
+			if key.Name == c.Args[0] {
+				return fmt.Errorf("key name already exists")
+			}
+		}
+	}
+
 	if AskForConfirm(fmt.Sprintf(`please record and backup keystore once it is generated, we don’t store your private key! 
 	 type 'yes' to confirm that you understood the result of this action: `)) == nil {
 
@@ -141,7 +184,8 @@ func RunWalletGenkey(c *CmdConfig) error {
 			return err
 		}
 
-		encryptedKeyJSONV3 := encryptedKeyJSONV3{
+		encryptedKeyJSONV3 := EncryptedKeyJSONV3{
+			c.Args[0],
 			address,
 			publicKey,
 			cryptoStruct,
@@ -169,11 +213,49 @@ func RunWalletGenkey(c *CmdConfig) error {
 			return errors.New("unable to write keystore")
 		}
 
-		fmt.Printf("\nkeystore: UTC--%s--%s\n\n", toISO8601(ts), address)
+		fmt.Printf("\ncreated keystore: %s/UTC--%s--%s\n\n", configHome(), toISO8601(ts), address)
 
 	}
 
 	return nil
+}
+
+// RunWalletKeylist list key in $HOME/.ankr
+func RunWalletKeylist(c *CmdConfig) error {
+
+	files, err := ioutil.ReadDir(configHome())
+	if err != nil {
+		return err
+	}
+
+	path := configHome() + "/"
+
+	var keylist []*displayers.KeyStore
+
+	for _, f := range files {
+		matched, err := filepath.Match("UTC*", f.Name())
+		if err != nil {
+			return err
+		}
+		if matched {
+			kf, err := ioutil.ReadFile(path + f.Name())
+			if err != nil {
+				return err
+			}
+			var key EncryptedKeyJSONV3
+			err = json.Unmarshal(kf, &key)
+			if err != nil {
+				return err
+			}
+			keylist = append(keylist, &displayers.KeyStore{
+				Name:      key.Name,
+				Address:   key.Address,
+				PublicKey: key.PublicKey,
+			})
+		}
+	}
+	item := &displayers.Key{Keystores: keylist}
+	return c.Display(item)
 }
 
 // RunWalletImportkey import wallet key.
@@ -183,30 +265,79 @@ func RunWalletImportkey(c *CmdConfig) error {
 		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
-	authResult := gwusermgr.AuthenticationResult{}
-	viper.UnmarshalKey("AuthResult", &authResult)
-
-	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found, cannot update key to ankr network")
+	ks, err := c.Ankr.GetString(c.NS, ankrctl.ArgKeyStoreSlug)
+	if err != nil {
+		return err
 	}
 
-	if AskForConfirm(fmt.Sprintf(`if you have previously generated or imported wallet address, the former ones will be replaced!
-	 type 'yes' to confirm that you understood the result of this action: `)) == nil {
+	kf, err := ioutil.ReadFile(ks)
+	if err != nil {
+		return err
+	}
 
-		kf, err := ioutil.ReadFile(c.Args[0])
+	var key EncryptedKeyJSONV3
+
+	err = json.Unmarshal(kf, &key)
+	if err != nil {
+		return err
+	}
+
+	files, err := ioutil.ReadDir(configHome())
+	if err != nil {
+		return err
+	}
+	path := configHome() + "/"
+
+	for _, f := range files {
+		matched, err := filepath.Match("UTC*", f.Name())
 		if err != nil {
 			return err
 		}
-
-		var key encryptedKeyJSONV3
-
-		err = json.Unmarshal(kf, &key)
-		if err != nil {
-			return err
+		if matched {
+			kf, err := ioutil.ReadFile(path + f.Name())
+			if err != nil {
+				return err
+			}
+			var ks EncryptedKeyJSONV3
+			err = json.Unmarshal(kf, &ks)
+			if err != nil {
+				return err
+			}
+			if ks.Name == c.Args[0] {
+				fmt.Printf("key \"%s\" already exists.\n", ks.Name)
+				return nil
+			}
 		}
-		fmt.Println("\nimporting...\nwallet address: ", key.Address)
+	}
 
-		fmt.Println("\nupdating wallet...")
+	key.Name = c.Args[0]
+	ts := time.Now().UTC()
+	jsonKey, err := json.Marshal(key)
+	if err != nil {
+		return err
+	}
+	kfw, err := KeyFileWriter(fmt.Sprintf("UTC--%s--%s", toISO8601(ts), key.Address))
+	if err != nil {
+		return err
+	}
+	defer kfw.Close()
+
+	_, err = kfw.Write(jsonKey)
+	if err != nil {
+		return errors.New("unable to write keystore")
+	}
+
+	fmt.Printf("\nkeystore imported: %s/UTC--%s--%s\n\n", configHome(), toISO8601(ts), key.Address)
+
+	if AskForConfirm(fmt.Sprintf(`do you want to update keystore address of your ankr wallet?
+	 type 'yes' to confirm, 'no' to cancel: `)) == nil {
+
+		authResult := gwusermgr.AuthenticationResult{}
+		viper.UnmarshalKey("AuthResult", &authResult)
+
+		if authResult.AccessToken == "" {
+			return fmt.Errorf("no ankr network access token found, you need to login first")
+		}
 
 		viper.Set(ankrctl.ArgPublicKeySlug, key.PublicKey)
 		viper.Set(ankrctl.ArgAddressSlug, key.Address)
@@ -238,78 +369,56 @@ func RunWalletImportkey(c *CmdConfig) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("updated user %s with wallet address: %s\n", rsp.Email, rsp.Attributes.PubKey)
+		fmt.Printf("updated user %s wallet address: %s\n", rsp.Email, rsp.Attributes.PubKey)
 
 	}
 
 	return nil
 }
 
-/* RunWalletExportkey export wallet key.
-func RunWalletExportkey(c *CmdConfig) error {
+// RunWalletDeletekey delete wallet key.
+func RunWalletDeletekey(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
 		return ankrctl.NewMissingArgsErr(c.NS)
 	}
 
-	if AskForConfirm(fmt.Sprintf(`About to export privateKey/publicKey/address to keystore.
-	Type 'yes' to confirm that you would save this key file: `)) == nil {
+	if AskForConfirm(fmt.Sprintf(`about to delete keystore '%s', type 'yes' to confirm, 'no' to cancel: `, c.Args[0])) == nil {
 
-		key := encryptedKeyJSONV3{}
-		key.PublicKey = viper.GetString(ankrctl.ArgPublicKeySlug)
-		key.Address = viper.GetString(ankrctl.ArgAddressSlug)
-
-		if key.PrivateKey == "" || key.PublicKey == "" || key.Address == "" {
-			return errors.New("No existing key to export")
-		}
-
-		fmt.Print("Please input the key file encryption secret: ")
-		secret, err := terminal.ReadPassword(int(syscall.Stdin))
-		if err != nil {
-			return nil
-		}
-
-		fmt.Print("\nPlease input passcode again to confirm: ")
-		confirmSecret, err := terminal.ReadPassword(int(syscall.Stdin))
+		files, err := ioutil.ReadDir(configHome())
 		if err != nil {
 			return err
 		}
+		path := configHome() + "/"
 
-		if string(secret) != string(confirmSecret) {
-			return errors.New("\nSecret and confirm secret not match")
+		for _, f := range files {
+			matched, err := filepath.Match("UTC*", f.Name())
+			if err != nil {
+				return err
+			}
+			if matched {
+				kf, err := ioutil.ReadFile(path + f.Name())
+				if err != nil {
+					return err
+				}
+				var ks EncryptedKeyJSONV3
+				err = json.Unmarshal(kf, &ks)
+				if err != nil {
+					return err
+				}
+				if ks.Name == c.Args[0] {
+					if err = os.Remove(path + f.Name()); err != nil {
+						return err
+					}
+					return nil
+				}
+			}
 		}
-
-		fmt.Println("\n\nexporting keystore...")
-
-		kfw, err := KeyFileWriter(c.Args[0])
-		if err != nil {
-			return err
-		}
-
-		defer kfw.Close()
-
-		kf, err := json.Marshal(key)
-		if err != nil {
-			return err
-		}
-
-		ekf, err := AesEncrypt(kf, secret)
-		if err != nil {
-			return errors.New("unable to encrypt key file")
-		}
-
-		_, err = kfw.Write(ekf)
-		if err != nil {
-			return errors.New("unable to write key file")
-		}
-
-		fmt.Println("\nDone.")
-
+		fmt.Printf("no keystore found with name '%s'\n", c.Args[0])
 	}
 
 	return nil
 }
-*/
 
 // RunWalletSendtoken send token to other wallet address.
 func RunWalletSendCoins(c *CmdConfig) error {
@@ -351,19 +460,49 @@ func RunWalletSendCoins(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
-	ks, err := ioutil.ReadFile(keystore)
+	ksf := keystore
+
+	files, err := ioutil.ReadDir(configHome())
 	if err != nil {
 		return err
 	}
 
-	var key encryptedKeyJSONV3
+	path := configHome() + "/"
+
+	for _, f := range files {
+		matched, err := filepath.Match("UTC*", f.Name())
+		if err != nil {
+			return err
+		}
+		if matched {
+			kf, err := ioutil.ReadFile(path + f.Name())
+			if err != nil {
+				return err
+			}
+			var key EncryptedKeyJSONV3
+			err = json.Unmarshal(kf, &key)
+			if err != nil {
+				return err
+			}
+			if key.Name == keystore {
+				ksf = configHome() + "/" + f.Name()
+				break
+			}
+		}
+	}
+
+	ks, err := ioutil.ReadFile(ksf)
+	if err != nil {
+		return err
+	}
+
+	var key EncryptedKeyJSONV3
 
 	err = json.Unmarshal(ks, &key)
 	if err != nil {
 		return err
 	}
 	address := key.Address
-	publicKey := key.PublicKey
 
 	fmt.Print("Please input the keystore password: ")
 	password, err := terminal.ReadPassword(int(syscall.Stdin))
@@ -376,18 +515,12 @@ func RunWalletSendCoins(c *CmdConfig) error {
 	}
 	privateKey := string(privateKeyDecrypt)
 
-	if address == "" || publicKey == "" || privateKey == "" {
+	if address == "" || privateKey == "" {
 
-		fmt.Println("\nNo key found, please approve this transaction with your wallet address, public key and private key!")
+		fmt.Println("\nNo key found, please approve this transaction with your wallet address and private key!")
 
 		fmt.Print("\nAddress: ")
 		address, err = retrieveUserInput()
-		if err != nil {
-			return err
-		}
-
-		fmt.Print("\nPublic key: ")
-		publicKey, err = retrieveUserInput()
 		if err != nil {
 			return err
 		}
@@ -398,24 +531,35 @@ func RunWalletSendCoins(c *CmdConfig) error {
 			return err
 		}
 	}
-
-	if address == "" || publicKey == "" || privateKey == "" {
+	fmt.Println("")
+	if address == "" || privateKey == "" {
 		return errors.New("Wrong wallet address, public key and private key")
 	}
 	if tendermintURL == "" {
-		tendermintURL = "chain-dev.dccn.ankr.com"
+		tendermintURL = "https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
 	}
-	fmt.Println("")
-	if AskForConfirm(fmt.Sprintf("About to send %s from wallet address %s to wallet address %s, Type 'yes' to confirm this action: ", c.Args[0], address, target)) == nil {
-		txhash, err := wallet.SendCoins(tendermintURL, "26657", privateKey, address, target, tokenAmount.String())
+	if tendermintPort == "" {
+		tendermintPort = "443"
+	}
+	if AskForConfirm(fmt.Sprintf("About to send %s tokens from address '%s' to address '%s', type 'yes' to confirm this action: ", c.Args[0], address, target)) == nil {
+		urls := strings.Split(tendermintURL, ";")
+		randomUrls := Shuffle(urls)
+		tendermintURL = randomUrls[0]
+		for _, url := range randomUrls {
+			netinfoURL := url + ":" + tendermintPort + "/net_info"
+			rsp, err := http.Get(netinfoURL)
+			if err == nil && rsp.StatusCode == 200 {
+				tendermintURL = url
+				break
+			}
+		}
+
+		txhash, err := wallet.SendCoins(tendermintURL, tendermintPort, privateKey, address, target, tokenAmount.String())
 		if err != nil {
 			return err
 		}
 		fmt.Printf("\ndone. tx hash: %s\n", txhash)
-	} else {
-		fmt.Println("\nabort.")
 	}
-
 	return nil
 }
 
@@ -433,9 +577,25 @@ func RunWalletGetbalance(c *CmdConfig) error {
 
 	fmt.Printf("Query balance by address %s\n", address)
 	if tendermintURL == "" {
-		tendermintURL = "chain-dev.dccn.ankr.com"
+		tendermintURL = "https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
 	}
-	balance, err := wallet.GetBalance(tendermintURL, "26657", address)
+	if tendermintPort == "" {
+		tendermintPort = "443"
+	}
+
+	urls := strings.Split(tendermintURL, ";")
+	randomUrls := Shuffle(urls)
+	tendermintURL = randomUrls[0]
+	for _, url := range randomUrls {
+		netinfoURL := url + ":" + tendermintPort + "/net_info"
+		rsp, err := http.Get(netinfoURL)
+		if err == nil && rsp.StatusCode == 200 {
+			tendermintURL = url
+			break
+		}
+	}
+
+	balance, err := wallet.GetBalance(tendermintURL, tendermintPort, address)
 	if err != nil {
 		return err
 	}
@@ -617,4 +777,16 @@ func RunWalletDepositHistory(c *CmdConfig) error {
 	}
 
 	return nil
+}
+
+func Shuffle(slice []string) []string {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	ret := make([]string, len(slice))
+	n := len(slice)
+	for i := 0; i < n; i++ {
+		randIndex := r.Intn(len(slice))
+		ret[i] = slice[randIndex]
+		slice = append(slice[:randIndex], slice[randIndex+1:]...)
+	}
+	return ret
 }
