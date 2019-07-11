@@ -32,5 +32,8 @@ RUN CGO_ENABLED=0 \
     cmd/ankrctl/main.go
 
 FROM alpine:3.7
+RUN  apk update && \
+     apk add libc6-compat && \
+     apk add ca-certificates
 COPY --from=builder /go/bin/ankrctl /bin/ankrctl
 
