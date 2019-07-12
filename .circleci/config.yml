@@ -63,3 +63,10 @@ jobs:
             docker tag ankrctl:$BRANCH_NAME $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/ankrctl:$TAG
             docker push $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/ankrctl:$TAG
             done
+
+            if [[ ($BRANCH_NAME == "stage") ]]
+            then
+              docker login -u $DOCKER_USER -p $DOCKER_PASSWD
+              docker tag ankrctl:$BRANCH_NAME ankrnetwork/akrctl:latest
+              docker push ankrnetwork/ankrctl:latest
+            fi
