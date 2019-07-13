@@ -599,8 +599,16 @@ func RunWalletGetbalance(c *CmdConfig) error {
 	if err != nil {
 		return err
 	}
-	balanceDecimal := balance[:len(balance)-18] + "." + balance[len(balance)-18:]
-	fmt.Printf("The balance is: %s\n", balanceDecimal)
+	if len(balance) <= 18 {
+		balanceDecimalZero := make([]byte, 18-len(balance))
+		for i := 0; i < 18-len(balance); i++ {
+			balanceDecimalZero = append(balanceDecimalZero, '0')
+		}
+		balance = "0." + string(balanceDecimalZero) + balance
+	} else {
+		balance = balance[:len(balance)-18] + "." + balance[len(balance)-18:]
+	}
+	fmt.Printf("The balance is: %s\n", balance)
 
 	return nil
 }
