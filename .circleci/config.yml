@@ -67,6 +67,6 @@ jobs:
             if [[ ($BRANCH_NAME == "stage") ]]
             then
               docker login -u $DOCKER_USER -p $DOCKER_PASSWD
-              docker tag ankrctl:$BRANCH_NAME ankrnetwork/akrctl:latest
+              docker tag ankrctl:$BRANCH_NAME ankrnetwork/ankrctl:latest
               docker push ankrnetwork/ankrctl:latest
             fi
