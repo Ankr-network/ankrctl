@@ -1,80 +1,57 @@
 # Working with Wallet
 The Wallet is used to interact with the Ankr's blockchain. Everything that adds new data to the blockchain requires a signature from a private key. These signed transactions can be produced by the `wallet` function.
 ## Generate Public Key, Private Key and Wallet Address
-Wallet address and public key are used for accessing the account tokens on Ankr chain, and private is used to sign the wallet transactions. To use wallet fuction you must create the wallet key pair and save it for later usage.
+Wallet address and private key are used for accessing the account tokens on Ankr chain, and private key is used to sign the wallet transactions. To use wallet fuction you must create the wallet keystore.
 ```
-$ ankrctl wallet genkey
+$ ankrctl wallet genkey my_new_key
 
-Warning: About to generate wallet address, public key and private key..
-	Please record and backup wallet address and keys once generated!!
-	Note: If these keys lost, you will lost access to your tokens in the wallet!!
-	Note: If you have previously generated these keys, the former ones will be replaced!!
+Warning: please record and backup keystore once it is generated, we don’t store your private key!
+	 type 'yes' to confirm that you understood the result of this action: y
 
-	Type 'yes' to confirm that you understood the result of this action: y
+generating keys...
 
+private key:  AVu+OM3GT3MqISot6GwNRzHb7mdCOSAssCfL5sugtk5Se6mvNvdvKXf96ltbL0rdWTrxfIImbLrFPYr1/ebOIQ==
+public key:  Unuprzb3byl3/epbWy9K3Vk68XyCJmy6xT2K9f3mziE=
+address:  229FF040112FC1A83D01AA0A43660482C35F6CDF6864F8
 
-Generating keys...
+about to export to keystore..
+please input the keystore encryption password:
+please input password again:
 
-Updating wallet...
+exporting to keystore...
 
-Private Key:  WPwpd22hvCz9Erj1GdtpORx18lzZbf4s016+hkVzDBkQxauRZag2XDRQEsziZjOHQpYFXuIQd0q7IJCuiGEzkA==
-Public Key:  EMWrkWWoNlw0UBLM4mYzh0KWBV7iEHdKuyCQrohhM5A=
-Address:  2966BD78A9E388360BC70B4B5298D08C595D938F
+created keystore: 
+User/my_user/.ankr/UTC--2019-07-24T18-16-12.112674000Z--229FF040112FC1A83D01AA0A43660482C35F6CDF6864F8
 ```
 
-## Export Wallet Key Pair to Key File
-To better preserve the wallet key pair, we strongly recommend you to export it to key file, and preserve it somewhere safe. If you run ankrctl with docker, remember to copy it to local filesystem using `docker cp` or use mount local filesystem volume option `-v` when using `docker run` to run ankrctl.
-
-When exporting the key file, you need to provide the passcode for key file encryption, passcode should not exceeding 16 characters.
+## Import Wallet Keystore from Keystore file
+You can also import keystore file to ankrctl key list anytime, and choose to update keystore address to ankr user account while importing key.
 ```
-$ ankrctl wallet exportkey ./key_file
+$ ankrctl wallet importkey my_import_key --keystore UTC--2019-07-06T22-29-42.344574000Z--219B0A5F896B7A1949128B8F5136362BF939994D769D58
 
-Warning: About to export privateKey/publicKey/address to key file.
-	Type 'yes' to confirm that you would save this key file: yes
-Please input the key file encryption secret:
-Please input passcode again to confirm:
+keystore imported: /Users/my_user/.ankr/UTC--2019-07-24T18-34-54.113932000Z--219B0A5F896B7A1949128B8F5136362BF939994D769D58
 
-Exporting keys...
+Warning: do you want to update keystore address of your ankr wallet?
+	 type 'yes' to confirm, 'no' to cancel: y
 
-Done.
-```
-## Import Wallet Key Pair from Key File
-After key file exported, you can also import it to ankrctl anytime when you need to access the wallet.
-
-When importing key pair you need to provide the passcode to decrypt the key file.
-```
-$ ankrctl wallet importkey ./key_file
-
-Warning: About to import address, public key and private key from key file.
-	Note: If you have previously generated or imported these keys, the former ones will be replaced!
-	Type 'yes' to confirm that you understood the result of this action: yes
-
-Please input the keyfile secret:
-Importing...
-Private Key:  WPwpd22hvCz9Erj1GdtpORx18lzZbf4s016+hkVzDBkQxauRZag2XDRQEsziZjOHQpYFXuIQd0q7IJCuiGEzkA==
-Public Key:  EMWrkWWoNlw0UBLM4mYzh0KWBV7iEHdKuyCQrohhM5A=
-Address:  2966BD78A9E388360BC70B4B5298D08C595D938F
-
-Updating wallet...
-
-Done.
+updated user test12345@mailinator.com wallet address: 219B0A5F896B7A1949128B8F5136362BF939994D769D58
 ```
 
 ## Getting Wallet Balance
 After you deposit or someone transfer the token to your account, you can query the account balance.
 ```
-$  ankrctl wallet getbal 0D1A90135B1F327FC34BC6515B401A6B19B79125
+$  ankrctl wallet getbalance 0D1A90135B1F327FC34BC6515B401A6B19B79125
 
 Query balance by address 0D1A90135B1F327FC34BC6515B401A6B19B79125
 The balance is: 6566.123400000000000000
 ```
-## Getting Wallet Balance
-If you have tokens at your wallet address and you want to sent the tokens to another account, you can use `sendtoken` and provide the key pair to sign the transaction, valid token format should have no more than 18 digits after decimal point, and not exceeding the balance of your account.
+## Send coins
+If you have coins at your wallet address and you want to sent the coins to another account, you can use `sendcoins` and provide the keystore to sign the transaction, valid ammount format should have no more than 18 digits after decimal point, and not exceeding the balance of your account.
 ```
-$ ankrctl wallet sendtoken 123.56789 --address B508ED0D54597D516A680E7951F18CAD24C7EC9F --target 0D1A90135B1F327FC34BC6515B401A6B19B79125 --public-key=wvHG3EddBbXQHcyJal0CS/YQcNYt
-EbFYxejnqf9OhM4= --private-key=wmyZZoMedWlsPUDVCOy+TiVcrIBPcn3WJN8k5cPQgIvC8cbcR10FtdAdzIlqXQJL9hBw1i0RsVjF6Oep/06Ezg==
+$ ankrctl wallet sendcoins 1.06745756242365 --target-address FB1B2B9561FF55C12FA099C6AF365FE0C88E44D1AC2BCE --keystore my_new_key
+Please input the keystore password:
 
-Warning: About to send 123.56789 from wallet address B508ED0D54597D516A680E7951F18CAD24C7EC9F to wallet address 0D1A90135B1F327FC34BC6515B401A6B19B79125, Type 'yes' to confirm this action: yes
+Warning: About to send 1.06745756242365 tokens from address 'A22AF48DA84A984F4EB155F6D811C6331721148B89076B' to address 'FB1B2B9561FF55C12FA099C6AF365FE0C88E44D1AC2BCE', type 'yes' to confirm this action: y
 
 Done.
 ```
@@ -82,6 +59,6 @@ Done.
 ## Generate Wallet Address for deposit between MAINNET/ERC20/BEP2
 To use Wallet Address for deposit between MAINNET/ERC20/BEP2, use type and purpose to specify these address to generate:
 ```
-go run cmd/ankrctl/main.go -u client-dev.dccn.ankr.com wallet genaddr --type BEP2 --purpose ERC20
+ankrctl wallet genaddr --type BEP2 --purpose ERC20
 Generated Address type BEP2 tbnb15sssy7680ac4726txpzgpzg5tl0v7hh5cxyafj for Purpose ERC20
 ```
