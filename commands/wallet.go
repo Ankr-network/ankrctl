@@ -329,50 +329,6 @@ func RunWalletImportkey(c *CmdConfig) error {
 
 	fmt.Printf("\nkeystore imported: %s/UTC--%s--%s\n\n", configHome(), toISO8601(ts), key.Address)
 
-	if AskForConfirm(fmt.Sprintf(`do you want to update keystore address of your ankr wallet?
-	 type 'yes' to confirm, 'no' to cancel: `)) == nil {
-
-		authResult := gwusermgr.AuthenticationResult{}
-		viper.UnmarshalKey("AuthResult", &authResult)
-
-		if authResult.AccessToken == "" {
-			return fmt.Errorf("no ankr network access token found, you need to login first")
-		}
-
-		viper.Set(ankrctl.ArgPublicKeySlug, key.PublicKey)
-		viper.Set(ankrctl.ArgAddressSlug, key.Address)
-		if err := writeConfig(); err != nil {
-			return fmt.Errorf(err.Error())
-		}
-
-		md := metadata.New(map[string]string{
-			"token": authResult.AccessToken,
-		})
-		ctx := metadata.NewOutgoingContext(context.Background(), md)
-		tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
-		defer cancel()
-
-		url := viper.GetString("hub-url")
-
-		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
-		if err != nil {
-			log.Fatalf("did not connect: %v", err)
-		}
-
-		defer conn.Close()
-		userClient := gwusermgr.NewUserMgrClient(conn)
-		userAttributes := []*gwusermgr.UserAttribute{}
-		attribute := &gwusermgr.UserAttribute{Key: "PubKey", Value: key.Address}
-		userAttributes = append(userAttributes, attribute)
-		rsp, err := userClient.UpdateAttributes(tokenctx,
-			&gwusermgr.UpdateAttributesRequest{UserAttributes: userAttributes})
-		if err != nil {
-			return err
-		}
-		fmt.Printf("updated user %s wallet address: %s\n", rsp.Email, rsp.Attributes.PubKey)
-
-	}
-
 	return nil
 }
 
@@ -541,6 +497,7 @@ func RunWalletSendCoins(c *CmdConfig) error {
 	if tendermintPort == "" {
 		tendermintPort = "443"
 	}
+	fmt.Println("")
 	if AskForConfirm(fmt.Sprintf("About to send %s tokens from address '%s' to address '%s', type 'yes' to confirm this action: ", c.Args[0], address, target)) == nil {
 		urls := strings.Split(tendermintURL, ";")
 		randomUrls := Shuffle(urls)
