@@ -22,7 +22,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Ankr-network/dccn-cli"
+	ankrctl "github.com/Ankr-network/dccn-cli"
 	"github.com/Ankr-network/dccn-cli/commands/displayers"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -77,8 +77,6 @@ var ErrNoAccessToken = errors.New("no access token has been configured")
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	AnkrCmd.PersistentFlags().StringVarP(&HubURL, "hub-url", "u", clientURL, "Override default endpoint")
 
 	viper.SetEnvPrefix("ANKR")
 	viper.BindEnv("hub-url", "ANKR_HUB_URL")
