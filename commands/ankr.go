@@ -80,7 +80,6 @@ func init() {
 
 	viper.SetEnvPrefix("ANKR")
 	viper.BindEnv("hub-url", "ANKR_HUB_URL")
-	viper.BindPFlag("hub-url", AnkrCmd.PersistentFlags().Lookup("hub-url"))
 	viper.SetDefault("hub-url", clientURL)
 	addCommands()
 }
