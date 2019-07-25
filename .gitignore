@@ -1,3 +1,6 @@
 .DS_Store
 /vendor
 UTC--*
+/build/ankrctl_darwin_amd64
+/build/ankrctl_windows_amd64.exe
+/build/ankrctl_linux_amd64
