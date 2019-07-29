@@ -122,8 +122,9 @@ func TestRunUserUpdate(t *testing.T) {
 	lc := ankrctl.NewLiveCommand("go")
 	fmt.Println("user update test..")
 
+	// test update name
 	updateRes, err := lc.Run("run", "main.go", "user", "update",
-		MockUserEmail, "--update-key", MockRegisterCode, "-u", url)
+		MockUserEmail, "--update-key", MockUserName,"--update-value", "MockNameUpdate", "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
