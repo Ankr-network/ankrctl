@@ -16,7 +16,6 @@ func TestAskForConfirmYes(t *testing.T) {
 	retrieveUserInput = func(string) (string, error) {
 		return "yes", nil
 	}
-
 	err := AskForConfirm("test")
 	assert.NoError(t, err)
 }

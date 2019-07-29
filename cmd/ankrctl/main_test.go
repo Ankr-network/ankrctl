@@ -22,7 +22,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
 	ankrctl "github.com/Ankr-network/dccn-cli"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	"github.com/stretchr/testify/assert"

@@ -20,7 +20,6 @@ import (
 	"io"
 	"regexp"
 	"testing"
-
 	"github.com/fatih/color"
 	"github.com/stretchr/testify/assert"
 )
