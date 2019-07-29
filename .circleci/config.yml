@@ -70,3 +70,25 @@ jobs:
               docker tag ankrctl:$BRANCH_NAME ankrnetwork/akrctl:latest
               docker push ankrnetwork/ankrctl:latest
             fi
+
+  test:
+    docker:
+      - image: circleci/golang:1.10
+    working_directory: /go/src/github.com/Ankr-network/dccn-cli
+    steps:
+      - checkout
+      - run:
+          name: go to the object path
+          command: cd /commands
+      - run:
+          name: Test
+          command: go test -v
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build

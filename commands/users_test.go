@@ -2,13 +2,13 @@ package commands
 
 import (
 	"fmt"
+	ankrctl "github.com/Ankr-network/dccn-cli"
+	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"os"
 	"strings"
 	"testing"
 	"time"
-	ankrctl "github.com/Ankr-network/dccn-cli"
-	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -116,7 +116,6 @@ func TestRunUserConfirmRegistration(t *testing.T) {
 	}
 	fmt.Println(string(confirmRes))
 	assert.True(t, strings.Contains(string(confirmRes), MockResultSuccess))
-
 }
 
 
