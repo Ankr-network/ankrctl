@@ -118,6 +118,9 @@ func TestRunUserConfirmRegistration(t *testing.T) {
 	assert.True(t, strings.Contains(string(confirmRes), MockResultSuccess))
 }
 
+func TestRunUserUpdate(t *testing.T) {
+
+}
 
 func TestRunUserLogout(t *testing.T) {
 

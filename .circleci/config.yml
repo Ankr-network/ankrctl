@@ -81,6 +81,9 @@ jobs:
           name: go to the object path
           command: cd /go/src/github.com/Ankr-network/dccn-cli/commands
       - run:
+          name: dep ensure
+          command: dep ensure --update
+      - run:
           name: Test
           command: go test -v
 
