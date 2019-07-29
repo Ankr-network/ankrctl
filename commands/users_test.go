@@ -119,6 +119,16 @@ func TestRunUserConfirmRegistration(t *testing.T) {
 }
 
 func TestRunUserUpdate(t *testing.T) {
+	lc := ankrctl.NewLiveCommand("go")
+	fmt.Println("user update test..")
+
+	updateRes, err := lc.Run("run", "main.go", "user", "update",
+		MockUserEmail, "--update-key", MockRegisterCode, "-u", url)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	fmt.Println(string(updateRes))
+	assert.True(t, strings.Contains(string(updateRes), MockResultSuccess))
 
 }
 

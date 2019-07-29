@@ -74,7 +74,7 @@ jobs:
   test:
     docker:
       - image: circleci/golang:1.10
-    working_directory: /go/src/github.com/Ankr-network/dccn-cli
+    working_directory: /go/src/github.com/Ankr-network/dccn-cli/commands
     steps:
       - checkout
       - run:
