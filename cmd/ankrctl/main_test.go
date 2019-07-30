@@ -79,6 +79,7 @@ func TestMockCommand_Run(t *testing.T) {
 	registerRes, err := lc.Run( "user", "register", MockUserName,
 		"--email", MockUserEmail, "--password", MockPassword)
 	if err != nil {
+		t.Log(err)
 		t.Error(err.Error())
 	}
 	fmt.Println(string(registerRes))
