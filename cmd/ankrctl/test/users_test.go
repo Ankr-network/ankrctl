@@ -28,7 +28,7 @@ func TestMockCommand(t *testing.T) {
 		c.WriteRune(charsa[rand.Intn(len(charsa))])
 	}
 
-	lc := ankrctl.NewLiveCommand("../../build/ankrctl_linux_amd64")
+	lc := ankrctl.NewLiveCommand("../../../build/ankrctl_linux_amd64")
 	MockUserEmail := "test12345@mailinator.com"
 	MockPassword := "test12345"
 	fmt.Println("user login test..")
