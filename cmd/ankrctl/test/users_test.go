@@ -16,7 +16,6 @@ limitations under the License.
 package test
 
 import (
-	"fmt"
 	ankrctl "github.com/Ankr-network/dccn-cli"
 	"github.com/stretchr/testify/assert"
 	"strings"
@@ -68,13 +67,23 @@ func TestRunUserLogin(t *testing.T) {
 		c.WriteRune(charsa[rand.Intn(len(charsa))])
 	}*/
 
-	MockUserEmail := "test12345@mailinator.com"
-	MockPassword := "test12345"
-	fmt.Println("user login test..")
-	loginRes, err := lc.Run( "user", "login", "--email", MockUserEmail, "--password", MockPassword)
+	CorrectUserEmail := "test12345@mailinator.com"
+	CorrectPassword := "test12345"
+	t.Log("user login test ...")
+
+	// case 1: correct input
+	loginRes, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
-		t.Error(err.Error())
+		t.Error(err)
 	}
-	fmt.Println(string(loginRes))
+	t.Log(string(loginRes))
 	assert.True(t, strings.Contains(string(loginRes), MockResultSuccess))
+
+	// case 2: invalid inputs
+	_, err_invalid := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err_invalid == nil {
+		t.Error(err_invalid)
+	}
+	t.Log("Cannot login successfully for invalid email or password")
+
 }
