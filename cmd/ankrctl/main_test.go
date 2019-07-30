@@ -71,7 +71,7 @@ func TestMockCommand_Run(t *testing.T) {
 	MockPassword := b.String()
 	MockUserName := "test" + c.String()
 
-	lc := ankrctl.NewLiveCommand("./build/ankrctl_linux_amd64")
+	lc := ankrctl.NewLiveCommand("../../build/ankrctl_linux_amd64")
 
 	MockUserEmail := MockUserName + "@mailinator.com"
 
