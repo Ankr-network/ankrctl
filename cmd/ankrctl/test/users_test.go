@@ -37,6 +37,6 @@ func TestMockCommand(t *testing.T) {
 		t.Error(err.Error())
 	}
 	fmt.Println(string(loginRes))
-	assert.True(t, strings.Contains(string(loginRes), "success"))
+	assert.True(t, strings.Contains(string(loginRes), "Success"))
 
 }
