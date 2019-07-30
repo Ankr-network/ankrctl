@@ -71,12 +71,12 @@ func TestMockCommand_Run(t *testing.T) {
 	MockPassword := b.String()
 	MockUserName := "test" + c.String()
 
-	lc := ankrctl.NewLiveCommand("go")
+	lc := ankrctl.NewLiveCommand("/build/ankrctl")
 
 	MockUserEmail := MockUserName + "@mailinator.com"
 
 	fmt.Println("user register test..")
-	registerRes, err := lc.Run("run", "main.go", "user", "register", MockUserName,
+	registerRes, err := lc.Run( "user", "register", MockUserName,
 		"--email", MockUserEmail, "--password", MockPassword)
 	if err != nil {
 		t.Error(err.Error())
