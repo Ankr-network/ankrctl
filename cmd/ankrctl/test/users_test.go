@@ -80,7 +80,7 @@ func TestRunUserLogin(t *testing.T) {
 	assert.True(t, strings.Contains(string(loginRes), MockResultSuccess))
 
 	// case 2: invalid inputs
-	_, err_invalid := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	_, err_invalid := lc.Run( "user", "login", "--email", "", "--password", "")
 	if err_invalid == nil {
 		t.Error(err_invalid)
 	}
