@@ -33,6 +33,9 @@ const (
 	MockAppType      = "Deploy"
 )
 
+var CorrectUserEmail = "test12345@mailinator.com"
+var CorrectPassword = "test12345"
+var CorrectUserName = "test12345"
 var lc = ankrctl.NewLiveCommand("../../../build/ankrctl_linux_amd64")
 
 /*type mail struct {
@@ -67,8 +70,7 @@ func TestRunUserLogin(t *testing.T) {
 		c.WriteRune(charsa[rand.Intn(len(charsa))])
 	}*/
 
-	CorrectUserEmail := "test12345@mailinator.com"
-	CorrectPassword := "test12345"
+
 	t.Log("user login test ...")
 
 	// case 1: correct input
@@ -85,5 +87,47 @@ func TestRunUserLogin(t *testing.T) {
 		t.Error(err_invalid)
 	}
 	t.Log("Cannot login successfully for invalid email or password")
+
+}
+
+func TestRunUserLogout(t *testing.T) {
+
+	t.Log("user logout test ...")
+
+	logoutRes, err := lc.Run( "user", "logout")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(string(logoutRes))
+	assert.True(t, strings.Contains(string(logoutRes), MockResultSuccess))
+
+}
+
+
+func TestRunUserDetail(t *testing.T) {
+
+	t.Log("user detail test ...")
+
+	detailRes, err := lc.Run( "user", "detail")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(string(detailRes))
+	assert.True(t, strings.Contains(string(detailRes), "Name"))
+	assert.True(t, strings.Contains(string(detailRes), "Email"))
+	assert.True(t, strings.Contains(string(detailRes), "Status"))
+}
+
+
+func TestRunUserUpdate(t *testing.T) {
+
+	t.Log("user update test ...")
+
+	updateRes, err := lc.Run( "user", "update", CorrectUserEmail, "--update-key", CorrectUserName, "--update-value", "user_name_update_test")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(string(updateRes))
+	assert.True(t, strings.Contains(string(updateRes), MockResultSuccess))
 
 }
