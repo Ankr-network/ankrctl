@@ -72,12 +72,11 @@ func TestMockCommand_Run(t *testing.T) {
 	MockUserEmail := "test12345@mailinator.com"
 	MockPassword := "test12345"
 	fmt.Println("user login test..")
-	loginRes, err := lc.Run( "user", "login", MockUserEmail, "--password", MockPassword)
+	loginRes, err := lc.Run( "user", "login", "--email", MockUserEmail, "--password", MockPassword)
 	if err != nil {
 		t.Error(err.Error())
 	}
 	fmt.Println(string(loginRes))
 	assert.True(t, strings.Contains(string(loginRes), MockResultSuccess))
-
 
 }
