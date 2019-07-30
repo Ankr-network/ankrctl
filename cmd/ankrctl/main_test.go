@@ -20,7 +20,6 @@ import (
 	ankrctl "github.com/Ankr-network/dccn-cli"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -72,17 +71,13 @@ func TestMockCommand_Run(t *testing.T) {
 	MockPassword := b.String()
 	MockUserName := "test" + c.String()
 
-	var url = os.Getenv("URL_BRANCH")
-	fmt.Println("url: " + url + "\n")
-
 	lc := ankrctl.NewLiveCommand("go")
 
 	MockUserEmail := MockUserName + "@mailinator.com"
 
 	fmt.Println("user register test..")
 	registerRes, err := lc.Run("run", "main.go", "user", "register", MockUserName,
-		"--email", MockUserEmail, "--password", MockPassword,
-		"-u", url)
+		"--email", MockUserEmail, "--password", MockPassword)
 	if err != nil {
 		t.Error(err.Error())
 	}
