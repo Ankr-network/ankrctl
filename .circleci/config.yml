@@ -80,7 +80,7 @@ jobs:
       - run:
           name: dep ensure
           command: dep ensure --update
-      - rum:
+      - run:
           name: make dev test file
           command: make build_lin_dev
       - run:
