@@ -1,7 +1,7 @@
 .PHONY: build_win build_mac build_lin win_env mac_env lin_env build
 
-CLIENT_URL=client.dccn.ankr.com
-ANKR_CHAIN_URL=https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com
+CLIENT_URL=client-dev.dccn.ankr.com
+ANKR_CHAIN_URL=https://chain-dev-01.dccn.ankr.com;https://chain-dev-02.dccn.ankr.com
 
 build = CGO_ENABLED=0 \
     GOOS=$(GOOS) \

@@ -82,7 +82,7 @@ jobs:
           command: dep ensure --update
       - run:
           name: Test
-          command: go test ./commands -v
+          command: go test ./cmd/ankrctl -v
 
 workflows:
   version: 2

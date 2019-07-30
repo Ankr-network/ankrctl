@@ -124,7 +124,7 @@ func TestRunUserUpdate(t *testing.T) {
 
 	// test update name
 	updateRes, err := lc.Run("run", "main.go", "user", "update",
-		MockUserEmail, "--update-key", MockUserName,"--update-value", "MockNameUpdate", "-u", url)
+		MockUserEmail, "--update-key", MockUserName,"--update-value", "MockNameUpdateTest", "-u", url)
 	if err != nil {
 		t.Error(err.Error())
 	}
