@@ -15,14 +15,13 @@ package commands
 
 import (
 	"fmt"
+	"golang.org/x/crypto/ssh/terminal"
 	"log"
 	"syscall"
 	"time"
 
-	"github.com/spf13/viper"
-	"golang.org/x/crypto/ssh/terminal"
-
 	ankrctl "github.com/Ankr-network/dccn-cli"
+	"github.com/spf13/viper"
 
 	"github.com/spf13/cobra"
 
@@ -49,11 +48,6 @@ func userCmd() *Command {
 		IsIndex:       true,
 	}
 
-	//DCCN-CLI user register
-	cmdUserRegister := CmdBuilder(cmd, RunUserRegister, "register <user-name>", "user register",
-		Writer, aliasOpt("rg"), docCategories("user"))
-	AddStringFlag(cmdUserRegister, ankrctl.ArgEmailSlug, "", "", "User email", requiredOpt())
-	AddStringFlag(cmdUserRegister, ankrctl.ArgPasswordSlug, "", "", "User password", requiredOpt())
 
 	//DCCN-CLI user comfirm registration
 	cmdUserConfirmRegistration := CmdBuilder(cmd, RunUserConfirmRegistration,
@@ -103,7 +97,8 @@ func userCmd() *Command {
 	//DCCN-CLI user login
 	cmdUserLogin := CmdBuilder(cmd, RunUserLogin, "login", "user login", Writer,
 		aliasOpt("li"), docCategories("user"))
-	_ = cmdUserLogin
+	AddStringFlag(cmdUserLogin, ankrctl.ArgEmailSlug, "", "", "User attribute key")
+	AddStringFlag(cmdUserLogin, ankrctl.ArgPasswordSlug, "", "", "User attribute key")
 
 	//DCCN-CLI user logout
 	cmdUserLogout := CmdBuilder(cmd, RunUserLogout, "logout", "user logout", Writer,
@@ -119,16 +114,13 @@ func userCmd() *Command {
 
 }
 
-// RunUserRegister register a user.
-func RunUserRegister(c *CmdConfig) error {
 
-	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
-	}
+
+// RunUserLogin login user by email and password.
+func RunUserLogin(c *CmdConfig) error {
 
 	email, err := c.Ankr.GetString(c.NS, ankrctl.ArgEmailSlug)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -137,45 +129,19 @@ func RunUserRegister(c *CmdConfig) error {
 		return err
 	}
 
-	url := viper.GetString("hub-url")
-	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
+	if len(email) == 0 || len(password) == 0{
+		fmt.Print("\nEmail: ")
+		email, err = retrieveUserInput()
+		if err != nil {
+			return err
+		}
 
-	defer conn.Close()
-	userClient := gwusermgr.NewUserMgrClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), ankr_const.ClientTimeOut*time.Second)
-	defer cancel()
-
-	urr := &gwusermgr.RegisterRequest{
-		Password: password,
-		Email:    email,
-		Name:     c.Args[0],
-	}
-
-	if _, err := userClient.Register(ctx, urr); err != nil {
-		return err
-	}
-
-	fmt.Printf("User %s Register Requested, Please Check Your Email Box.\n", email)
-
-	return nil
-}
-
-// RunUserLogin login user by email and password.
-func RunUserLogin(c *CmdConfig) error {
-
-	fmt.Print("\nEmail: ")
-	email, err := retrieveUserInput()
-	if err != nil {
-		return err
-	}
-
-	fmt.Print("\nPassword: ")
-	password, err := terminal.ReadPassword(int(syscall.Stdin))
-	if err != nil {
-		return err
+		fmt.Print("\nPassword: ")
+		p, err := terminal.ReadPassword(int(syscall.Stdin))
+		if err != nil {
+			return err
+		}
+		password = string(p)
 	}
 
 	url := viper.GetString("hub-url")
@@ -192,7 +158,7 @@ func RunUserLogin(c *CmdConfig) error {
 	defer cancel()
 
 	rsp, err := userClient.Login(ctx,
-		&gwusermgr.LoginRequest{Email: email, Password: string(password)})
+		&gwusermgr.LoginRequest{Email: email, Password: password})
 	if err != nil {
 		log.Fatal(err.Error())
 	}

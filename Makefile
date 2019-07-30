@@ -5,7 +5,7 @@ TEST_DEV_URL=client-dev.dccn.ankr.com
 TEST_STAGE_URL=client-stage.dccn.ankr.com
 ANKR_CHAIN_URL = https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com
 ANKR_CHAIN_URL_STAGE = https://chain-stage-01.dccn.ankr.com;https://chain-stage-02.dccn.ankr.com
-ANKR_CHAIN_URL_DEV = https://chain-dev-01.dccn.ankr.com;https://chain-dev-02.dccn.ankr.com
+ANKR_CHAIN_URL_DEV = https://chain-stage-01.dccn.ankr.com;https://chain-stage-02.dccn.ankr.com
 
 build = CGO_ENABLED=0 \
     GOOS=$(GOOS) \

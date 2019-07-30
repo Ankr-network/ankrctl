@@ -68,21 +68,16 @@ func TestMockCommand_Run(t *testing.T) {
 		c.WriteRune(charsa[rand.Intn(len(charsa))])
 	}
 
-	MockPassword := b.String()
-	MockUserName := "test" + c.String()
-
 	lc := ankrctl.NewLiveCommand("../../build/ankrctl_linux_amd64")
-
-	MockUserEmail := MockUserName + "@mailinator.com"
-
-	fmt.Println("user register test..")
-	registerRes, err := lc.Run( "user", "register", MockUserName,
-		"--email", MockUserEmail, "--password", MockPassword)
+	MockUserEmail := "test12345@mailinator.com"
+	MockPassword := "test12345"
+	fmt.Println("user login test..")
+	loginRes, err := lc.Run( "user", "login", MockUserEmail, "--password", MockPassword)
 	if err != nil {
-		t.Log(err)
 		t.Error(err.Error())
 	}
-	fmt.Println(string(registerRes))
-	assert.True(t, strings.Contains(string(registerRes), MockResultSuccess))
+	fmt.Println(string(loginRes))
+	assert.True(t, strings.Contains(string(loginRes), MockResultSuccess))
+
 
 }
