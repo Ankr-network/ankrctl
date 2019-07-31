@@ -87,7 +87,7 @@ jobs:
           name: Test
           command: |
             sleep 30
-            go test ./cmd/ankrctl/test -v
+            go test ./commands/test -v
 
 workflows:
   version: 2
