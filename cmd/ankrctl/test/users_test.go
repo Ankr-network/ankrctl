@@ -165,7 +165,7 @@ func TestRunUserChangePassword(t *testing.T) {
 
 	// user change password test
 	t.Log("user change password test ...")
-	changePasswordRes, err := lc.Run( "user", "change-password", "--old-password", CorrectPassword, "--new-password", "ChangePasswordTest")
+	changePasswordRes, err := lc.Run( "user", "change-password", CorrectUserEmail, "--old-password", CorrectPassword, "--new-password", "ChangePasswordTest")
 	if err != nil {
 		t.Error(err)
 	}
@@ -179,7 +179,7 @@ func TestRunUserChangePassword(t *testing.T) {
 	}
 
 	// recovery
-	lc.Run( "user", "change-password", "--old-password", "ChangePasswordTest", "--new-password", CorrectPassword)
+	lc.Run( "user", "change-password", CorrectUserEmail, "--old-password", "ChangePasswordTest", "--new-password", CorrectPassword)
 
 }
 
