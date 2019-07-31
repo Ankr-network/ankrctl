@@ -103,11 +103,16 @@ func TestRunUserLogout(t *testing.T) {
 
 }
 
-
 func TestRunUserDetail(t *testing.T) {
 
-	t.Log("user detail test ...")
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
 
+	// user detail test
+	t.Log("user detail test ...")
 	detailRes, err := lc.Run( "user", "detail")
 	if err != nil {
 		t.Error(err)
@@ -118,11 +123,16 @@ func TestRunUserDetail(t *testing.T) {
 	assert.True(t, strings.Contains(string(detailRes), "Status"))
 }
 
-
 func TestRunUserUpdate(t *testing.T) {
 
-	t.Log("user update test ...")
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
 
+	// user update test
+	t.Log("user update test ...")
 	updateRes, err := lc.Run( "user", "update", CorrectUserEmail, "--update-key", CorrectUserName, "--update-value", "user_name_update_test")
 	if err != nil {
 		t.Error(err)
