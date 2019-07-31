@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"log"
+	"os"
 	"syscall"
 	"time"
 
@@ -486,7 +487,8 @@ func RunUserUpdate(c *CmdConfig) error {
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
+		fmt.Fprintf(os.Stderr, "no ankr network access token found")
+		return nil
 	}
 
 	md := metadata.New(map[string]string{
@@ -498,12 +500,14 @@ func RunUserUpdate(c *CmdConfig) error {
 
 	updateKey, err := c.Ankr.GetString(c.NS, ankrctl.ArgUpdateKeySlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, err.Error())
+		return nil
 	}
 
 	updateValue, err := c.Ankr.GetString(c.NS, ankrctl.ArgUpdateValueSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, err.Error())
+		return nil
 	}
 
 	attributeArray := []*gwusermgr.UserAttribute{}
@@ -511,22 +515,16 @@ func RunUserUpdate(c *CmdConfig) error {
 
 	keys := map[string]bool{
 		"AvatarBackgroundColor": true,
-		"MainnetToErcAddr":      true,
-		"ErcToMainnetAddr":      true,
-		"MainnetToBepAddr":      true,
-		"ErcToBepAddr":          true,
-		"BepToErcAddr":          true,
-		"BepToMainnetAddr":      true,
 		"BepPubKey":             true,
 		"ErcPubKey":             true,
-		"BepToMainnetMemo":      true,
 		"Avatar":                true,
 		"Name":                  true,
 		"PubKey":                true,
 	}
 
 	if _, ok := keys[updateKey]; !ok {
-		return fmt.Errorf("not correct user attribute for update")
+		fmt.Fprintf(os.Stderr, "not correct user attribute for update")
+		return nil
 	}
 	attribute.Key = updateKey
 	attribute.Value = updateValue
@@ -537,7 +535,8 @@ func RunUserUpdate(c *CmdConfig) error {
 
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		fmt.Fprintf(os.Stderr, "did not connect: %v", err.Error())
+		return nil
 	}
 
 	defer conn.Close()
@@ -545,12 +544,14 @@ func RunUserUpdate(c *CmdConfig) error {
 	rsp, err := userClient.UpdateAttributes(tokenctx,
 		&gwusermgr.UpdateAttributesRequest{UserAttributes: attributeArray})
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, err.Error())
+		return nil
 	}
 
 	viper.Set("User", rsp)
 	if err := writeConfig(); err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, err.Error())
+		return nil
 	}
 
 	fmt.Println("User Update Attribute Success.")
