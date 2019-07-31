@@ -30,12 +30,18 @@ func TestRunNamespaceCreate(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(nsCreateRes)
 	t.Log(string(nsCreateRes))
+	assert.True(t, strings.Contains(string(nsCreateRes), "success"))
 	t.Log("list charts successfully")
-	assert.True(t, strings.Contains(string(nsCreateRes), MockResultSuccess))
+
+	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
 
+	// delete the namespace created
+	lc.Run("namespace", "delete", test_ns_id)
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
 }
