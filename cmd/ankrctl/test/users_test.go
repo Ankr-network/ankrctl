@@ -145,14 +145,10 @@ func TestRunUserUpdate(t *testing.T) {
 	time.Sleep(4 * time.Second)
 
 	// check the update result
-	detailRes, err := lc.Run( "user", "detail")
-	if err != nil {
-		t.Error(err)
+	_, err_update := lc.Run( "user", "detail")
+	if err_update != nil {
+		t.Error(err_update)
 	}
-	t.Log(detailRes)
-	//if detailRes.Attributes.Name != "user_name_update_test" {
-	//	t.Error(err)
-	//}
 
 	// recovery
 	lc.Run( "user", "update", CorrectUserEmail, "--update-key", "Name", "--update-value", CorrectUserName)
@@ -187,7 +183,7 @@ func TestRunUserChangePassword(t *testing.T) {
 
 }
 
-func TestRunUserChangeEmail(t *testing.T) {
+/*func TestRunUserChangeEmail(t *testing.T) {
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
@@ -213,4 +209,4 @@ func TestRunUserChangeEmail(t *testing.T) {
 	// recovery
 	lc.Run( "user", "change-password", "--old-password", "ChangePasswordTest", "--new-password", CorrectPassword)
 
-}
+}*/
