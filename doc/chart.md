@@ -12,7 +12,7 @@ stable    wordpress    5.7.1             5.1.1                 Web publishing pl
 ## Upload a Chart:
 Upload a new chart to user catalog:
 ```
-$ ankrctl upload wordpress --upload-file ../dccn-appmgr/examples/test/wordpress-5.7.1.tgz --upload-version=5.7.1
+$ ankrctl chart upload wordpress --upload-file ../dccn-appmgr/examples/test/wordpress-5.7.1.tgz --upload-version=5.7.1
 Chart wordpress upload success.
 ```
 
