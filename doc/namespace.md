@@ -26,6 +26,6 @@ Namespace ns-5f9e00af-025d-482f-812d-01c488cd70b9 delete success.
 ## Update a Namespace:
 
 ```
-$ ankrctl update ns-89bb94be-7e7f-4f6e-8f5e-e3103c5ed68c --cpu-limit 300 --mem-limit 300 --storage-limit 4
+$ ankrctl namespace update ns-89bb94be-7e7f-4f6e-8f5e-e3103c5ed68c --cpu-limit 300 --mem-limit 300 --storage-limit 4
 Namespace ns-89bb94be-7e7f-4f6e-8f5e-e3103c5ed68c update success.
 ```

@@ -63,7 +63,7 @@ func TestRunNamespaceUpdate(t *testing.T) {
 
 	// namespace update test
 	t.Log("namespace update test ...")
-	nsUpdateRes, err := lc.Run("update", test_ns_id, "--cpu-limit", "1024", "--mem-limit", "2048", "--storage-limit", "16")
+	nsUpdateRes, err := lc.Run("namespace", "update", test_ns_id, "--cpu-limit", "1024", "--mem-limit", "2048", "--storage-limit", "16")
 	if err != nil {
 		t.Error(err)
 	}
@@ -75,6 +75,35 @@ func TestRunNamespaceUpdate(t *testing.T) {
 
 	// delete the namespace created
 	lc.Run("namespace", "delete", test_ns_id)
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+}
+
+func TestRunNamespaceDelete(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// namespace create for delete test
+	MockNamespaceName = "ns_delete_cli_test"
+	nsCreateRes, _ := lc.Run( "namespace", "create", MockNamespaceName, "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
+
+	// wait for status changed
+	time.Sleep(10 * time.Second)
+
+	// namespace delete test
+	t.Log("namespace delete test ...")
+	nsDeleteRes, err := lc.Run("namespace", "delete", test_ns_id)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(string(nsDeleteRes))
+	assert.True(t, strings.Contains(string(nsDeleteRes), "success"))
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
