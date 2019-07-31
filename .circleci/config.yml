@@ -85,7 +85,9 @@ jobs:
           command: make build_lin_dev
       - run:
           name: Test
-          command: go test ./cmd/ankrctl/test -v
+          command: |
+            sleep 30
+            go test ./cmd/ankrctl/test -v
 
 workflows:
   version: 2
