@@ -23,6 +23,13 @@ Warning: Are you sure you want to Cancel 1 namespace(s) (y/N) ? y
 Namespace ns-5f9e00af-025d-482f-812d-01c488cd70b9 delete success.
 ```
 
+Tips: if you don't want to see the warning, please use the following command:
+
+```
+$ ankrctl namespace delete ns-5f9e00af-025d-482f-812d-01c488cd70b9 -f
+Namespace ns-5f9e00af-025d-482f-812d-01c488cd70b9 delete success.
+```
+
 ## Update a Namespace:
 
 ```
