@@ -346,7 +346,7 @@ func RunUserChangePassword(c *CmdConfig) error {
 	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ChangePassword(tokenctx,
 		&gwusermgr.ChangePasswordRequest{NewPassword: newPassword, OldPassword: oldPassword}); err != nil {
-		fmt.Fprintf(os.Stdout, "\nERROR: %s\n","cannot get change password")
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
 		return nil
 	}
 
