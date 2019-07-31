@@ -183,7 +183,7 @@ func TestRunUserChangePassword(t *testing.T) {
 
 }
 
-/*func TestRunUserChangeEmail(t *testing.T) {
+func TestRunUserChangeEmail(t *testing.T) {
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
@@ -191,22 +191,30 @@ func TestRunUserChangePassword(t *testing.T) {
 		t.Error(err)
 	}
 
-	// user change password test
-	t.Log("user change password test ...")
-	changePasswordRes, err := lc.Run( "user", "change-password", "--old-password", CorrectPassword, "--new-password", "ChangePasswordTest")
+	// user change email test
+	t.Log("user change email test ...")
+	changeEmailRes, err := lc.Run( "user", "email-change", "ankrtestfake@mailinator.com")
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(string(changePasswordRes))
-	assert.True(t, strings.Contains(string(changePasswordRes), MockResultSuccess))
+	t.Log(string(changeEmailRes))
+	assert.True(t, strings.Contains(string(changeEmailRes), "Requested"))
+}
 
-	// use logincli api to test
-	_, err_change_password := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", "ChangePasswordTest")
-	if err_change_password != nil {
-		t.Error(err_change_password)
+func TestRunUserForgotPassword(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
 	}
 
-	// recovery
-	lc.Run( "user", "change-password", "--old-password", "ChangePasswordTest", "--new-password", CorrectPassword)
-
-}*/
+	// user change email test
+	t.Log("user forgot password test ...")
+	ForgotPasswordRes, err := lc.Run( "user", "forgot-password", CorrectUserEmail)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(string(ForgotPasswordRes))
+	assert.True(t, strings.Contains(string(ForgotPasswordRes), "Requested"))
+}

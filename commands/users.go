@@ -260,7 +260,8 @@ func RunUserForgotPassword(c *CmdConfig) error {
 	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ForgotPassword(context.Background(),
 		&gwusermgr.ForgotPasswordRequest{Email: c.Args[0]}); err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	fmt.Println("Forgot Password Requested, Please Check Your Email Box.")
@@ -427,12 +428,14 @@ func RunUserChangeEmail(c *CmdConfig) error {
 	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ChangeEmail(tokenctx,
 		&gwusermgr.ChangeEmailRequest{NewEmail: c.Args[0]}); err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	user.Email = c.Args[0]
 	viper.Set("User", user)
 	if err := writeConfig(); err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	fmt.Println("Change Email Requested, Please Check Your Email Box.")

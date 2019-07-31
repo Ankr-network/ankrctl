@@ -44,7 +44,7 @@ User Update Attribute Success.
 You can change the user password with new one:
 
 ```
-$ ankrctl user change-password --old-password passw0rd --new-password passw1rd
+$ ankrctl user change-password user_name@mailinator.com --old-password passw0rd --new-password passw1rd
 
 Change Password Success.
 ```
