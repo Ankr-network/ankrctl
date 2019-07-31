@@ -133,7 +133,7 @@ func TestRunUserUpdate(t *testing.T) {
 
 	// user update test
 	t.Log("user update test ...")
-	updateRes, err := lc.Run( "user", "update", CorrectUserEmail, "--update-key", CorrectUserName, "--update-value", "user_name_update_test")
+	updateRes, err := lc.Run( "user", "update", CorrectUserEmail, "--update-key", "Name", "--update-value", "user_name_update_test")
 	if err != nil {
 		t.Error(err)
 	}

@@ -523,7 +523,7 @@ func RunUserUpdate(c *CmdConfig) error {
 	}
 
 	if _, ok := keys[updateKey]; !ok {
-		fmt.Fprintf(os.Stderr, "not correct user attribute for update")
+		fmt.Fprintf(os.Stdout, "not correct user attribute for update")
 		return nil
 	}
 	attribute.Key = updateKey
