@@ -200,12 +200,14 @@ func RunUserLogout(c *CmdConfig) error {
 	defer cancel()
 	if _, err := userClient.Logout(tokenContext,
 		&gwusermgr.RefreshToken{RefreshToken: authResult.RefreshToken}); err != nil {
-		return err
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+			return nil
 	}
 	viper.Set("UserDetail", "")
 	viper.Set("AuthResult", "")
 	if err := writeConfig(); err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	fmt.Println("Logout Success.")
 
@@ -508,13 +510,13 @@ func RunUserUpdate(c *CmdConfig) error {
 
 	updateKey, err := c.Ankr.GetString(c.NS, ankrctl.ArgUpdateKeySlug)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
 		return nil
 	}
 
 	updateValue, err := c.Ankr.GetString(c.NS, ankrctl.ArgUpdateValueSlug)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
 		return nil
 	}
 
@@ -552,13 +554,13 @@ func RunUserUpdate(c *CmdConfig) error {
 	rsp, err := userClient.UpdateAttributes(tokenctx,
 		&gwusermgr.UpdateAttributesRequest{UserAttributes: attributeArray})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
 		return nil
 	}
 
 	viper.Set("User", rsp)
 	if err := writeConfig(); err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
 		return nil
 	}
 
@@ -595,7 +597,8 @@ func RunUserDetail(c *CmdConfig) error {
 	userClient := gwusermgr.NewUserMgrClient(conn)
 	rsp, err := userClient.UserDetail(tokenctx, &common_proto.Empty{})
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	fmt.Printf("Name: %s \n", rsp.Attributes.Name)

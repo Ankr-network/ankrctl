@@ -23,54 +23,16 @@ import (
 	"time"
 )
 
-const (
-	MockResultSuccess = "Success"
-	MockAppid        = "100"
-	MockAppName      = "app"
-	MockAppImage     = "nginx:1.12"
-	MockReplica       = "2"
-	MockUpdateImage   = "nginx:1.13"
-	MockUpdateReplica = "3"
-	MockAppType      = "Deploy"
+const MockResultSuccess = "Success"
+
+var(
+	CorrectUserEmail = "test12345@mailinator.com"
+	CorrectPassword = "test12345"
+	CorrectUserName = "test12345"
+	lc = ankrctl.NewLiveCommand("../../../build/ankrctl_linux_amd64")
 )
 
-var CorrectUserEmail = "test12345@mailinator.com"
-var CorrectPassword = "test12345"
-var CorrectUserName = "test12345"
-var lc = ankrctl.NewLiveCommand("../../../build/ankrctl_linux_amd64")
-
-/*type mail struct {
-	From    string `json:"f"`
-	Subject string `json:"s"`
-	HTML    string `json:"html"`
-	Text    string `json:"text"`
-}
-
-type msg struct {
-	UID string `json:"uid"`
-}
-
-type inbox struct {
-	Msgs []msg `json:"msgs"`
-}*/
-
 func TestRunUserLogin(t *testing.T) {
-
-	/*rand.Seed(time.Now().UnixNano())
-	charsA := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	charsa := []rune("abcdefghijklmnopqrstuvwxyz")
-	nums := []rune("0123456789")
-	var b strings.Builder
-	var c strings.Builder
-	for i := 0; i < 3; i++ {
-		b.WriteRune(charsA[rand.Intn(len(charsA))])
-		b.WriteRune(charsa[rand.Intn(len(charsa))])
-		b.WriteRune(nums[rand.Intn(len(nums))])
-		c.WriteRune(charsa[rand.Intn(len(charsa))])
-		c.WriteRune(charsa[rand.Intn(len(charsa))])
-		c.WriteRune(charsa[rand.Intn(len(charsa))])
-	}*/
-
 
 	t.Log("user login test ...")
 
