@@ -1,13 +1,7 @@
 package test
 
-import (
-	"github.com/stretchr/testify/assert"
-	"strings"
-	"testing"
-)
 
-
-func TestRunNamespaceList(t *testing.T) {
+/*func TestRunNamespaceList(t *testing.T) {
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
@@ -27,7 +21,7 @@ func TestRunNamespaceList(t *testing.T) {
 	assert.True(t, strings.Contains(string(chartListRes), "Repo"))
 }
 
-/*func TestRunChartList(t *testing.T) {
+func TestRunChartList(t *testing.T) {
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
