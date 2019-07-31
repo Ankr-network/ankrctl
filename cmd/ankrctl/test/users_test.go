@@ -165,7 +165,7 @@ func TestRunUserChangePassword(t *testing.T) {
 
 	// user change password test
 	t.Log("user change password test ...")
-	changePasswordRes, err := lc.Run( "user", "change-password", CorrectUserEmail, "--old-password", CorrectPassword, "--new-password", "ChangePasswordTest")
+	changePasswordRes, err := lc.Run( "user", "change-password", CorrectUserEmail, "--old-password", CorrectPassword, "--new-password", "ankr12345")
 	if err != nil {
 		t.Error(err)
 	}
@@ -173,13 +173,13 @@ func TestRunUserChangePassword(t *testing.T) {
 	assert.True(t, strings.Contains(string(changePasswordRes), MockResultSuccess))
 
 	// use logincli api to test
-	_, err_change_password := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", "ChangePasswordTest")
+	_, err_change_password := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", "ankr12345")
 	if err_change_password != nil {
 		t.Error(err_change_password)
 	}
 
 	// recovery
-	lc.Run( "user", "change-password", CorrectUserEmail, "--old-password", "ChangePasswordTest", "--new-password", CorrectPassword)
+	lc.Run( "user", "change-password", CorrectUserEmail, "--old-password", "ankr12345", "--new-password", CorrectPassword)
 
 }
 
