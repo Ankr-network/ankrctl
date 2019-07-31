@@ -55,8 +55,17 @@ func TestRunUserLogin(t *testing.T) {
 
 func TestRunUserLogout(t *testing.T) {
 
-	t.Log("user logout test ...")
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
 
+	// wait for status changed
+	time.Sleep(2 * time.Second)
+
+	// test user logout
+	t.Log("user logout test ...")
 	logoutRes, err := lc.Run( "user", "logout")
 	if err != nil {
 		t.Error(err)
@@ -73,6 +82,9 @@ func TestRunUserDetail(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	// wait for status changed
+	time.Sleep(2 * time.Second)
 
 	// user detail test
 	t.Log("user detail test ...")
@@ -94,6 +106,9 @@ func TestRunUserUpdate(t *testing.T) {
 		t.Error(err)
 	}
 
+	// wait for status changed
+	time.Sleep(2 * time.Second)
+
 	// user update test
 	t.Log("user update test ...")
 	updateRes, err := lc.Run( "user", "update", CorrectUserEmail, "--update-key", "Name", "--update-value", "user_name_update_test")
@@ -104,7 +119,7 @@ func TestRunUserUpdate(t *testing.T) {
 	assert.True(t, strings.Contains(string(updateRes), MockResultSuccess))
 
 	// wait for status changed
-	time.Sleep(4 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	// check the update result
 	_, err_update := lc.Run( "user", "detail")
@@ -125,6 +140,9 @@ func TestRunUserChangePassword(t *testing.T) {
 		t.Error(err)
 	}
 
+	// wait for status changed
+	time.Sleep(2 * time.Second)
+
 	// user change password test
 	t.Log("user change password test ...")
 	changePasswordRes, err := lc.Run( "user", "change-password", CorrectUserEmail, "--old-password", CorrectPassword, "--new-password", "ankr12345")
@@ -133,6 +151,9 @@ func TestRunUserChangePassword(t *testing.T) {
 	}
 	t.Log(string(changePasswordRes))
 	assert.True(t, strings.Contains(string(changePasswordRes), MockResultSuccess))
+
+	// wait for status changed
+	time.Sleep(2 * time.Second)
 
 	// use logincli api to test
 	_, err_change_password := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", "ankr12345")
@@ -153,6 +174,9 @@ func TestRunUserChangeEmail(t *testing.T) {
 		t.Error(err)
 	}
 
+	// wait for status changed
+	time.Sleep(2 * time.Second)
+
 	// user change email test
 	t.Log("user change email test ...")
 	changeEmailRes, err := lc.Run( "user", "email-change", "ankrtestfake@mailinator.com")
@@ -170,6 +194,9 @@ func TestRunUserForgotPassword(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	// wait for status changed
+	time.Sleep(2 * time.Second)
 
 	// user change email test
 	t.Log("user forgot password test ...")
