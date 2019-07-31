@@ -312,7 +312,8 @@ func RunUserChangePassword(c *CmdConfig) error {
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n","no ankr network access token found")
+		return nil
 	}
 
 	md := metadata.New(map[string]string{
@@ -324,25 +325,29 @@ func RunUserChangePassword(c *CmdConfig) error {
 
 	oldPassword, err := c.Ankr.GetString(c.NS, ankrctl.ArgOldPasswordSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n","cannot get oldPassword")
+		return nil
 	}
 
 	newPassword, err := c.Ankr.GetString(c.NS, ankrctl.ArgNewPasswordSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n","cannot get newPassword")
+		return nil
 	}
 
 	url := viper.GetString("hub-url")
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n","cannot get connect")
+		return nil
 	}
 
 	defer conn.Close()
 	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ChangePassword(tokenctx,
 		&gwusermgr.ChangePasswordRequest{NewPassword: newPassword, OldPassword: oldPassword}); err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n","cannot get change password")
+		return nil
 	}
 
 	fmt.Println("Change Password Success.")
