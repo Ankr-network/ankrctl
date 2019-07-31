@@ -40,6 +40,7 @@ func TestRunNamespaceCreate(t *testing.T) {
 
 	// delete the namespace created
 	lc.Run("namespace", "delete", test_ns_id)
+	lc.Run("y")
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
@@ -75,6 +76,7 @@ func TestRunNamespaceUpdate(t *testing.T) {
 
 	// delete the namespace created
 	lc.Run("namespace", "delete", test_ns_id)
+	lc.Run("y")
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
@@ -98,9 +100,13 @@ func TestRunNamespaceDelete(t *testing.T) {
 
 	// namespace delete test
 	t.Log("namespace delete test ...")
-	nsDeleteRes, err := lc.Run("namespace", "delete", test_ns_id)
-	if err != nil {
-		t.Error(err)
+	_, err_delete := lc.Run("namespace", "delete", test_ns_id)
+	if err_delete != nil {
+		t.Error(err_delete)
+	}
+	nsDeleteRes, err_confirm := lc.Run("y")
+	if err_confirm != nil {
+		t.Error(err_confirm)
 	}
 	t.Log(string(nsDeleteRes))
 	assert.True(t, strings.Contains(string(nsDeleteRes), "success"))
