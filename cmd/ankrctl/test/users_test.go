@@ -20,6 +20,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+	"time"
 )
 
 const (
@@ -133,11 +134,82 @@ func TestRunUserUpdate(t *testing.T) {
 
 	// user update test
 	t.Log("user update test ...")
-	updateRes, err := lc.Run( "user", "update", CorrectUserEmail, "--update-key", "N", "--update-value", "user_name_update_test")
+	updateRes, err := lc.Run( "user", "update", CorrectUserEmail, "--update-key", "Name", "--update-value", "user_name_update_test")
 	if err != nil {
 		t.Error(err)
 	}
 	t.Log(string(updateRes))
 	assert.True(t, strings.Contains(string(updateRes), MockResultSuccess))
+
+	// wait for status changed
+	time.Sleep(4 * time.Second)
+
+	// check the update result
+	detailRes, err := lc.Run( "user", "detail")
+	if err != nil {
+		t.Error(err)
+	}
+	if detailRes.Attributes.Name != "user_name_update_test" {
+		t.Error(err)
+	}
+
+	// recovery
+	lc.Run( "user", "update", CorrectUserEmail, "--update-key", "Name", "--update-value", CorrectUserName)
+
+}
+
+func TestRunUserChangePassword(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// user change password test
+	t.Log("user change password test ...")
+	changePasswordRes, err := lc.Run( "user", "change-password", "--old-password", CorrectPassword, "--new-password", "ChangePasswordTest")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(string(changePasswordRes))
+	assert.True(t, strings.Contains(string(changePasswordRes), MockResultSuccess))
+
+	// use logincli api to test
+	_, err_change_password := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", "ChangePasswordTest")
+	if err_change_password != nil {
+		t.Error(err_change_password)
+	}
+
+	// recovery
+	lc.Run( "user", "change-password", "--old-password", "ChangePasswordTest", "--new-password", CorrectPassword)
+
+}
+
+func TestRunUserChangeEmail(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// user change password test
+	t.Log("user change password test ...")
+	changePasswordRes, err := lc.Run( "user", "change-password", "--old-password", CorrectPassword, "--new-password", "ChangePasswordTest")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(string(changePasswordRes))
+	assert.True(t, strings.Contains(string(changePasswordRes), MockResultSuccess))
+
+	// use logincli api to test
+	_, err_change_password := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", "ChangePasswordTest")
+	if err_change_password != nil {
+		t.Error(err_change_password)
+	}
+
+	// recovery
+	lc.Run( "user", "change-password", "--old-password", "ChangePasswordTest", "--new-password", CorrectPassword)
 
 }
