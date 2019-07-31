@@ -16,6 +16,7 @@ package commands
 import (
 	"fmt"
 	"log"
+	"os"
 	"sync"
 	"time"
 
@@ -273,7 +274,8 @@ func RunNamespaceUpdate(c *CmdConfig) error {
 
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	updateNamespaceRequest := &gwtaskmgr.UpdateNamespaceRequest{}
@@ -281,33 +283,39 @@ func RunNamespaceUpdate(c *CmdConfig) error {
 
 	cpuLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsCpuLimitSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	nsCpuLimit, err := strconv.ParseUint(cpuLimit, 10, 64)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	updateNamespaceRequest.NsCpuLimit = uint32(nsCpuLimit)
 
 	memLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsMemLimitSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	nsMemLimit, err := strconv.ParseUint(memLimit, 10, 64)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	updateNamespaceRequest.NsMemLimit = uint32(nsMemLimit)
 
 	storageLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsStorageLimitSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	nsStorageLimit, err := strconv.ParseUint(storageLimit, 10, 64)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	updateNamespaceRequest.NsStorageLimit = uint32(nsStorageLimit)
 

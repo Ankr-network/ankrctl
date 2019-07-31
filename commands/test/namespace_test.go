@@ -109,3 +109,25 @@ func TestRunNamespaceDelete(t *testing.T) {
 	time.Sleep(2 * time.Second)
 }
 
+func TestRunNamespaceList(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// namespace list test
+	t.Log("namespace list test ...")
+	nsListRes, err := lc.Run("namespace", "list")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(string(nsListRes))
+	assert.True(t, strings.Contains(string(nsListRes), "Name"))
+	assert.True(t, strings.Contains(string(nsListRes), "ID"))
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+}
+
