@@ -94,7 +94,7 @@ func TestRunChartUpload(t *testing.T) {
 	time.Sleep(2 * time.Second)
 }
 
-/*func TestRunChartDelete(t *testing.T) {
+func TestRunChartDelete(t *testing.T) {
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
@@ -102,13 +102,16 @@ func TestRunChartUpload(t *testing.T) {
 		t.Error(err)
 	}
 
-	// chart upload for chart_delete test
-	lc.Run( "chart", "upload", chartUploadName, "--upload-file", chartUploadFile, "--upload-version", chartUploadVersion)
+	// download a chart for upload
+	chartDownloadRes, _ := lc.Run( "chart", "download", "wordpress", "--download-repo", "stable", "--download-version", "5.6.2")
+
+	// upload a chart for delete test
+	lc.Run( "chart", "upload", chartUploadName, "--upload-file", string(chartDownloadRes), "--upload-version", chartUploadVersion)
 
 	// wait for status changed
 	time.Sleep(5 * time.Second)
 
-	// delete the chart uploaded
+	// chart delete test
 	t.Log("chart delete test ...")
 	chartDeleteRes, err := lc.Run("chart", "delete", chartUploadName, "--delete-version", chartUploadVersion, "-f")
 	if err != nil {
@@ -117,7 +120,51 @@ func TestRunChartUpload(t *testing.T) {
 		t.Log(string(chartDeleteRes))
 		assert.True(t, strings.Contains(string(chartDeleteRes), "success"))
 	}
+
 	// wait for status changed
 	time.Sleep(2 * time.Second)
-}*/
+}
 
+func TestRunChartDetail(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// chart detail test
+	t.Log("chart detail test ...")
+	chartDetailRes, err := lc.Run("chart", "detail", "wordpress", "--detail-repo", "stable", "--show-version", "5.6.0")
+	if err != nil {
+		t.Error(err)
+	}else{
+		t.Log(string(chartDetailRes))
+		assert.True(t, strings.Contains(string(chartDetailRes), "Repo"))
+	}
+
+	// wait for status changed
+	time.Sleep(2 * time.Second)
+}
+
+func TestRunChartSaveas(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// chart saveas test
+	t.Log("chart saveas test ...")
+	chartSaveasRes, err := lc.Run("chart", "saveas", "wordpress-5.6.0", "--delete-version", chartUploadVersion, "-f")
+	if err != nil {
+		t.Error(err)
+	}else{
+		t.Log(string(chartSaveasRes))
+		assert.True(t, strings.Contains(string(chartSaveasRes), "success"))
+	}
+
+	// wait for status changed
+	time.Sleep(2 * time.Second)
+}
