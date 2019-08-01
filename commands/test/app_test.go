@@ -104,6 +104,7 @@ func TestRunAppUpdate(t *testing.T) {
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
 	app_id := strings.Split(string(appCreateRes), " ")[5]
+	t.Log(app_id)
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
@@ -222,3 +223,4 @@ func TestRunAppPurge(t *testing.T) {
 	time.Sleep(2 * time.Second)
 
 }
+
