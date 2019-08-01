@@ -61,7 +61,6 @@ func TestRunChartDownload(t *testing.T) {
 }
 
 
-
 func TestRunChartUpload(t *testing.T) {
 
 	// user login at first
