@@ -12,8 +12,8 @@ stable    wordpress    5.7.1             5.1.1                 Web publishing pl
 ## Download a Chart:
 Download a chart :
 ```
-$ ankrctl chart download wordpress --download-repo=stable --download-version=5.7.1
-Chart wordpress download success.
+$ ankrctl chart download wordpress --download-repo=stable --download-version=5.6.2
+Successfully download chart and saved it to: /go/src/github.com/Ankr-network/dccn-cli/commands/test/wordpress-5.6.2.tgz
 ```
 
 

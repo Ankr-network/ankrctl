@@ -52,7 +52,7 @@ func TestRunChartDownload(t *testing.T) {
 		t.Error(err)
 	}else{
 		t.Log(string(chartDownloadRes))
-		assert.True(t, strings.Contains(string(chartDownloadRes), "success"))
+		assert.True(t, strings.Contains(string(chartDownloadRes), "Successfully"))
 		t.Log("download chart successfully")
 	}
 
@@ -75,7 +75,7 @@ func TestRunChartUpload(t *testing.T) {
 
 	// chart upload test
 	t.Log("chart upload test ...")
-	chartUploadRes, err := lc.Run( "chart", "upload", chartUploadName, "--upload-file", string(chartDownloadRes), "--upload-version", chartUploadVersion)
+	chartUploadRes, err := lc.Run( "chart", "upload", chartUploadName, "--upload-file", "/go/src/github.com/Ankr-network/dccn-cli/commands/test/wordpress-5.6.2.tgz", "--upload-version", chartUploadVersion)
 	if err != nil {
 		t.Error(err)
 	}else{
@@ -103,10 +103,10 @@ func TestRunChartDelete(t *testing.T) {
 	}
 
 	// download a chart for upload
-	chartDownloadRes, _ := lc.Run( "chart", "download", "wordpress", "--download-repo", "stable", "--download-version", "5.6.2")
+	lc.Run( "chart", "download", "wordpress", "--download-repo", "stable", "--download-version", "5.6.2")
 
 	// upload a chart for delete test
-	lc.Run( "chart", "upload", chartUploadName, "--upload-file", string(chartDownloadRes), "--upload-version", chartUploadVersion)
+	lc.Run( "chart", "upload", chartUploadName, "--upload-file", "/go/src/github.com/Ankr-network/dccn-cli/commands/test/wordpress-5.6.2.tgz", "--upload-version", chartUploadVersion)
 
 	// wait for status changed
 	time.Sleep(5 * time.Second)
@@ -139,7 +139,7 @@ func TestRunChartDetail(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}else{
-		t.Log(string(chartDetailRes))
+		//t.Log(string(chartDetailRes))
 		assert.True(t, strings.Contains(string(chartDetailRes), "Repo"))
 	}
 

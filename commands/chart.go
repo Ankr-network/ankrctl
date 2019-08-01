@@ -306,13 +306,15 @@ func RunChartSaveas(c *CmdConfig) error {
 
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	saveasChartRequest := &gwtaskmgr.SaveAsChartRequest{}
 
 	saveasVer, err := c.Ankr.GetString(c.NS, ankrctl.ArgSaveasVersionSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	saveasChartRequest.Destination = &gwtaskmgr.Destination{
@@ -322,17 +324,20 @@ func RunChartSaveas(c *CmdConfig) error {
 
 	sourceName, err := c.Ankr.GetString(c.NS, ankrctl.ArgSourceNameSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	sourceVer, err := c.Ankr.GetString(c.NS, ankrctl.ArgSourceVersionSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	sourceRepo, err := c.Ankr.GetString(c.NS, ankrctl.ArgSourceRepoSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	saveasChartRequest.Source = &gwtaskmgr.Source{
@@ -342,12 +347,14 @@ func RunChartSaveas(c *CmdConfig) error {
 	}
 	file, err := c.Ankr.GetString(c.NS, ankrctl.ArgValuesYamlSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	saveasChartRequest.ValuesYaml, err = ioutil.ReadFile(file)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	_, err = appClient.SaveAsChart(tokenctx, saveasChartRequest)
