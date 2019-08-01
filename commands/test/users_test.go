@@ -40,16 +40,18 @@ func TestRunUserLogin(t *testing.T) {
 	loginRes, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(loginRes))
 	assert.True(t, strings.Contains(string(loginRes), MockResultSuccess))
+	}
 
 	// case 2: invalid inputs
 	_, err_invalid := lc.Run( "user", "login", "--email", "", "--password", "")
 	if err_invalid == nil {
 		t.Error(err_invalid)
-	}
+	}else{
 	t.Log("Cannot login successfully for invalid email or password")
+	}
 
 }
 
@@ -69,9 +71,10 @@ func TestRunUserLogout(t *testing.T) {
 	logoutRes, err := lc.Run( "user", "logout")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(logoutRes))
 	assert.True(t, strings.Contains(string(logoutRes), MockResultSuccess))
+	}
 
 }
 
@@ -91,11 +94,12 @@ func TestRunUserDetail(t *testing.T) {
 	detailRes, err := lc.Run( "user", "detail")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(detailRes))
 	assert.True(t, strings.Contains(string(detailRes), "Name"))
 	assert.True(t, strings.Contains(string(detailRes), "Email"))
 	assert.True(t, strings.Contains(string(detailRes), "Status"))
+	}
 }
 
 func TestRunUserUpdate(t *testing.T) {
@@ -114,9 +118,10 @@ func TestRunUserUpdate(t *testing.T) {
 	updateRes, err := lc.Run( "user", "update", CorrectUserEmail, "--update-key", "Name", "--update-value", "user_name_update_test")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(updateRes))
 	assert.True(t, strings.Contains(string(updateRes), MockResultSuccess))
+	}
 
 	// wait for status changed
 	time.Sleep(2 * time.Second)
@@ -148,9 +153,10 @@ func TestRunUserChangePassword(t *testing.T) {
 	changePasswordRes, err := lc.Run( "user", "change-password", CorrectUserEmail, "--old-password", CorrectPassword, "--new-password", "ankr12345")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(changePasswordRes))
 	assert.True(t, strings.Contains(string(changePasswordRes), MockResultSuccess))
+	}
 
 	// wait for status changed
 	time.Sleep(2 * time.Second)
@@ -182,9 +188,10 @@ func TestRunUserChangeEmail(t *testing.T) {
 	changeEmailRes, err := lc.Run( "user", "email-change", "ankrtestfake@mailinator.com")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(changeEmailRes))
 	assert.True(t, strings.Contains(string(changeEmailRes), "Requested"))
+	}
 }
 
 func TestRunUserForgotPassword(t *testing.T) {
@@ -203,7 +210,8 @@ func TestRunUserForgotPassword(t *testing.T) {
 	ForgotPasswordRes, err := lc.Run( "user", "forgot-password", CorrectUserEmail)
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(ForgotPasswordRes))
 	assert.True(t, strings.Contains(string(ForgotPasswordRes), "Requested"))
+	}
 }

@@ -26,11 +26,12 @@ func TestRunChartList(t *testing.T) {
 	chartListRes, err := lc.Run( "chart", "list", "--list-repo", "stable")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(chartListRes))
 	t.Log("list charts successfully")
 	assert.True(t, strings.Contains(string(chartListRes), "Name"))
 	assert.True(t, strings.Contains(string(chartListRes), "Repo"))
+	}
 
 	// wait for status changed
 	time.Sleep(2 * time.Second)
@@ -47,13 +48,14 @@ func TestRunChartUpload(t *testing.T) {
 
 	// chart upload test
 	t.Log("chart upload test ...")
-	chartUploadRes, err := lc.Run( "chart", "upload", "--upload-file", chartUploadFile, "--upload-version", chartUploadVersion)
+	chartUploadRes, err := lc.Run( "chart", "upload", chartUploadName, "--upload-file", chartUploadFile, "--upload-version", chartUploadVersion)
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(chartUploadRes))
 	assert.True(t, strings.Contains(string(chartUploadRes), "success"))
 	t.Log("upload chart successfully")
+	}
 
 	// wait for status changed
 	time.Sleep(5 * time.Second)

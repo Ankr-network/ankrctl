@@ -29,11 +29,11 @@ func TestRunNamespaceCreate(t *testing.T) {
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(nsCreateRes))
 	assert.True(t, strings.Contains(string(nsCreateRes), "success"))
 	t.Log("create namespace successfully")
-
+	}
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
@@ -66,9 +66,10 @@ func TestRunNamespaceUpdate(t *testing.T) {
 	nsUpdateRes, err := lc.Run("namespace", "update", test_ns_id, "--cpu-limit", "1024", "--mem-limit", "2048", "--storage-limit", "16")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(nsUpdateRes))
 	assert.True(t, strings.Contains(string(nsUpdateRes), "success"))
+	}
 
 	// wait for statues changed
 	time.Sleep(5 * time.Second)
@@ -101,10 +102,11 @@ func TestRunNamespaceDelete(t *testing.T) {
 	nsDeleteRes, err := lc.Run("namespace", "delete", test_ns_id, "-f")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(nsDeleteRes))
 	assert.True(t, strings.Contains(string(nsDeleteRes), "success"))
 	t.Log("delete namespace successfully")
+	}
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
@@ -123,10 +125,11 @@ func TestRunNamespaceList(t *testing.T) {
 	nsListRes, err := lc.Run("namespace", "list")
 	if err != nil {
 		t.Error(err)
-	}
+	}else{
 	t.Log(string(nsListRes))
 	assert.True(t, strings.Contains(string(nsListRes), "Name"))
 	assert.True(t, strings.Contains(string(nsListRes), "ID"))
+	}
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
