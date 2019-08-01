@@ -9,6 +9,14 @@ Repo      Name         Latest Version    Latest App Version    Description
 stable    wordpress    5.7.1             5.1.1                 Web publishing platform for building blogs and websites.
 ```
 
+## Download a Chart:
+Download a chart :
+```
+$ ankrctl chart download wordpress --download-repo=stable --download-version=5.7.1
+Chart wordpress download success.
+```
+
+
 ## Upload a Chart:
 Upload a new chart to user catalog:
 ```
