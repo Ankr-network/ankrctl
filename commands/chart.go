@@ -388,19 +388,22 @@ func RunChartDownload(c *CmdConfig) error {
 
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	downloadChartRequest := &gwtaskmgr.DownloadChartRequest{}
 
 	downloadChartRequest.ChartName = c.Args[0]
 	downloadChartRequest.ChartVer, err = c.Ankr.GetString(c.NS, ankrctl.ArgDownloadVersionSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	downloadChartRequest.ChartRepo, err = c.Ankr.GetString(c.NS, ankrctl.ArgDownloadRepoSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	rsp, err := appClient.DownloadChart(tokenctx, downloadChartRequest)
@@ -410,19 +413,22 @@ func RunChartDownload(c *CmdConfig) error {
 
 	chart, err := chartutil.LoadArchive(bytes.NewReader(rsp.ChartFile))
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	dest, err := os.Getwd()
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	name, err := chartutil.Save(chart, dest)
 	if err == nil {
 		fmt.Printf("Successfully download chart and saved it to: %s\n", name)
 	} else {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	return nil
