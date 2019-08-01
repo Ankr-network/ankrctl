@@ -33,7 +33,7 @@ func TestRunAppCreate(t *testing.T) {
 
 	// create app
 	appCreateRes, err := lc.Run("app", "create", MockAppName, "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
-	app_id := strings.Fields(string(appCreateRes))[1]
+	app_id := strings.Split(string(appCreateRes), " ")[5]
 	if err != nil {
 		t.Error(err.Error())
 	}else{
@@ -63,7 +63,7 @@ func TestRunAppCreate(t *testing.T) {
 	// case 2: create app with namespace at the same time
 	t.Log("app create test ... (case 2)")
 	appCreateRes_1, err_1 := lc.Run("app", "create", MockAppName, "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-name", "app_create_cli_test", "--cpu-limit", "1000", "--mem-limit", "2048", "--storage-limit","8")
-	app_id_1 := strings.Fields(string(appCreateRes_1))[1]
+	app_id_1 := strings.Split(string(appCreateRes_1), " ")[5]
 	if err_1 != nil {
 		t.Error(err_1.Error())
 	}else{
@@ -103,8 +103,7 @@ func TestRunAppUpdate(t *testing.T) {
 
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
-	app_id := strings.Fields(string(appCreateRes))[1]
-	t.Log(app_id)
+	app_id := strings.Split(string(appCreateRes), " ")[5]
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
@@ -154,7 +153,7 @@ func TestRunAppCancel(t *testing.T) {
 
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_cancel_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
-	app_id := strings.Fields(string(appCreateRes))[1]
+	app_id := strings.Split(string(appCreateRes), " ")[5]
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
@@ -188,7 +187,7 @@ func TestRunAppPurge(t *testing.T) {
 		t.Error(err)
 	}
 
-	// app create for app_cancel test
+	// app create for app_purge test
 	// create a namespace for app_create
 	nsCreateRes, _ := lc.Run( "namespace", "create", "app_cancel_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
@@ -197,20 +196,20 @@ func TestRunAppPurge(t *testing.T) {
 	time.Sleep(10 * time.Second)
 
 	// create app
-	appCreateRes, _ := lc.Run("app", "create", "app_cancel_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
-	app_id := strings.Fields(string(appCreateRes))[1]
+	appCreateRes, _ := lc.Run("app", "create", "app_purge_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
+	app_id := strings.Split(string(appCreateRes), " ")[5]
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
 
-	// cancel app test
-	t.Log("app cancel test ... ")
-	appCancelRes, err := lc.Run("app", "cancel", app_id, "-f")
+	// purge app test
+	t.Log("app purge test ... ")
+	appPurgeRes, err := lc.Run("app", "purge", app_id, "-f")
 	if err != nil {
 		t.Error(err.Error())
 	}else{
-		t.Log(string(appCancelRes))
-		assert.True(t, strings.Contains(string(appCancelRes), "success"))
+		t.Log(string(appPurgeRes))
+		assert.True(t, strings.Contains(string(appPurgeRes), "success"))
 	}
 
 	// wait for statues changed
