@@ -49,5 +49,38 @@ func TestRunAppCreate(t *testing.T) {
 	// purge the app created
 	lc.Run("app", "purge", app_id, "-f")
 
+	// wait for statues changed
+	time.Sleep(10 * time.Second)
+
+	// cancel the namespace created
+	lc.Run("namespace", "delete", test_ns_id, "-f")
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+
+
+	// case 2: create app with namespace at the same time
+	t.Log("app create test ... (case 2)")
+	appCreateRes_1, err_1 := lc.Run("app", "create", MockAppName, "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-name", "app_create_cli_test", "--cpu-limit", "1000", "--mem-limit", "2048", "--storage-limit","8")
+
+	if err_1 != nil {
+		t.Error(err_1.Error())
+	}
+	t.Log(string(appCreateRes_1))
+	assert.True(t, len(string(appCreateRes_1)) > 0)
+	assert.True(t, strings.Contains(string(appCreateRes_1), "success"))
+	app_id_1 := strings.Fields(string(appCreateRes_1))[1]
+	assert.True(t, len(app_id_1) > 0)
+
+	// wait for statues changed
+	time.Sleep(10 * time.Second)
+
+	// purge the app created
+	lc.Run("app", "purge", app_id_1, "-f")
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+
 }
+
 

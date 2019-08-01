@@ -184,6 +184,10 @@ func RunUserLogout(c *CmdConfig) error {
 		return fmt.Errorf("no ankr network access token found")
 	}
 
+	if authResult.RefreshToken == "" {
+		return fmt.Errorf("no ankr network refresh token found")
+	}
+
 	md := metadata.New(map[string]string{
 		"token": authResult.AccessToken,
 	})
