@@ -496,7 +496,8 @@ func RunAppUpdate(c *CmdConfig) error {
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
+		fmt.Fprintf(os.Stdout, "no ankr network access token found")
+		return nil
 	}
 
 	md := metadata.New(map[string]string{
@@ -534,7 +535,7 @@ func RunAppUpdate(c *CmdConfig) error {
 	url := viper.GetString("hub-url")
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
+		fmt.Fprintf(os.Stdout, "Did not connect: %v", err.Error())
 	}
 	defer conn.Close()
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
@@ -545,7 +546,8 @@ func RunAppUpdate(c *CmdConfig) error {
 
 			_, err := appClient.UpdateApp(tokenctx, updateAppRequest)
 			if err != nil {
-				return fmt.Errorf("Status Code: %s  Message: %s", status.Code(err), err.Error())
+				fmt.Fprintf(os.Stdout, "Status Code: %s  Message: %s", status.Code(err), err.Error())
+				return nil
 			}
 			fmt.Printf("App %s update success.\n", id)
 		}
