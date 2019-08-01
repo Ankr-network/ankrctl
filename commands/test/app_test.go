@@ -12,7 +12,6 @@ var (
 )
 
 
-
 func TestRunAppCreate(t *testing.T) {
 
 	// user login at first
@@ -105,6 +104,7 @@ func TestRunAppUpdate(t *testing.T) {
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
 	app_id := strings.Fields(string(appCreateRes))[1]
+	t.Log(app_id)
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
@@ -180,4 +180,46 @@ func TestRunAppCancel(t *testing.T) {
 
 }
 
+func TestRunAppPurge(t *testing.T) {
 
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// app create for app_cancel test
+	// create a namespace for app_create
+	nsCreateRes, _ := lc.Run( "namespace", "create", "app_cancel_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
+
+	// wait for status changed
+	time.Sleep(10 * time.Second)
+
+	// create app
+	appCreateRes, _ := lc.Run("app", "create", "app_cancel_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
+	app_id := strings.Fields(string(appCreateRes))[1]
+
+	// wait for status changed
+	time.Sleep(10 * time.Second)
+
+	// cancel app test
+	t.Log("app cancel test ... ")
+	appCancelRes, err := lc.Run("app", "cancel", app_id, "-f")
+	if err != nil {
+		t.Error(err.Error())
+	}else{
+		t.Log(string(appCancelRes))
+		assert.True(t, strings.Contains(string(appCancelRes), "success"))
+	}
+
+	// wait for statues changed
+	time.Sleep(10 * time.Second)
+
+	// cancel the namespace created
+	lc.Run("namespace", "delete", test_ns_id, "-f")
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+
+}

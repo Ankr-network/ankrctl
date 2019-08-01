@@ -332,7 +332,8 @@ func RunAppCancel(c *CmdConfig) error {
 
 	force, err := c.Ankr.GetBool(c.NS, ankrctl.ArgForce)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	if len(c.Args) < 1 {
