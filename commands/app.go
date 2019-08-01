@@ -513,7 +513,8 @@ func RunAppUpdate(c *CmdConfig) error {
 
 	appname, err := c.Ankr.GetString(c.NS, ankrctl.ArgAppNameSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	if len(appname) > 0 {
 		updateAppRequest.AppName = appname
@@ -521,7 +522,8 @@ func RunAppUpdate(c *CmdConfig) error {
 
 	chartver, err := c.Ankr.GetString(c.NS, ankrctl.ArgUpdateVersionSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	if len(chartver) > 0 {
