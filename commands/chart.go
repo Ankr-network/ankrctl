@@ -123,7 +123,8 @@ func RunChartUpload(c *CmdConfig) error {
 
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	uploadChartRequest := &gwtaskmgr.UploadChartRequest{}
@@ -131,17 +132,20 @@ func RunChartUpload(c *CmdConfig) error {
 
 	uploadChartRequest.ChartVer, err = c.Ankr.GetString(c.NS, ankrctl.ArgUploadVersionSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	uploadChartRequest.ChartRepo = "user"
 
 	file, err := c.Ankr.GetString(c.NS, ankrctl.ArgUploadFileSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 	uploadChartRequest.ChartFile, err = ioutil.ReadFile(file)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	_, err = appClient.UploadChart(tokenctx, uploadChartRequest)
