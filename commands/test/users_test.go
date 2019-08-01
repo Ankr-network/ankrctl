@@ -75,7 +75,6 @@ func TestRunUserLogout(t *testing.T) {
 	t.Log(string(logoutRes))
 	assert.True(t, strings.Contains(string(logoutRes), MockResultSuccess))
 	}
-
 }
 
 func TestRunUserDetail(t *testing.T) {

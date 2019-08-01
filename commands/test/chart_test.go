@@ -147,7 +147,7 @@ func TestRunChartDetail(t *testing.T) {
 	time.Sleep(2 * time.Second)
 }
 
-func TestRunChartSaveas(t *testing.T) {
+/*func TestRunChartSaveas(t *testing.T) {
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
@@ -167,4 +167,4 @@ func TestRunChartSaveas(t *testing.T) {
 
 	// wait for status changed
 	time.Sleep(2 * time.Second)
-}
+}*/

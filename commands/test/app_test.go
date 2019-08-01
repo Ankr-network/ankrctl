@@ -1,0 +1,53 @@
+package test
+
+import (
+	"github.com/stretchr/testify/assert"
+	"strings"
+	"testing"
+	"time"
+)
+
+var (
+	MockAppName = "app_create_cli_test"
+)
+
+
+
+func TestRunAppCreate(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// app create test
+	// case 1: use a prepared namespace to create the app
+	t.Log("app create test ... (case 1)")
+
+	// create a namespace for app_create test
+	nsCreateRes, _ := lc.Run( "namespace", "create", "app_create_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
+
+	// wait for status changed
+	time.Sleep(10 * time.Second)
+
+	// create app
+	appCreateRes, err := lc.Run("app", "create", MockAppName, "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	t.Log(string(appCreateRes))
+	assert.True(t, len(string(appCreateRes)) > 0)
+	assert.True(t, strings.Contains(string(appCreateRes), "success"))
+	app_id := strings.Fields(string(appCreateRes))[1]
+	assert.True(t, len(app_id) > 0)
+
+	// wait for statues changed
+	time.Sleep(10 * time.Second)
+
+	// purge the app created
+	lc.Run("app", "purge", app_id, "-f")
+
+}
+

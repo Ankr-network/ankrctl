@@ -16,6 +16,7 @@ package commands
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -116,17 +117,20 @@ func RunAppCreate(c *CmdConfig) error {
 
 	chartname, err := c.Ankr.GetString(c.NS, ankrctl.ArgChartNameSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	chartrepo, err := c.Ankr.GetString(c.NS, ankrctl.ArgChartRepoSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	chartver, err := c.Ankr.GetString(c.NS, ankrctl.ArgChartVersionSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	createAppRequest.Chart = &gwtaskmgr.Chart{
@@ -137,7 +141,8 @@ func RunAppCreate(c *CmdConfig) error {
 
 	nsID, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsIDSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	if nsID != "" {
@@ -145,7 +150,8 @@ func RunAppCreate(c *CmdConfig) error {
 	} else {
 		nsname, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsNameSlug)
 		if err != nil {
-			return err
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+			return nil
 		}
 
 		if len(nsname) == 0 {
@@ -154,7 +160,8 @@ func RunAppCreate(c *CmdConfig) error {
 
 		cpuLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsCpuLimitSlug)
 		if err != nil {
-			return err
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+			return nil
 		}
 
 		nsCpuLimit, err := strconv.ParseFloat(cpuLimit, 32)
@@ -164,7 +171,8 @@ func RunAppCreate(c *CmdConfig) error {
 
 		memLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsMemLimitSlug)
 		if err != nil {
-			return err
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+			return nil
 		}
 
 		nsMemLimit, err := strconv.ParseFloat(memLimit, 32)
@@ -174,7 +182,8 @@ func RunAppCreate(c *CmdConfig) error {
 
 		storageLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsStorageLimitSlug)
 		if err != nil {
-			return err
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+			return nil
 		}
 
 		nsStorageLimit, err := strconv.ParseFloat(storageLimit, 32)
@@ -184,7 +193,8 @@ func RunAppCreate(c *CmdConfig) error {
 
 		nsClusterID, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsClusterIDSlug)
 		if err != nil {
-			return err
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+			return nil
 		}
 
 		createAppRequest.Namespace = &gwtaskmgr.Namespace{
