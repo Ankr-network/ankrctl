@@ -8,9 +8,8 @@ import (
 )
 
 var (
-	chartUploadFile = "../dccn-appmgr/examples/test/wordpress-5.7.1.tgz"
-	chartUploadVersion = "5.7.1"
-	chartUploadName = "wordpress"
+	chartUploadVersion = "8.8.8"
+	chartUploadName = "chart_update_test"
 )
 
 func TestRunChartList(t *testing.T) {
@@ -62,7 +61,7 @@ func TestRunChartDownload(t *testing.T) {
 }
 
 
-/*
+
 func TestRunChartUpload(t *testing.T) {
 
 	// user login at first
@@ -72,11 +71,12 @@ func TestRunChartUpload(t *testing.T) {
 	}
 
 	// download a chart for upload
-
+	chartDownloadRes, _ := lc.Run( "chart", "download", "wordpress", "--download-repo", "stable", "--download-version", "5.6.2")
+	t.Log(string(chartDownloadRes))
 
 	// chart upload test
 	t.Log("chart upload test ...")
-	chartUploadRes, err := lc.Run( "chart", "upload", chartUploadName, "--upload-file", chartUploadFile, "--upload-version", chartUploadVersion)
+	chartUploadRes, err := lc.Run( "chart", "upload", chartUploadName, "--upload-file", string(chartDownloadRes), "--upload-version", chartUploadVersion)
 	if err != nil {
 		t.Error(err)
 	}else{
