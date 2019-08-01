@@ -33,7 +33,8 @@ func TestRunAppCreate(t *testing.T) {
 
 	// create app
 	appCreateRes, err := lc.Run("app", "create", MockAppName, "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
-	app_id := strings.Split(string(appCreateRes), " ")[5]
+	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
+	app_id := strings.Split(app_id_pre, ",")[0]
 	if err != nil {
 		t.Error(err.Error())
 	}else{
@@ -63,7 +64,8 @@ func TestRunAppCreate(t *testing.T) {
 	// case 2: create app with namespace at the same time
 	t.Log("app create test ... (case 2)")
 	appCreateRes_1, err_1 := lc.Run("app", "create", MockAppName, "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-name", "app_create_cli_test", "--cpu-limit", "1000", "--mem-limit", "2048", "--storage-limit","8")
-	app_id_1 := strings.Split(string(appCreateRes_1), " ")[5]
+	app_id_pre_1 := strings.Split(string(appCreateRes), " ")[5]
+	app_id_1 := strings.Split(app_id_pre_1, ",")[0]
 	if err_1 != nil {
 		t.Error(err_1.Error())
 	}else{
@@ -103,7 +105,8 @@ func TestRunAppUpdate(t *testing.T) {
 
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
-	app_id := strings.Split(string(appCreateRes), " ")[5]
+	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
+	app_id := strings.Split(app_id_pre, ",")[0]
 	t.Log(app_id)
 
 	// wait for status changed
@@ -154,7 +157,8 @@ func TestRunAppCancel(t *testing.T) {
 
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_cancel_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
-	app_id := strings.Split(string(appCreateRes), " ")[5]
+	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
+	app_id := strings.Split(app_id_pre, ",")[0]
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
@@ -198,7 +202,8 @@ func TestRunAppPurge(t *testing.T) {
 
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_purge_cli_test", "--chart-name", "wordpress", "--chart-repo", "stable", "--chart-version", "5.6.0",  "--ns-id", test_ns_id)
-	app_id := strings.Split(string(appCreateRes), " ")[5]
+	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
+	app_id := strings.Split(app_id_pre, ",")[0]
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
