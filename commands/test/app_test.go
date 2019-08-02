@@ -34,7 +34,7 @@ func TestRunAppCreate(t *testing.T) {
 	time.Sleep(10 * time.Second)
 
 	// create app
-	appCreateRes, err := lc.Run("app", "create", "app_create_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	appCreateRes, err := lc.Run("app", "create", "app_create_cli_test_1", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
 	if err != nil {
@@ -46,7 +46,6 @@ func TestRunAppCreate(t *testing.T) {
 		assert.True(t, len(app_id) > 0)
 	}
 
-
 	// wait for statues changed
 	time.Sleep(10 * time.Second)
 
@@ -54,7 +53,7 @@ func TestRunAppCreate(t *testing.T) {
 	lc.Run("app", "purge", app_id, "-f")
 
 	// wait for statues changed
-	time.Sleep(10 * time.Second)
+		time.Sleep(10 * time.Second)
 
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
@@ -65,7 +64,7 @@ func TestRunAppCreate(t *testing.T) {
 
 	// case 2: create app with namespace at the same time
 	t.Log("app create test ... (case 2)")
-	appCreateRes_1, err_1 := lc.Run("app", "create", "app_create_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-name", "ns_app_create_cli", "--cpu-limit", "1000", "--mem-limit", "2048", "--storage-limit","8")
+	appCreateRes_1, err_1 := lc.Run("app", "create", "app_create_cli_test_2", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-name", "ns_app_create_cli", "--cpu-limit", "1000", "--mem-limit", "2048", "--storage-limit","8")
 	app_id_pre_1 := strings.Split(string(appCreateRes), " ")[5]
 	app_id_1 := strings.Split(app_id_pre_1, ",")[0]
 	if err_1 != nil {
@@ -223,7 +222,11 @@ func TestRunAppDetail(t *testing.T) {
 	app_id := strings.Split(app_id_pre, ",")[0]
 
 	// wait for status changed
-	time.Sleep(20 * time.Second)
+	time.Sleep(15 * time.Second)
+
+	// check
+	Res, _ := lc.Run("app", "list")
+	t.Log(string(Res))
 
 	// app detail test
 	t.Log("app detail test ... ")

@@ -84,7 +84,7 @@ func TestRunNamespaceUpdate(t *testing.T) {
 func TestRunNamespaceDelete(t *testing.T) {
 
 	// need a break, sleep 60s
-	time.Sleep(60 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
@@ -116,8 +116,6 @@ func TestRunNamespaceDelete(t *testing.T) {
 }
 
 func TestRunNamespaceList(t *testing.T) {
-
-
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)

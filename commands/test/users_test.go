@@ -103,8 +103,8 @@ func TestRunUserDetail(t *testing.T) {
 
 func TestRunUserUpdate(t *testing.T) {
 
-	// need a break, sleep 60s
-	time.Sleep(60 * time.Second)
+	// need a break, sleep 45s
+	time.Sleep(45 * time.Second)
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)

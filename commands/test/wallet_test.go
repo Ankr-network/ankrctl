@@ -33,8 +33,8 @@ func TestRunWalletKeylist(t *testing.T) {
 
 func TestRunWalletGenkey(t *testing.T) {
 
-	// need a break, sleep 60s
-	time.Sleep(60*time.Second)
+	// need a break, sleep 50s
+	time.Sleep(50*time.Second)
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)

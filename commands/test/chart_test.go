@@ -161,7 +161,7 @@ func TestRunChartSaveas(t *testing.T) {
 
 	// chart saveas test
 	t.Log("chart saveas test ...")
-	chartSaveasRes, err := lc.Run("chart", "saveas", "chart_saveas_cli_test", "--source-name", "wordpress", "--source-repo", "stable", "--source-version", "5.6.0", "--saveas-version", chartUploadVersion, "--values-yaml", "./values.yaml")
+	chartSaveasRes, err := lc.Run("chart", "saveas", "chart_saveas_cli_test", "--source-name", "wordpress", "--source-repo", "stable", "--source-version", "5.6.0", "--saveas-version", chartUploadVersion)
 	if err != nil {
 		t.Error(err)
 	}else{
