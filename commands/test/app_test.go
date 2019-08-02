@@ -287,6 +287,7 @@ func TestRunAppDetail(t *testing.T) {
 
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", MockAppName, "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	t.Log(appCreateRes)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
 	t.Log(app_id)
