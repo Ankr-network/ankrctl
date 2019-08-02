@@ -78,7 +78,7 @@ func TestRunAppCreate(t *testing.T) {
 
 
 	// wait for statues changed
-	time.Sleep(10 * time.Second)
+	time.Sleep(20 * time.Second)
 
 	// purge the app created
 	lc.Run("app", "purge", app_id_1, "-f")
