@@ -284,6 +284,10 @@ func TestRunAppDetail(t *testing.T) {
 	appCreateRes, _ := lc.Run("app", "create", MockAppName, "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
+	t.Log(app_id)
+
+	// wait for status changed
+	time.Sleep(15 * time.Second)
 
 	// app detail test
 	t.Log("app detail test ... ")
@@ -331,6 +335,9 @@ func TestRunAppOverview(t *testing.T) {
 	appCreateRes, _ := lc.Run("app", "create", MockAppName, "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
+
+	// wait for status changed
+	time.Sleep(10 * time.Second)
 
 	// app overview test
 	t.Log("app overview test ... ")
