@@ -122,6 +122,9 @@ func TestRunAppUpdate(t *testing.T) {
 	// wait for status changed
 	time.Sleep(15 * time.Second)
 
+	// check
+	lc.Run("app", "list")
+
 	// update app test
 	t.Log("app update test ... ")
 	appUpdateRes, err := lc.Run("app", "update", app_id, "--app-name", "app_update_result", "--update-version", "6.6.6")
@@ -276,6 +279,8 @@ func TestRunAppDetail(t *testing.T) {
 	// create a namespace for app_detail test
 	nsCreateRes, _ := lc.Run( "namespace", "create", "app_detail_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
+
+	t.Log(test_ns_id)
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
