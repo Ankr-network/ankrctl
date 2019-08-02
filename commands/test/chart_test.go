@@ -139,7 +139,7 @@ func TestRunChartDetail(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}else{
-		//t.Log(string(chartDetailRes))
+		t.Log(string(chartDetailRes))
 		assert.True(t, strings.Contains(string(chartDetailRes), "Repo"))
 	}
 

@@ -274,7 +274,7 @@ func TestRunAppDetail(t *testing.T) {
 
 	// app create for app_detail test
 	// create a namespace for app_detail test
-	nsCreateRes, _ := lc.Run( "namespace", "create", "app_create_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	nsCreateRes, _ := lc.Run( "namespace", "create", "app_detail_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
 	// wait for status changed
@@ -287,12 +287,60 @@ func TestRunAppDetail(t *testing.T) {
 
 	// app detail test
 	t.Log("app detail test ... ")
-	appDetailRes, err := lc.Run("app", "detail")
+	appDetailRes, err := lc.Run("app", "detail", app_id)
 	if err != nil {
 		t.Error(err.Error())
 	}else{
 		t.Log(string(appDetailRes))
 		assert.True(t, strings.Contains(string(appDetailRes), "detail"))
+	}
+
+	// wait for statues changed
+	time.Sleep(10 * time.Second)
+
+	// purge the app created
+	lc.Run("app", "purge", app_id, "-f")
+
+	// wait for statues changed
+	time.Sleep(10 * time.Second)
+
+	// cancel the namespace created
+	lc.Run("namespace", "delete", test_ns_id, "-f")
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+}
+
+func TestRunAppOverview(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// app create for app_overview test
+	// create a namespace for app_overview test
+	nsCreateRes, _ := lc.Run( "namespace", "create", "app_overview_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
+
+	// wait for status changed
+	time.Sleep(10 * time.Second)
+
+	// create app
+	appCreateRes, _ := lc.Run("app", "create", MockAppName, "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
+	app_id := strings.Split(app_id_pre, ",")[0]
+
+	// app overview test
+	t.Log("app overview test ... ")
+	appOverviewRes, err := lc.Run("app", "overview", app_id)
+	if err != nil {
+		t.Error(err.Error())
+	}else{
+		t.Log(string(appOverviewRes))
+		assert.True(t, strings.Contains(string(appOverviewRes), "Namespace"))
+		assert.True(t, strings.Contains(string(appOverviewRes), "Cluster"))
 	}
 
 	// wait for statues changed
