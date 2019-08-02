@@ -117,7 +117,7 @@ func TestRunAppUpdate(t *testing.T) {
 
 	// update app test
 	t.Log("app update test ... ")
-	appUpdateRes, err := lc.Run("app", "update", app_id, "--app-name", "app_update_result", "--update-version", "6.6.6")
+	appUpdateRes, err := lc.Run("app", "update", app_id, "--app-name", "app_update_result")
 	if err != nil {
 		t.Error(err.Error())
 	}else{
@@ -229,6 +229,5 @@ func TestRunAppPurge(t *testing.T) {
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
-
 }
 
