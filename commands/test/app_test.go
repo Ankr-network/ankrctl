@@ -123,6 +123,12 @@ func TestRunAppCancel(t *testing.T) {
 	}
 
 	// wait for statues changed
+	time.Sleep(2 * time.Second)
+
+	// purge the app created
+	lc.Run("app", "purge", app_id, "-f")
+
+	// wait for statues changed
 	time.Sleep(10 * time.Second)
 
 	// cancel the namespace created
