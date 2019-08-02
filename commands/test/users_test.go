@@ -34,9 +34,6 @@ var(
 
 func TestRunUserLogin(t *testing.T) {
 
-	// as the first test, sleep 60s
-	time.Sleep(60 * time.Second)
-
 	t.Log("user login test ...")
 
 	// case 1: correct input
@@ -141,6 +138,9 @@ func TestRunUserUpdate(t *testing.T) {
 
 func TestRunUserChangePassword(t *testing.T) {
 
+	// need a break, sleep 60s
+	time.Sleep(60 * time.Second)
+
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
@@ -175,9 +175,6 @@ func TestRunUserChangePassword(t *testing.T) {
 }
 
 func TestRunUserChangeEmail(t *testing.T) {
-
-	// need a break, sleep 60s
-	time.Sleep(60 * time.Second)
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)

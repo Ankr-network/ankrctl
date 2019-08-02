@@ -17,9 +17,6 @@ var (
 
 func TestRunAppCreate(t *testing.T) {
 
-	// as the first test, sleep 60s
-	time.Sleep(60 * time.Second)
-
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
@@ -87,71 +84,6 @@ func TestRunAppCreate(t *testing.T) {
 
 	// purge the app created
 	lc.Run("app", "purge", app_id_1, "-f")
-
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
-
-}
-
-func TestRunAppUpdate(t *testing.T) {
-
-	// user login at first
-	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
-	if err != nil {
-		t.Error(err)
-	}
-
-	// app create for app_update test
-	// create a namespace for app_create
-	nsCreateRes, _ := lc.Run( "namespace", "create", "app_update_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
-	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
-
-	// wait for status changed
-	time.Sleep(10 * time.Second)
-
-	// download and upload a chart for app_create
-	lc.Run( "chart", "download", "wordpress", "--download-repo", "stable", "--download-version", "5.6.2")
-	lc.Run( "chart", "upload", "app_update_test", "--upload-file", "/go/src/github.com/Ankr-network/dccn-cli/commands/test/wordpress-5.6.2.tgz", "--upload-version", chartUploadVersion)
-
-	// wait for status changed
-	time.Sleep(10 * time.Second)
-
-	// create app
-	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", "app_update_test", "--chart-repo", "user", "--chart-version", chartUploadVersion,  "--ns-id", test_ns_id)
-	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
-	app_id := strings.Split(app_id_pre, ",")[0]
-	t.Log(app_id)
-
-	// wait for status changed
-	time.Sleep(15 * time.Second)
-
-	// check
-	lc.Run("app", "list")
-
-	// update app test
-	t.Log("app update test ... ")
-	appUpdateRes, err := lc.Run("app", "update", app_id, "--app-name", "app_update_result", "--update-version", "6.6.6")
-	if err != nil {
-		t.Error(err.Error())
-	}else{
-		t.Log(string(appUpdateRes))
-		assert.True(t, strings.Contains(string(appUpdateRes), "success"))
-	}
-
-	// wait for statues changed
-	time.Sleep(10 * time.Second)
-
-	// purge the app created
-	lc.Run("app", "purge", app_id, "-f")
-
-	// wait for statues changed
-	time.Sleep(10 * time.Second)
-
-	// cancel the namespace created
-	lc.Run("namespace", "delete", test_ns_id, "-f")
-
-	// delete the chart upload
-	lc.Run("chart", "delete", chartUploadName, "--delete-version", "6.6.6", "-f")
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
@@ -272,10 +204,6 @@ func TestRunAppList(t *testing.T) {
 
 func TestRunAppDetail(t *testing.T) {
 
-	// need a break, sleep 60s
-	time.Sleep(60 * time.Second)
-
-
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
@@ -377,4 +305,70 @@ func TestRunAppOverview(t *testing.T) {
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
+}
+
+func TestRunAppUpdate(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// app create for app_update test
+	// create a namespace for app_create
+	nsCreateRes, _ := lc.Run( "namespace", "create", "app_update_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
+
+	// wait for status changed
+	time.Sleep(10 * time.Second)
+
+	// download and upload a chart for app_create
+	lc.Run( "chart", "download", "wordpress", "--download-repo", "stable", "--download-version", "5.6.2")
+	lc.Run( "chart", "upload", "app_update_test", "--upload-file", "/go/src/github.com/Ankr-network/dccn-cli/commands/test/wordpress-5.6.2.tgz", "--upload-version", chartUploadVersion)
+
+	// wait for status changed
+	time.Sleep(10 * time.Second)
+
+	// create app
+	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", "app_update_test", "--chart-repo", "user", "--chart-version", chartUploadVersion,  "--ns-id", test_ns_id)
+	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
+	app_id := strings.Split(app_id_pre, ",")[0]
+	t.Log(app_id)
+
+	// wait for status changed
+	time.Sleep(20 * time.Second)
+
+	// check
+	Res, _ := lc.Run("app", "list")
+	t.Log(string(Res))
+
+	// update app test
+	t.Log("app update test ... ")
+	appUpdateRes, err := lc.Run("app", "update", app_id, "--app-name", "app_update_result", "--update-version", "6.6.6")
+	if err != nil {
+		t.Error(err.Error())
+	}else{
+		t.Log(string(appUpdateRes))
+		assert.True(t, strings.Contains(string(appUpdateRes), "success"))
+	}
+
+	// wait for statues changed
+	time.Sleep(10 * time.Second)
+
+	// purge the app created
+	lc.Run("app", "purge", app_id, "-f")
+
+	// wait for statues changed
+	time.Sleep(10 * time.Second)
+
+	// cancel the namespace created
+	lc.Run("namespace", "delete", test_ns_id, "-f")
+
+	// delete the chart upload
+	lc.Run("chart", "delete", chartUploadName, "--delete-version", "6.6.6", "-f")
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+
 }

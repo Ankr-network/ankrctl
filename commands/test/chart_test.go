@@ -14,9 +14,6 @@ var (
 
 func TestRunChartList(t *testing.T) {
 
-	// as the first test, sleep 60s
-	time.Sleep(60 * time.Second)
-
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
@@ -148,6 +145,10 @@ func TestRunChartDetail(t *testing.T) {
 
 	// wait for status changed
 	time.Sleep(2 * time.Second)
+
+	// need a break, sleep 60s
+	time.Sleep(60 * time.Second)
+
 }
 
 /*func TestRunChartSaveas(t *testing.T) {
