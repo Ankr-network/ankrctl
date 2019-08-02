@@ -122,7 +122,7 @@ func RunWalletGenkey(c *CmdConfig) error {
 
 	files, err := ioutil.ReadDir(configHome())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 
@@ -131,23 +131,23 @@ func RunWalletGenkey(c *CmdConfig) error {
 	for _, f := range files {
 		matched, err := filepath.Match("UTC*", f.Name())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 			return nil
 		}
 		if matched {
 			kf, err := ioutil.ReadFile(path + f.Name())
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+				fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 				return nil
 			}
 			var key EncryptedKeyJSONV3
 			err = json.Unmarshal(kf, &key)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+				fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 				return nil
 			}
 			if key.Name == c.Args[0] {
-				fmt.Fprintf(os.Stderr, "\nERROR: %s\n", "key name already exists")
+				fmt.Fprintf(os.Stdout, "\nERROR: %s\n", "key name already exists")
 				return nil
 			}
 		}
@@ -161,7 +161,7 @@ func RunWalletGenkey(c *CmdConfig) error {
 		privateKey, publicKey, address := wallet.GenerateKeys()
 
 		if privateKey == "" || publicKey == "" || address == "" {
-			fmt.Fprintf(os.Stderr, "generated keys error: got empty secrets")
+			fmt.Fprintf(os.Stdout, "generated keys error: got empty secrets")
 			return nil
 		}
 
@@ -170,25 +170,25 @@ func RunWalletGenkey(c *CmdConfig) error {
 		fmt.Print("\nabout to export to keystore...\nplease input the keystore encryption password: ")
 		password, err := terminal.ReadPassword(int(syscall.Stdin))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 			return nil
 		}
 
 		fmt.Print("\nplease input password again: ")
 		confirmPassword, err := terminal.ReadPassword(int(syscall.Stdin))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 			return nil
 		}
 
 		if string(password) != string(confirmPassword) {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", "password and confirm password not match")
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", "password and confirm password not match")
 			return nil
 		}
 
 		cryptoStruct, err := EncryptDataV3([]byte(privateKey), []byte(password), StandardScryptN, StandardScryptP)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 			return nil
 		}
 
@@ -202,7 +202,7 @@ func RunWalletGenkey(c *CmdConfig) error {
 
 		jsonKey, err := json.Marshal(encryptedKeyJSONV3)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 			return nil
 		}
 
@@ -212,7 +212,7 @@ func RunWalletGenkey(c *CmdConfig) error {
 
 		kfw, err := KeyFileWriter(fmt.Sprintf("UTC--%s--%s", toISO8601(ts), address))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 			return nil
 		}
 
@@ -220,10 +220,10 @@ func RunWalletGenkey(c *CmdConfig) error {
 
 		_, err = kfw.Write(jsonKey)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", "unable to write keystore")
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", "unable to write keystore")
 		}
 
-		fmt.Fprintf(os.Stderr, "\ncreated keystore: %s/UTC--%s--%s\n\n", configHome(), toISO8601(ts), address)
+		fmt.Fprintf(os.Stdout, "\ncreated keystore: %s/UTC--%s--%s\n\n", configHome(), toISO8601(ts), address)
 
 	}
 
@@ -235,7 +235,7 @@ func RunWalletKeylist(c *CmdConfig) error {
 
 	files, err := ioutil.ReadDir(configHome())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 
@@ -246,19 +246,19 @@ func RunWalletKeylist(c *CmdConfig) error {
 	for _, f := range files {
 		matched, err := filepath.Match("UTC*", f.Name())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 			return nil
 		}
 		if matched {
 			kf, err := ioutil.ReadFile(path + f.Name())
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+				fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 				return nil
 			}
 			var key EncryptedKeyJSONV3
 			err = json.Unmarshal(kf, &key)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+				fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 				return nil
 			}
 			keylist = append(keylist, &displayers.KeyStore{
@@ -281,12 +281,13 @@ func RunWalletImportkey(c *CmdConfig) error {
 
 	ks, err := c.Ankr.GetString(c.NS, ankrctl.ArgKeyFileSlug)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
+		return nil
 	}
 
 	kf, err := ioutil.ReadFile(ks)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 
@@ -294,13 +295,13 @@ func RunWalletImportkey(c *CmdConfig) error {
 
 	err = json.Unmarshal(kf, &key)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 
 	files, err := ioutil.ReadDir(configHome())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 	path := configHome() + "/"
@@ -308,23 +309,23 @@ func RunWalletImportkey(c *CmdConfig) error {
 	for _, f := range files {
 		matched, err := filepath.Match("UTC*", f.Name())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 			return nil
 		}
 		if matched {
 			kf, err := ioutil.ReadFile(path + f.Name())
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+				fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 				return nil
 			}
 			var ks EncryptedKeyJSONV3
 			err = json.Unmarshal(kf, &ks)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+				fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 				return nil
 			}
 			if ks.Name == c.Args[0] {
-				fmt.Fprintf(os.Stderr, "\nERROR: key '%s' already exists.\n", ks.Name)
+				fmt.Fprintf(os.Stdout, "\nERROR: key '%s' already exists.\n", ks.Name)
 				return nil
 			}
 		}
@@ -333,12 +334,12 @@ func RunWalletImportkey(c *CmdConfig) error {
 	fmt.Print("please input the keystore password: ")
 	password, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 	_, err = DecryptDataV3(key.Crypto, string(password))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 
@@ -346,19 +347,19 @@ func RunWalletImportkey(c *CmdConfig) error {
 	ts := time.Now().UTC()
 	jsonKey, err := json.Marshal(key)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 	kfw, err := KeyFileWriter(fmt.Sprintf("UTC--%s--%s", toISO8601(ts), key.Address))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 	defer kfw.Close()
 
 	_, err = kfw.Write(jsonKey)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", "unable to write keystore")
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n", "unable to write keystore")
 		return nil
 	}
 

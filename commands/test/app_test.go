@@ -8,7 +8,6 @@ import (
 )
 
 var (
-	MockAppName = "app_create_cli_test"
 	ChartName = "wordpress"
 	ChartRepo = "stable"
 	ChartVersion = "5.6.2"
@@ -28,14 +27,14 @@ func TestRunAppCreate(t *testing.T) {
 	t.Log("app create test ... (case 1)")
 
 	// create a namespace for app_create test
-	nsCreateRes, _ := lc.Run( "namespace", "create", "app_create_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	nsCreateRes, _ := lc.Run( "namespace", "create", "ns_app_create_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
 
 	// create app
-	appCreateRes, err := lc.Run("app", "create", MockAppName, "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	appCreateRes, err := lc.Run("app", "create", "app_create_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
 	if err != nil {
@@ -66,7 +65,7 @@ func TestRunAppCreate(t *testing.T) {
 
 	// case 2: create app with namespace at the same time
 	t.Log("app create test ... (case 2)")
-	appCreateRes_1, err_1 := lc.Run("app", "create", MockAppName, "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-name", "app_create_cli_test", "--cpu-limit", "1000", "--mem-limit", "2048", "--storage-limit","8")
+	appCreateRes_1, err_1 := lc.Run("app", "create", "app_create_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-name", "ns_app_create_cli", "--cpu-limit", "1000", "--mem-limit", "2048", "--storage-limit","8")
 	app_id_pre_1 := strings.Split(string(appCreateRes), " ")[5]
 	app_id_1 := strings.Split(app_id_pre_1, ",")[0]
 	if err_1 != nil {
@@ -100,7 +99,7 @@ func TestRunAppCancel(t *testing.T) {
 
 	// app create for app_cancel test
 	// create a namespace for app_create
-	nsCreateRes, _ := lc.Run( "namespace", "create", "app_cancel_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	nsCreateRes, _ := lc.Run( "namespace", "create", "ns_app_cancel_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
 	// wait for status changed
@@ -145,7 +144,7 @@ func TestRunAppPurge(t *testing.T) {
 
 	// app create for app_purge test
 	// create a namespace for app_create
-	nsCreateRes, _ := lc.Run( "namespace", "create", "app_cancel_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	nsCreateRes, _ := lc.Run( "namespace", "create", "ns_app_cancel_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
 	// wait for status changed
@@ -212,7 +211,7 @@ func TestRunAppDetail(t *testing.T) {
 
 	// app create for app_detail test
 	// create a namespace for app_detail test
-	nsCreateRes, _ := lc.Run( "namespace", "create", "app_detail_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	nsCreateRes, _ := lc.Run( "namespace", "create", "ns_app_detail_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
 	t.Log(test_ns_id)
@@ -221,14 +220,14 @@ func TestRunAppDetail(t *testing.T) {
 	time.Sleep(10 * time.Second)
 
 	// create app
-	appCreateRes, _ := lc.Run("app", "create", MockAppName, "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	appCreateRes, _ := lc.Run("app", "create", "app_detail_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	t.Log(string(appCreateRes))
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
 	t.Log(app_id)
 
 	// wait for status changed
-	time.Sleep(15 * time.Second)
+	time.Sleep(20 * time.Second)
 
 	// app detail test
 	t.Log("app detail test ... ")
@@ -266,14 +265,14 @@ func TestRunAppOverview(t *testing.T) {
 
 	// app create for app_overview test
 	// create a namespace for app_overview test
-	nsCreateRes, _ := lc.Run( "namespace", "create", "app_overview_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	nsCreateRes, _ := lc.Run( "namespace", "create", "ns_app_overview_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
 
 	// create app
-	appCreateRes, _ := lc.Run("app", "create", MockAppName, "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	appCreateRes, _ := lc.Run("app", "create", "app_overview_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
 
@@ -317,7 +316,7 @@ func TestRunAppUpdate(t *testing.T) {
 
 	// app create for app_update test
 	// create a namespace for app_create
-	nsCreateRes, _ := lc.Run( "namespace", "create", "app_update_cli_test", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	nsCreateRes, _ := lc.Run( "namespace", "create", "ns_app_update_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
 	// wait for status changed
