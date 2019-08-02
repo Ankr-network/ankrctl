@@ -33,6 +33,9 @@ func TestRunWalletKeylist(t *testing.T) {
 
 func TestRunWalletGenkey(t *testing.T) {
 
+	// need a break, sleep 60s
+	time.Sleep(60*time.Second)
+
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
@@ -57,9 +60,6 @@ func TestRunWalletGenkey(t *testing.T) {
 
 func TestRunWalletImportkey(t *testing.T) {
 
-	// need a break, sleep 60s
-	time.Sleep(60*time.Second)
-
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
@@ -75,7 +75,7 @@ func TestRunWalletImportkey(t *testing.T) {
 		assert.True(t, strings.Contains(string(walletImportKeyRes), "private key"))
 		assert.True(t, strings.Contains(string(walletImportKeyRes), "public key"))
 		assert.True(t, strings.Contains(string(walletImportKeyRes), "address"))
-		t.Log("wallet genkey successfully")
+		t.Log("wallet import key successfully")
 	}
 
 	// wait for status changed

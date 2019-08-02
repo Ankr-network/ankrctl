@@ -214,17 +214,13 @@ func TestRunAppDetail(t *testing.T) {
 	nsCreateRes, _ := lc.Run( "namespace", "create", "ns_app_detail_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
-	t.Log(test_ns_id)
-
 	// wait for status changed
 	time.Sleep(10 * time.Second)
 
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_detail_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
-	t.Log(string(appCreateRes))
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
-	t.Log(app_id)
 
 	// wait for status changed
 	time.Sleep(20 * time.Second)

@@ -147,11 +147,11 @@ func TestRunChartDetail(t *testing.T) {
 	time.Sleep(2 * time.Second)
 
 	// need a break, sleep 60s
-	time.Sleep(60 * time.Second)
+	time.Sleep(45 * time.Second)
 
 }
 
-/*func TestRunChartSaveas(t *testing.T) {
+func TestRunChartSaveas(t *testing.T) {
 
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
@@ -161,7 +161,7 @@ func TestRunChartDetail(t *testing.T) {
 
 	// chart saveas test
 	t.Log("chart saveas test ...")
-	chartSaveasRes, err := lc.Run("chart", "saveas", "wordpress-5.6.0", "--delete-version", chartUploadVersion, "-f")
+	chartSaveasRes, err := lc.Run("chart", "saveas", "chart_saveas_cli_test", "--source-name", "wordpress", "--source-repo", "stable", "--source-version", "5.6.0", "--saveas-version", chartUploadVersion, "--values-yaml", "./values.yaml")
 	if err != nil {
 		t.Error(err)
 	}else{
@@ -170,5 +170,9 @@ func TestRunChartDetail(t *testing.T) {
 	}
 
 	// wait for status changed
-	time.Sleep(2 * time.Second)
-}*/
+	time.Sleep(5 * time.Second)
+
+	// delete the chart saveas
+	lc.Run("chart", "delete", "chart_saveas_cli_test", "--delete-version", chartUploadVersion, "-f")
+
+}
