@@ -106,8 +106,15 @@ func TestRunAppUpdate(t *testing.T) {
 	// wait for status changed
 	time.Sleep(10 * time.Second)
 
+	// download and upload a chart for app_create
+	lc.Run( "chart", "download", "wordpress", "--download-repo", "stable", "--download-version", "5.6.2")
+	lc.Run( "chart", "upload", "app_update_test", "--upload-file", "/go/src/github.com/Ankr-network/dccn-cli/commands/test/wordpress-5.6.2.tgz", "--upload-version", chartUploadVersion)
+
+	// wait for status changed
+	time.Sleep(5 * time.Second)
+
 	// create app
-	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", "app_update_test", "--chart-repo", "user", "--chart-version", chartUploadVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
 	t.Log(app_id)
@@ -117,7 +124,7 @@ func TestRunAppUpdate(t *testing.T) {
 
 	// update app test
 	t.Log("app update test ... ")
-	appUpdateRes, err := lc.Run("app", "update", app_id, "--app-name", "app_update_result")
+	appUpdateRes, err := lc.Run("app", "update", app_id, "--app-name", "app_update_result", "--update-version", "6.6.6")
 	if err != nil {
 		t.Error(err.Error())
 	}else{
@@ -136,6 +143,9 @@ func TestRunAppUpdate(t *testing.T) {
 
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
+
+	// delete the chart upload
+	lc.Run("chart", "delete", chartUploadName, "--delete-version", "6.6.6", "-f")
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
@@ -226,6 +236,29 @@ func TestRunAppPurge(t *testing.T) {
 
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+}
+
+func TestRunAppList(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// app list test
+	t.Log("app list test ... ")
+	appListRes, err := lc.Run("app", "list")
+	if err != nil {
+		t.Error(err.Error())
+	}else{
+		t.Log(string(appListRes))
+		assert.True(t, strings.Contains(string(appListRes), "ID"))
+		assert.True(t, strings.Contains(string(appListRes), "Name"))
+	}
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
