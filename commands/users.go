@@ -145,6 +145,9 @@ func RunUserLogin(c *CmdConfig) error {
 		password = string(p)
 	}
 
+	fmt.Print(email)
+	fmt.Print(password)
+
 	url := viper.GetString("hub-url")
 
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
