@@ -155,6 +155,7 @@ func TestRunAppPurge(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	t.Log(appCreateRes)
 
 	// app create for app_purge test
 	// create a namespace for app_create
