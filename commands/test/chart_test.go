@@ -158,9 +158,11 @@ func TestRunChartSaveas(t *testing.T) {
 		t.Error(err)
 	}
 
+	lc.Run( "chart", "download", "wordpress", "--download-repo", "stable", "--download-version", "5.6.2")
+
 	// chart saveas test
 	t.Log("chart saveas test ...")
-	chartSaveasRes, err := lc.Run("chart", "saveas", "chart_saveas_cli_test", "--source-name", "wordpress", "--source-repo", "stable", "--source-version", "5.6.0", "--saveas-version", chartUploadVersion, "--values-yaml", "fake_yaml")
+	chartSaveasRes, err := lc.Run("chart", "saveas", "chart_saveas_cli_test", "--source-name", "wordpress", "--source-repo", "stable", "--source-version", "5.6.0", "--saveas-version", chartUploadVersion, "--values-yaml", "/go/src/github.com/Ankr-network/dccn-cli/commands/test/wordpress-5.6.2.tgz")
 	if err != nil {
 		t.Error(err)
 	}else{

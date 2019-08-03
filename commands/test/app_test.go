@@ -81,11 +81,15 @@ func TestRunAppCreate(t *testing.T) {
 	time.Sleep(15 * time.Second)
 
 	// purge the app created
-	lc.Run("app", "purge", app_id_1, "-f")
+	purgeRes, err := lc.Run("app", "purge", app_id_1, "-f")
+	if err != nil {
+		t.Error(err)
+	}else{
+		t.Log(string(purgeRes))
+	}
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
-
 }
 
 func TestRunAppCancel(t *testing.T) {
@@ -234,6 +238,9 @@ func TestRunAppDetail(t *testing.T) {
 	lc.Run("app", "list")
 
 	// wait for status changed
+	time.Sleep(5 * time.Second)
+
+	lc.Run("app", "detail", app_id)
 	time.Sleep(5 * time.Second)
 
 	// app detail test
