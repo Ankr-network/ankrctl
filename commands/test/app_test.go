@@ -222,10 +222,10 @@ func TestRunAppDetail(t *testing.T) {
 	time.Sleep(10 * time.Second)
 
 	// create app
-	appCreateRes, _ := lc.Run("app", "create", "app_detail_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
-	t.Log(string(appCreateRes))
+	appCreateRes, _ := lc.Run("app", "create", "app_create_cli_test_1", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
+	t.Log(string(appCreateRes))
 	t.Log(app_id_pre)
 	t.Log(app_id)
 	// wait for status changed
