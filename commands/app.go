@@ -265,7 +265,8 @@ func RunAppPurge(c *CmdConfig) error {
 
 	force, err := c.Ankr.GetBool(c.NS, ankrctl.ArgForce)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stdout, "\nERROR: %s\n",err.Error())
+		return nil
 	}
 
 	if len(c.Args) < 1 {
@@ -276,7 +277,8 @@ func RunAppPurge(c *CmdConfig) error {
 	viper.UnmarshalKey("AuthResult", &authResult)
 
 	if authResult.AccessToken == "" {
-		return fmt.Errorf("no ankr network access token found")
+		fmt.Fprintf(os.Stdout, "no ankr network access token found")
+		return nil
 	}
 
 	md := metadata.New(map[string]string{
@@ -291,7 +293,7 @@ func RunAppPurge(c *CmdConfig) error {
 
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
-			log.Fatalf("Did not connect: %v", err)
+			fmt.Fprintf(os.Stdout, "Did not connect: %v", err)
 		}
 		defer conn.Close()
 		appClient := gwtaskmgr.NewAppMgrClient(conn)
@@ -300,16 +302,18 @@ func RunAppPurge(c *CmdConfig) error {
 			for _, id := range ids {
 				_, err := appClient.PurgeApp(tokenctx, &gwtaskmgr.AppID{AppId: id})
 				if err != nil {
-					return fmt.Errorf("Status Code: %s  Message: %s", status.Code(err), err.Error())
+					fmt.Fprintf(os.Stdout, "Status Code: %s  Message: %s", status.Code(err), err.Error())
+					return nil
 				}
-				fmt.Printf("App %s purge success.\n", id)
+				fmt.Fprintf(os.Stdout, "App %s purge success.\n", id)
 			}
 			return nil
 		}
 		return fn(c.Args)
 
 	}
-	return fmt.Errorf("Operation aborted")
+	fmt.Fprintf(os.Stdout, "Operation aborted")
+	return nil
 
 }
 
