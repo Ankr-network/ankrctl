@@ -29,7 +29,7 @@ var(
 	CorrectUserEmail = "test12345@mailinator.com"
 	CorrectPassword = "test12345"
 	CorrectUserName = "test12345"
-	lc = ankrctl.NewLiveCommand("../../build/ankrctl_linux_amd64")
+	lc = ankrctl.NewLiveCommand("../../build/ankrctl_darwin_amd64")
 )
 
 func TestRunUserLogin(t *testing.T) {

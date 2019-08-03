@@ -201,28 +201,7 @@ func TestRunAppPurge(t *testing.T) {
 	time.Sleep(2 * time.Second)
 }
 
-func TestRunAppList(t *testing.T) {
 
-	// user login at first
-	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
-	if err != nil {
-		t.Error(err)
-	}
-
-	// app list test
-	t.Log("app list test ... ")
-	appListRes, err := lc.Run("app", "list")
-	if err != nil {
-		t.Error(err.Error())
-	}else{
-		t.Log(string(appListRes))
-		assert.True(t, strings.Contains(string(appListRes), "ID"))
-		assert.True(t, strings.Contains(string(appListRes), "Name"))
-	}
-
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
-}
 func TestRunAppPurge1(t *testing.T) {
 
 	// user login at first
@@ -284,7 +263,6 @@ func TestRunAppPurge1(t *testing.T) {
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
 }
-/*
 func TestRunAppDetail(t *testing.T) {
 
 	// user login at first
@@ -346,7 +324,32 @@ func TestRunAppDetail(t *testing.T) {
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
 }
-*/
+func TestRunAppList(t *testing.T) {
+
+	// user login at first
+	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// app list test
+	t.Log("app list test ... ")
+	appListRes, err := lc.Run("app", "list")
+	if err != nil {
+		t.Error(err.Error())
+	}else{
+		t.Log(string(appListRes))
+		assert.True(t, strings.Contains(string(appListRes), "ID"))
+		assert.True(t, strings.Contains(string(appListRes), "Name"))
+	}
+
+	// wait for statues changed
+	time.Sleep(2 * time.Second)
+}
+
+
+
+
 func TestRunAppOverview(t *testing.T) {
 
 	// user login at first
