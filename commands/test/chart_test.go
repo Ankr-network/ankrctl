@@ -21,7 +21,6 @@ func TestRunChartList(t *testing.T) {
 	}
 
 	// chart list test
-
 	chartListRes, err := lc.Run( "chart", "list", "--list-repo", "stable")
 	if err != nil {
 		t.Error(err)
@@ -147,7 +146,7 @@ func TestRunChartDetail(t *testing.T) {
 	time.Sleep(2 * time.Second)
 
 	// need a break, sleep 60s
-	time.Sleep(45 * time.Second)
+	time.Sleep(40 * time.Second)
 
 }
 
@@ -161,7 +160,7 @@ func TestRunChartSaveas(t *testing.T) {
 
 	// chart saveas test
 	t.Log("chart saveas test ...")
-	chartSaveasRes, err := lc.Run("chart", "saveas", "chart_saveas_cli_test", "--source-name", "wordpress", "--source-repo", "stable", "--source-version", "5.6.0", "--saveas-version", chartUploadVersion, "--values-yaml", "")
+	chartSaveasRes, err := lc.Run("chart", "saveas", "chart_saveas_cli_test", "--source-name", "wordpress", "--source-repo", "stable", "--source-version", "5.6.0", "--saveas-version", chartUploadVersion, "--values-yaml", "fake_yaml")
 	if err != nil {
 		t.Error(err)
 	}else{

@@ -9,9 +9,9 @@ import (
 
 var (
 	MockNamespaceName string
-	MockNamespaceCpu = "1000"
-	MockNamespaceMem = "512"
-	MockNamespaceStorage = "8"
+	MockNamespaceCpu = "1"
+	MockNamespaceMem = "2"
+	MockNamespaceStorage = "5"
 )
 
 func TestRunNamespaceCreate(t *testing.T) {
@@ -63,7 +63,7 @@ func TestRunNamespaceUpdate(t *testing.T) {
 
 	// namespace update test
 	t.Log("namespace update test ...")
-	nsUpdateRes, err := lc.Run("namespace", "update", test_ns_id, "--cpu-limit", "1024", "--mem-limit", "2048", "--storage-limit", "16")
+	nsUpdateRes, err := lc.Run("namespace", "update", test_ns_id, "--cpu-limit", "1", "--mem-limit", "2", "--storage-limit", "10")
 	if err != nil {
 		t.Error(err)
 	}else{

@@ -53,7 +53,7 @@ func TestRunAppCreate(t *testing.T) {
 	lc.Run("app", "purge", app_id, "-f")
 
 	// wait for statues changed
-		time.Sleep(10 * time.Second)
+	time.Sleep(10 * time.Second)
 
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
@@ -64,7 +64,7 @@ func TestRunAppCreate(t *testing.T) {
 
 	// case 2: create app with namespace at the same time
 	t.Log("app create test ... (case 2)")
-	appCreateRes_1, err_1 := lc.Run("app", "create", "app_create_cli_test_2", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-name", "ns_app_create_cli", "--cpu-limit", "1000", "--mem-limit", "2048", "--storage-limit","8")
+	appCreateRes_1, err_1 := lc.Run("app", "create", "app_create_cli_test_2", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-name", "ns_app_create_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
 	app_id_pre_1 := strings.Split(string(appCreateRes), " ")[5]
 	app_id_1 := strings.Split(app_id_pre_1, ",")[0]
 	if err_1 != nil {
@@ -78,7 +78,7 @@ func TestRunAppCreate(t *testing.T) {
 
 
 	// wait for statues changed
-	time.Sleep(20 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	// purge the app created
 	lc.Run("app", "purge", app_id_1, "-f")
@@ -228,11 +228,13 @@ func TestRunAppDetail(t *testing.T) {
 	app_id := strings.Split(app_id_pre, ",")[0]
 
 	// wait for status changed
-	time.Sleep(15 * time.Second)
+	time.Sleep(10 * time.Second)
 
-	// check
-	Res, _ := lc.Run("app", "list")
-	t.Log(string(Res))
+	// run app list at first
+	lc.Run("app", "list")
+
+	// wait for status changed
+	time.Sleep(5 * time.Second)
 
 	// app detail test
 	t.Log("app detail test ... ")
@@ -332,7 +334,7 @@ func TestRunAppUpdate(t *testing.T) {
 	lc.Run( "chart", "upload", "app_update_test", "--upload-file", "/go/src/github.com/Ankr-network/dccn-cli/commands/test/wordpress-5.6.2.tgz", "--upload-version", chartUploadVersion)
 
 	// wait for status changed
-	time.Sleep(10 * time.Second)
+	time.Sleep(40 * time.Second)
 
 	// create app
 	appCreateRes, _ := lc.Run("app", "create", "app_update_cli_test", "--chart-name", "app_update_test", "--chart-repo", "user", "--chart-version", chartUploadVersion,  "--ns-id", test_ns_id)
@@ -341,7 +343,7 @@ func TestRunAppUpdate(t *testing.T) {
 	t.Log(app_id)
 
 	// wait for status changed
-	time.Sleep(20 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	// check
 	Res, _ := lc.Run("app", "list")
