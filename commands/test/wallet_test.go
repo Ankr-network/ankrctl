@@ -43,7 +43,7 @@ func TestRunWalletGenkey(t *testing.T) {
 	}
 
 	// wallet genkey test
-	walletGenKeyRes, err := lc.Run( "wallet", "genkey", "wallet_genkey_cli_test", "-f")
+	walletGenKeyRes, err := lc.Run( "wallet", "genkey", "wallet_genkey_cli_test", "-y")
 	if err != nil {
 		t.Error(err)
 	}else{

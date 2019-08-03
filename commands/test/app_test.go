@@ -65,7 +65,7 @@ func TestRunAppCreate(t *testing.T) {
 	// case 2: create app with namespace at the same time
 	t.Log("app create test ... (case 2)")
 	appCreateRes_1, err_1 := lc.Run("app", "create", "app_create_cli_test_2", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-name", "ns_app_create_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
-	app_id_pre_1 := strings.Split(string(appCreateRes), " ")[5]
+	app_id_pre_1 := strings.Split(string(appCreateRes_1), " ")[5]
 	app_id_1 := strings.Split(app_id_pre_1, ",")[0]
 	if err_1 != nil {
 		t.Error(err_1.Error())
@@ -78,15 +78,10 @@ func TestRunAppCreate(t *testing.T) {
 
 
 	// wait for statues changed
-	time.Sleep(15 * time.Second)
+	time.Sleep(20 * time.Second)
 
 	// purge the app created
-	purgeRes, err := lc.Run("app", "purge", app_id_1, "-f")
-	if err != nil {
-		t.Error(err)
-	}else{
-		t.Log(string(purgeRes))
-	}
+	lc.Run("app", "purge", app_id_1, "-f")
 
 	// wait for statues changed
 	time.Sleep(2 * time.Second)
@@ -232,7 +227,7 @@ func TestRunAppDetail(t *testing.T) {
 	app_id := strings.Split(app_id_pre, ",")[0]
 
 	// wait for status changed
-	time.Sleep(10 * time.Second)
+	time.Sleep(20 * time.Second)
 
 	// run app list at first
 	lc.Run("app", "list")
