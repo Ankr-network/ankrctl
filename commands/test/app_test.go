@@ -140,7 +140,16 @@ func TestRunAppCancel(t *testing.T) {
 }
 
 func TestRunAppPurge(t *testing.T) {
+	nsCreateRes, _ := lc.Run( "namespace", "create", "ns_app_detail_cli", "--cpu-limit", MockNamespaceCpu, "--mem-limit", MockNamespaceMem, "--storage-limit", MockNamespaceStorage)
+	test_ns_id := strings.Split(string(nsCreateRes), " ")[1]
 
+	// wait for status changed
+	time.Sleep(10 * time.Second)
+
+	// create app
+	appCreateRes, _ := lc.Run("app", "create", "app_detail_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
+	app_id := strings.Split(app_id_pre, ",")[0]
 	// user login at first
 	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
 	if err != nil {
