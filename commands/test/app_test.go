@@ -107,6 +107,7 @@ func TestRunAppCancel(t *testing.T) {
 	appCreateRes, _ := lc.Run("app", "create", "app_cancel_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
+	t.Log(appCreateRes)
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
@@ -158,6 +159,7 @@ func TestRunAppPurge(t *testing.T) {
 	appCreateRes, _ := lc.Run("app", "create", "app_purge_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
+	t.Log(appCreateRes)
 
 	// wait for status changed
 	time.Sleep(10 * time.Second)
@@ -222,7 +224,7 @@ func TestRunAppDetail(t *testing.T) {
 	time.Sleep(10 * time.Second)
 
 	// create app
-	appCreateRes, _ := lc.Run("app", "create", "app_create_cli_test_1", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
+	appCreateRes, _ := lc.Run("app", "create", "app_detail_cli_test", "--chart-name", ChartName, "--chart-repo", ChartRepo, "--chart-version", ChartVersion,  "--ns-id", test_ns_id)
 	app_id_pre := strings.Split(string(appCreateRes), " ")[5]
 	app_id := strings.Split(app_id_pre, ",")[0]
 	t.Log(string(appCreateRes))
