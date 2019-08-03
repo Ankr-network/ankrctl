@@ -451,7 +451,7 @@ func RunAppDetail(c *CmdConfig) error {
 		fmt.Fprintf(os.Stdout, "Status Code: %s  Message: %s", status.Code(err), err.Error())
 		return nil
 	}
-	fmt.Printf("Application %s resource detail:\n %s \n", c.Args[0], r.AppReport.Detail)
+	fmt.Fprintf(os.Stdout,"Application %s resource detail:\n %s \n", c.Args[0], r.AppReport.Detail)
 
 	return nil
 }
