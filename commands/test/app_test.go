@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -225,6 +226,7 @@ func TestRunAppDetail(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}else{
+		fmt.Printf("%+v", appDetailRes)
 		t.Log(string(appDetailRes))
 		assert.True(t, strings.Contains(string(appDetailRes), "detail"))
 	}
