@@ -1,7 +1,6 @@
 package test
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -208,17 +207,17 @@ func TestRunAppDetail(t *testing.T) {
 	app_id := strings.Split(app_id_pre, ",")[0]
 	t.Log(app_id)
 	// wait for status changed
-	time.Sleep(180 * time.Second)
+	time.Sleep(10 * time.Second)
 
 	// run app list at first
 	Res, err := lc.Run("app", "list")
 	t.Log(string(Res))
 
 	// wait for status changed
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	lc.Run("app", "detail", app_id)
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	// app detail test
 	t.Log("app detail test ... ")
@@ -226,7 +225,6 @@ func TestRunAppDetail(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}else{
-		fmt.Printf("%+v", appDetailRes)
 		t.Log(string(appDetailRes))
 		assert.True(t, strings.Contains(string(appDetailRes), "detail"))
 	}
@@ -234,7 +232,7 @@ func TestRunAppDetail(t *testing.T) {
 	// wait for statues changed
 	time.Sleep(10 * time.Second)
 
-	/* purge the app created
+	// purge the app created
 	lc.Run("app", "purge", app_id, "-f")
 
 	// wait for statues changed
@@ -244,7 +242,7 @@ func TestRunAppDetail(t *testing.T) {
 	lc.Run("namespace", "delete", test_ns_id, "-f")
 
 	// wait for statues changed
-	time.Sleep(2 * time.Second)*/
+	time.Sleep(2 * time.Second)
 }
 func TestRunAppList(t *testing.T) {
 
