@@ -38,7 +38,7 @@ build_lin:
 	@$(build)
 
 	"make build_lin_dev"
-build_lin_dev: GOOS=darwin
+build_lin_dev: GOOS=linux
 build_lin_dev: GOARCH=amd64
 build_lin_dev: GOEXE=ankrctl_$(GOOS)_$(GOARCH)
 build_lin_dev:
