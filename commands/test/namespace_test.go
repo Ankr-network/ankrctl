@@ -102,7 +102,8 @@ func TestRunNamespaceDelete(t *testing.T) {
 
 	// namespace delete test
 	t.Log("namespace delete test ...")
-	nsDeleteRes, err := lc.Run("namespace", "delete", test_ns_id, "-f")
+	nsDeleteRes, err := lc.Run("namespace", "delete", test_ns_id)
+
 	if err != nil {
 		t.Error(err)
 	}else{

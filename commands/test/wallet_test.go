@@ -31,7 +31,7 @@ func TestRunWalletKeylist(t *testing.T) {
 	time.Sleep(2 * time.Second)
 }
 
-func TestRunWalletGenkey(t *testing.T) {
+/*func TestRunWalletGenkey(t *testing.T) {
 
 	// need a break, sleep 50s
 	time.Sleep(50*time.Second)
@@ -43,30 +43,6 @@ func TestRunWalletGenkey(t *testing.T) {
 	}
 
 	// wallet genkey test
-	walletGenKeyRes, err := lc.Run( "wallet", "genkey", "wallet_genkey_cli_test", "-y")
-	if err != nil {
-		t.Error(err)
-	}else{
-		t.Log(string(walletGenKeyRes))
-		assert.True(t, strings.Contains(string(walletGenKeyRes), "private key"))
-		assert.True(t, strings.Contains(string(walletGenKeyRes), "public key"))
-		assert.True(t, strings.Contains(string(walletGenKeyRes), "address"))
-		t.Log("wallet genkey successfully")
-	}
-
-	// wait for status changed
-	time.Sleep(2 * time.Second)
-}
-
-func TestRunWalletGetbalance(t *testing.T) {
-
-	// user login at first
-	_, err := lc.Run( "user", "login", "--email", CorrectUserEmail, "--password", CorrectPassword)
-	if err != nil {
-		t.Error(err)
-	}
-
-	// wallet genkey for wallet balance test
 	walletGenKeyRes, err := lc.Run( "wallet", "genkey", "wallet_genkey_cli_test", "-f")
 	if err != nil {
 		t.Error(err)
@@ -80,4 +56,4 @@ func TestRunWalletGetbalance(t *testing.T) {
 
 	// wait for status changed
 	time.Sleep(2 * time.Second)
-}
+}*/
