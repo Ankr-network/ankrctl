@@ -118,6 +118,7 @@ func RunChartUpload(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 
@@ -190,6 +191,7 @@ func RunChartList(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
@@ -248,6 +250,7 @@ func RunChartDetail(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
@@ -301,6 +304,7 @@ func RunChartSaveas(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 
@@ -390,6 +394,7 @@ func RunChartDownload(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 
@@ -477,6 +482,7 @@ func RunChartDelete(c *CmdConfig) error {
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("Did not connect: %v", err)
+			return nil
 		}
 
 		defer conn.Close()

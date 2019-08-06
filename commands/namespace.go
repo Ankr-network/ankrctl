@@ -105,6 +105,7 @@ func RunNamespaceCreate(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 
@@ -216,6 +217,7 @@ func RunNamespaceList(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
@@ -269,6 +271,7 @@ func RunNamespaceUpdate(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 
@@ -366,6 +369,7 @@ func RunNamespaceDelete(c *CmdConfig) error {
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("Did not connect: %v", err)
+			return nil
 		}
 
 		defer conn.Close()

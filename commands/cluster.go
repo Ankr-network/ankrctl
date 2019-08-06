@@ -95,6 +95,7 @@ func RunClusterList(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 	dcMgr := gwdcmgr.NewDCAPIClient(conn)
@@ -147,6 +148,7 @@ func RunNetworkInfo(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 

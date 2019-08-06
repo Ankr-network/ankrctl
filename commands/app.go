@@ -223,6 +223,7 @@ func RunAppCreate(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Did not connect: %v", err)
+		return nil
 	}
 
 	defer conn.Close()
@@ -294,6 +295,7 @@ func RunAppPurge(c *CmdConfig) error {
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
 			fmt.Fprintf(os.Stdout, "Did not connect: %v", err)
+			return nil
 		}
 		defer conn.Close()
 		appClient := gwtaskmgr.NewAppMgrClient(conn)
@@ -350,6 +352,7 @@ func RunAppCancel(c *CmdConfig) error {
 		conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("Did not connect: %v", err)
+			return nil
 		}
 
 		defer conn.Close()
@@ -402,6 +405,7 @@ func RunAppList(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 
@@ -441,6 +445,7 @@ func RunAppDetail(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		fmt.Fprintf(os.Stdout, "Did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 
@@ -476,6 +481,7 @@ func RunAppOverview(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Did not connect: %v", err)
+		return nil
 	}
 	defer conn.Close()
 
@@ -542,6 +548,7 @@ func RunAppUpdate(c *CmdConfig) error {
 	conn, err := grpc.Dial(url+port, grpc.WithInsecure())
 	if err != nil {
 		fmt.Fprintf(os.Stdout, "Did not connect: %v", err.Error())
+		return nil
 	}
 	defer conn.Close()
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
