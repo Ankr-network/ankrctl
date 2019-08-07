@@ -94,7 +94,6 @@ jobs:
               make build_lin_dev
             else
               make build_lin_dev
-            fi
 
       - run:
           name: Test
