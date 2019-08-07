@@ -83,9 +83,6 @@ jobs:
           name: dep ensure
           command: dep ensure --update
       - run:
-          name:
-          command: make build_lin
-      - run:
           name: make test file
           command: |
             Test_BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
