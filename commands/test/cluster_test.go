@@ -4,7 +4,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestRunClusterList(t *testing.T) {
@@ -27,8 +26,6 @@ func TestRunClusterList(t *testing.T) {
 		t.Log("list clusters successfully")
 	}
 
-	// wait for status changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunNetworkInfo(t *testing.T) {
@@ -54,7 +51,5 @@ func TestRunNetworkInfo(t *testing.T) {
 		t.Log("get network infos successfully")
 	}
 
-	// wait for status changed
-	time.Sleep(2 * time.Second)
 }
 

@@ -4,7 +4,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestRunWalletKeylist(t *testing.T) {
@@ -27,8 +26,6 @@ func TestRunWalletKeylist(t *testing.T) {
 		t.Log("list wallet successfully")
 	}
 
-	// wait for status changed
-	time.Sleep(2 * time.Second)
 }
 
 /*func TestRunWalletGenkey(t *testing.T) {

@@ -31,8 +31,6 @@ func TestRunChartList(t *testing.T) {
 	assert.True(t, strings.Contains(string(chartListRes), "Repo"))
 	}
 
-	// wait for status changed
-	time.Sleep(2 * time.Second)
 }
 
 
@@ -55,8 +53,6 @@ func TestRunChartDownload(t *testing.T) {
 		t.Log("download chart successfully")
 	}
 
-	// wait for status changed
-	time.Sleep(2 * time.Second)
 }
 
 
@@ -89,8 +85,6 @@ func TestRunChartUpload(t *testing.T) {
 	// delete the chart uploaded
 	lc.Run("chart", "delete", chartUploadName, "--delete-version", chartUploadVersion, "-f")
 
-	// wait for status changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunChartDelete(t *testing.T) {
@@ -120,8 +114,6 @@ func TestRunChartDelete(t *testing.T) {
 		assert.True(t, strings.Contains(string(chartDeleteRes), "success"))
 	}
 
-	// wait for status changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunChartDetail(t *testing.T) {
@@ -142,10 +134,8 @@ func TestRunChartDetail(t *testing.T) {
 		assert.True(t, strings.Contains(string(chartDetailRes), "Repo"))
 	}
 
-	// wait for status changed
-	time.Sleep(2 * time.Second)
-
-	// need a break, sleep 60s
+	// need a break, sleep
+	t.Log("need a break, sleep")
 	time.Sleep(40 * time.Second)
 
 }

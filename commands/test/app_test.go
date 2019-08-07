@@ -47,7 +47,7 @@ func TestRunAppCreate(t *testing.T) {
 	}
 
 	// wait for statues changed
-	time.Sleep(15 * time.Second)
+	time.Sleep(10 * time.Second)
 
 	// purge the app created
 	lc.Run("app", "purge", app_id, "-f")
@@ -57,9 +57,6 @@ func TestRunAppCreate(t *testing.T) {
 
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
-
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 
 
 	// case 2: create app with namespace at the same time
@@ -76,15 +73,12 @@ func TestRunAppCreate(t *testing.T) {
 		assert.True(t, len(app_id_1) > 0)
 	}
 
-
 	// wait for statues changed
 	time.Sleep(10 * time.Second)
 
 	// purge the app created
 	lc.Run("app", "purge", app_id_1, "-f")
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunAppCancel(t *testing.T) {
@@ -122,9 +116,6 @@ func TestRunAppCancel(t *testing.T) {
 		assert.True(t, strings.Contains(string(appCancelRes), "success"))
 	}
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
-
 	// purge the app created
 	lc.Run("app", "purge", app_id, "-f")
 
@@ -133,10 +124,6 @@ func TestRunAppCancel(t *testing.T) {
 
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
-
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
-
 }
 
 func TestRunAppPurge(t *testing.T) {
@@ -180,8 +167,6 @@ func TestRunAppPurge(t *testing.T) {
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 
 
@@ -241,8 +226,6 @@ func TestRunAppDetail(t *testing.T) {
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 func TestRunAppList(t *testing.T) {
 
@@ -263,8 +246,6 @@ func TestRunAppList(t *testing.T) {
 		assert.True(t, strings.Contains(string(appListRes), "Name"))
 	}
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunAppOverview(t *testing.T) {
@@ -314,8 +295,6 @@ func TestRunAppOverview(t *testing.T) {
 	// cancel the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunAppUpdate(t *testing.T) {
@@ -341,7 +320,7 @@ func TestRunAppUpdate(t *testing.T) {
 	t.Log(app_id)
 
 	// wait for status changed
-	time.Sleep(15 * time.Second)
+	time.Sleep(10 * time.Second)
 
 	// check
 	Res, _ := lc.Run("app", "list")
@@ -371,8 +350,5 @@ func TestRunAppUpdate(t *testing.T) {
 
 	// delete the chart upload
 	lc.Run("chart", "delete", chartUploadName, "--delete-version", "6.6.6", "-f")
-
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 
 }

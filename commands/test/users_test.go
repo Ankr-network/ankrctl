@@ -103,7 +103,8 @@ func TestRunUserDetail(t *testing.T) {
 
 func TestRunUserUpdate(t *testing.T) {
 
-	// need a break, sleep 45s
+	// need a break, sleep
+	t.Log("need a break, sleep")
 	time.Sleep(45 * time.Second)
 
 	// user login at first

@@ -41,8 +41,6 @@ func TestRunNamespaceCreate(t *testing.T) {
 	// delete the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunNamespaceUpdate(t *testing.T) {
@@ -77,13 +75,12 @@ func TestRunNamespaceUpdate(t *testing.T) {
 	// delete the namespace created
 	lc.Run("namespace", "delete", test_ns_id, "-f")
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunNamespaceDelete(t *testing.T) {
 
-	// need a break, sleep 60s
+	// need a break, sleep
+	t.Log("need a break, sleep")
 	time.Sleep(30 * time.Second)
 
 	// user login at first
@@ -111,8 +108,6 @@ func TestRunNamespaceDelete(t *testing.T) {
 	t.Log("delete namespace successfully")
 	}
 
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 
 func TestRunNamespaceList(t *testing.T) {
@@ -133,8 +128,5 @@ func TestRunNamespaceList(t *testing.T) {
 	assert.True(t, strings.Contains(string(nsListRes), "Name"))
 	assert.True(t, strings.Contains(string(nsListRes), "ID"))
 	}
-
-	// wait for statues changed
-	time.Sleep(2 * time.Second)
 }
 
