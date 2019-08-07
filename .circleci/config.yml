@@ -103,7 +103,7 @@ jobs:
             fi
             export Test_File
 
-            $Test_File
+            ${Test_File}
 
       - run:
           name: Test
