@@ -86,7 +86,6 @@ jobs:
           name: make test file
           command: |
             Test_BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-            Test_File = ""
             if [[ ($Test_BRANCH_NAME == "master") ]]
             then
               make build_lin_stage
