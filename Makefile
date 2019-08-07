@@ -42,7 +42,7 @@ build_lin_dev: GOOS=linux
 build_lin_dev: GOARCH=amd64
 build_lin_dev: GOEXE=ankrctl_$(GOOS)_$(GOARCH)
 build_lin_dev:
-	@echo "Building linux executable"
+	@echo "Building linux executable dev"
 	CGO_ENABLED=0 \
         GOOS=$(GOOS) \
         GOARCH=$(GOARCH) \
@@ -58,7 +58,7 @@ build_lin_stage: GOOS=linux
 build_lin_stage: GOARCH=amd64
 build_lin_stage: GOEXE=ankrctl_$(GOOS)_$(GOARCH)
 build_lin_stage:
-	@echo "Building linux executable"
+	@echo "Building linux executable stage"
 	CGO_ENABLED=0 \
         GOOS=$(GOOS) \
         GOARCH=$(GOARCH) \
@@ -73,7 +73,7 @@ build_lin_prod: GOOS=linux
 build_lin_prod: GOARCH=amd64
 build_lin_prod: GOEXE=ankrctl_$(GOOS)_$(GOARCH)
 build_lin_prod:
-	@echo "Building linux executable"
+	@echo "Building linux executable prod"
 	CGO_ENABLED=0 \
         GOOS=$(GOOS) \
         GOARCH=$(GOARCH) \
