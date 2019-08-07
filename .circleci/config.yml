@@ -71,6 +71,8 @@ jobs:
               docker push ankrnetwork/ankrctl:latest
             fi
 
+
+
   test:
     docker:
       - image: circleci/golang:1.10
@@ -81,8 +83,31 @@ jobs:
           name: dep ensure
           command: dep ensure --update
       - run:
-          name: make dev test file
+          name:
           command: make build_lin
+      - run:
+          name: make test file
+          command: |
+            Test_BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+            Test_File = ""
+            if [[ ($Test_BRANCH_NAME == "master") ]]
+            then
+              Test_BRANCH_NAME="stage"
+              Test_File = make build_lin_stage
+
+            elif [[ ($Test_BRANCH_NAME == "develop") ]]
+            then
+              Test_BRANCH_NAME="dev"
+              Test_File = make build_lin_dev
+
+            else
+              Test_BRANCH_NAME="feat"
+              Test_File = make build_lin_dev
+            fi
+            export Test_File
+
+            $Test_File
+
       - run:
           name: Test
           command: |
