@@ -89,21 +89,15 @@ jobs:
             Test_File = ""
             if [[ ($Test_BRANCH_NAME == "master") ]]
             then
-              Test_BRANCH_NAME="stage"
-              Test_File = make build_lin_stage
+              make build_lin_stage
 
             elif [[ ($Test_BRANCH_NAME == "develop") ]]
             then
-              Test_BRANCH_NAME="dev"
-              Test_File = make build_lin_dev
+              make build_lin_dev
 
             else
-              Test_BRANCH_NAME="feat"
-              Test_File = make build_lin_dev
+              make build_lin_dev
             fi
-            export Test_File
-
-            ${Test_File}
 
       - run:
           name: Test
