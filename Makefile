@@ -37,8 +37,8 @@ build_lin:
 	@echo "Building linux executable"
 	@$(build)
 
-	"make build_lin_dev"
-build_lin_dev: GOOS=linux
+
+build_lin_dev: GOOS=darwin
 build_lin_dev: GOARCH=amd64
 build_lin_dev: GOEXE=ankrctl_$(GOOS)_$(GOARCH)
 build_lin_dev:
@@ -53,8 +53,7 @@ build_lin_dev:
         cmd/ankrctl/main.go
 
 
-	"make build_lin_stage"
-build_lin_stage: GOOS=linux
+build_lin_stage: GOOS=darwin
 build_lin_stage: GOARCH=amd64
 build_lin_stage: GOEXE=ankrctl_$(GOOS)_$(GOARCH)
 build_lin_stage:
@@ -68,7 +67,7 @@ build_lin_stage:
         -o build/$(GOEXE) \
         cmd/ankrctl/main.go
 
-	"make build_lin_prod"
+
 build_lin_prod: GOOS=linux
 build_lin_prod: GOARCH=amd64
 build_lin_prod: GOEXE=ankrctl_$(GOOS)_$(GOARCH)
@@ -82,9 +81,6 @@ build_lin_prod:
         -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=$(CLIENT_URL) -X github.com/Ankr-network/dccn-cli/commands.tendermintURL=$(ANKR_CHAIN_URL)" \
         -o build/$(GOEXE) \
         cmd/ankrctl/main.go
-
-
-
 
 clean:
 	@echo "Cleaning up all the builds"
