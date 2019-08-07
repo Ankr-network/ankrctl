@@ -82,18 +82,19 @@ jobs:
           name: make test file
           command: |
             BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
             if [[ ($BRANCH_NAME == "master") ]]
             then
-              BRANCH_NAME="stage"
-              make build_lin_stage
+              make build_lin_prod
+
             elif [[ ($BRANCH_NAME == "develop") ]]
             then
-              BRANCH_NAME="dev"
-              make build_lin_dev
+              make build_lin_stage
+
             else
-              BRANCH_NAME="feat"
               make build_lin_dev
             fi
+
       - run:
           name: Test
           command: |
