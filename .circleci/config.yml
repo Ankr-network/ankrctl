@@ -35,6 +35,8 @@ jobs:
       - run:
           name: "Test, Build & Push Docker Image"
           command: |
+            export GO111MODULE=on
+            go mod download
             BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
             SHA1_SHORT=$(git rev-parse --short HEAD)
             DATE=`date +%Y%m%d%H%M%S`
