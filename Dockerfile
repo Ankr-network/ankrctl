@@ -15,7 +15,7 @@ RUN chmod 700 /root/.ssh
 RUN chmod 600 /root/.ssh/id_rsa
 
 WORKDIR $GOPATH/src/github.com/Ankr-network/ankrctl/
-COPY Gopkg.toml Gopkg.lock ./
+#COPY Gopkg.toml Gopkg.lock ./
 #RUN dep ensure -vendor-only
 RUN export GO111MODULE=on
 COPY . $GOPATH/src/github.com/Ankr-network/ankrctl/
