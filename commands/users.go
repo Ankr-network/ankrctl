@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/ssh/terminal"
 
-	ankrctl "github.com/Ankr-network/dccn-cli"
+	ankrctl "github.com/Ankr-network/ankrctl"
 
 	"github.com/spf13/cobra"
 

@@ -14,7 +14,7 @@ limitations under the License.
 package main
 
 import (
-	"github.com/Ankr-network/dccn-cli/commands"
+	"github.com/Ankr-network/ankrctl/commands"
 	"log"
 )
 

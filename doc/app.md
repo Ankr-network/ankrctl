@@ -25,9 +25,8 @@ app-6913b6e1-1c14-4096-98b7-d8a9d560b5a1    testwp1    stable        wordpress  
 ## List App Detail:
 
 ```
-$ ankrctl app detail 
+$ ankrctl app detail app-fb5f9f2c-40d4-4804-9e33-ee77beddeed5
 
-app detail app-fb5f9f2c-40d4-4804-9e33-ee77beddeed5
 Application app-fb5f9f2c-40d4-4804-9e33-ee77beddeed5 resource detail:
  LAST DEPLOYED: Sat May 11 19:47:46 2019
 NAMESPACE: ns-1d8f3554-b678-4271-80b7-f72ab15e4f34
@@ -80,7 +79,7 @@ NOTES:
 ## Get App Overview:
 
 ```
-$ ankrctl compute app overview
+$ ankrctl app overview
 Cluster Count:		2
 Namespace Count:	2
 Network Count:		2
@@ -98,21 +97,21 @@ Storage Usage:	7.5
 ## Update a App:
 
 ```
-$ ankrctl compute app update app-fb5f9f2c-40d4-4804-9e33-ee77beddeed5 --app-name testwp5 --update-version 5.7.1
+$ ankrctl app update app-fb5f9f2c-40d4-4804-9e33-ee77beddeed5 --app-name testwp5 --update-version 5.7.1
 App app-fb5f9f2c-40d4-4804-9e33-ee77beddeed5 update success.
 ```
 
 ## Cancel a App:
 
 ```
-$ ankrctl compute app cancel app-be31f9d3-858b-44d5-b314-68ea6a5a4582
+$ ankrctl app cancel app-be31f9d3-858b-44d5-b314-68ea6a5a4582
 Warning: Are you sure you want to Cancel 1 app(s) (y/N) ? y
 App app-be31f9d3-858b-44d5-b314-68ea6a5a4582 cancel success.
 ```
 ## Purge a App:
 
 ```
-$ ankrctl compute app purge app-be31f9d3-858b-44d5-b314-68ea6a5a4582
+$ ankrctl app purge app-be31f9d3-858b-44d5-b314-68ea6a5a4582
 Warning: Are you sure you want to Purge 1 app(s) (y/N) ? y
 App app-be31f9d3-858b-44d5-b314-68ea6a5a4582 purge success.
 ```

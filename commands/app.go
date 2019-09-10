@@ -24,8 +24,8 @@ import (
 
 	"context"
 
-	ankrctl "github.com/Ankr-network/dccn-cli"
-	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	ankrctl "github.com/Ankr-network/ankrctl"
+	"github.com/Ankr-network/ankrctl/commands/displayers"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwtaskmgr "github.com/Ankr-network/dccn-common/protos/gateway/taskmgr/v1"
 	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"

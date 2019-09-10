@@ -16,7 +16,7 @@ package displayers
 import (
 	"strings"
 
-	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/ankrctl"
 )
 
 func handleColumns(ns string, config ankrctl.Config) ([]string, error) {

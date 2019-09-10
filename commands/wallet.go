@@ -28,8 +28,8 @@ import (
 	"syscall"
 	"time"
 
-	ankrctl "github.com/Ankr-network/dccn-cli"
-	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	ankrctl "github.com/Ankr-network/ankrctl"
+	"github.com/Ankr-network/ankrctl/commands/displayers"
 	ankr_const "github.com/Ankr-network/dccn-common"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
@@ -156,7 +156,7 @@ func RunWalletGenkey(c *CmdConfig) error {
 	if AskForConfirm(fmt.Sprintf(`please record and backup keystore once it is generated, we don’t store your private key! 
 	 type 'yes' to confirm that you understood the result of this action: `)) == nil {
 
-		fmt.Println("\ngenerating keys...\n")
+		fmt.Println("\ngenerating keys...")
 
 		privateKey, publicKey, address := wallet.GenerateKeys()
 

@@ -81,7 +81,7 @@ func EncryptDataV3(data, auth []byte, scryptN, scryptP int) (CryptoJSON, error) 
 
 	salt := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
-		panic("reading from crypto/rand failed: " + err.Error())
+		panic("reading from crypto/rand failed: " + err	.Error())
 	}
 	derivedKey, err := scrypt.Key(auth, salt, scryptN, scryptR, scryptP, scryptDKLen)
 	if err != nil {

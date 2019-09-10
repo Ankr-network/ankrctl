@@ -24,8 +24,8 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/helm/pkg/chartutil"
 
-	ankrctl "github.com/Ankr-network/dccn-cli"
-	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	ankrctl "github.com/Ankr-network/ankrctl"
+	"github.com/Ankr-network/ankrctl/commands/displayers"
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
 
