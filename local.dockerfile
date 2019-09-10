@@ -6,17 +6,17 @@ RUN apk update && \
     apk add openssh
     
 RUN go get github.com/golang/dep/cmd/dep
-WORKDIR $GOPATH/src/github.com/Ankr-network/dccn-cli/
-COPY . $GOPATH/src/github.com/Ankr-network/dccn-cli/
+WORKDIR $GOPATH/src/github.com/Ankr-network/ankrctl/
+COPY . $GOPATH/src/github.com/Ankr-network/ankrctl/
 
 RUN CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
     go build -a \
     -installsuffix cgo \
-    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=${URL_BRANCH}" \
+    -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=${URL_BRANCH}" \
     -o /go/bin/ankrctl \
-    $GOPATH/src/github.com/Ankr-network/dccn-cli/cmd/ankrctl/main.go
+    $GOPATH/src/github.com/Ankr-network/ankrctl/cmd/ankrctl/main.go
 
 FROM scratch
 COPY --from=builder /go/bin/ankrctl /go/bin/ankrctl

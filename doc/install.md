@@ -10,7 +10,7 @@ There are three ways to install and run `ankrctl`:
 If you have a Go environment configured, you can install the development version of `ankrctl` from the source.(below procedure tested in go version `go1.11.2 darwin/amd64`)
 
 ```
-git clone https://github.com/Ankr-network/dccn-cli.git $GOPATH/src/github.com/Ankr-network/dccncli
+git clone https://github.com/Ankr-network/ankrctl.git $GOPATH/src/github.com/Ankr-network/ankrctl
 cd $GOPATH/src/github.com/Ankr-network/dccncli
 dep ensure --vendor-only
 go build -o akrcli cmd/dccncli/main.go

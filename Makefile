@@ -8,7 +8,7 @@ build = CGO_ENABLED=0 \
     GOARCH=$(GOARCH) \
     go build -a \
     -installsuffix cgo \
-    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=$(CLIENT_URL) -X github.com/Ankr-network/dccn-cli/commands.tendermintURL=$(ANKR_CHAIN_URL)" \
+    -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=$(CLIENT_URL) -X github.com/Ankr-network/ankrctl/commands.tendermintURL=$(ANKR_CHAIN_URL)" \
     -o build/$(GOEXE) \
     cmd/ankrctl/main.go
 

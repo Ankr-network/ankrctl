@@ -244,6 +244,7 @@ func RunNamespaceList(c *CmdConfig) error {
 	return c.Display(item)
 }
 
+
 // RunNamespaceUpdate update the namespace setting.
 func RunNamespaceUpdate(c *CmdConfig) error {
 
