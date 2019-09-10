@@ -14,10 +14,10 @@ RUN chmod go-w /root
 RUN chmod 700 /root/.ssh
 RUN chmod 600 /root/.ssh/id_rsa
 
-WORKDIR $GOPATH/src/github.com/Ankr-network/dccn-cli/
+WORKDIR $GOPATH/src/github.com/Ankr-network/ankrctl/
 COPY Gopkg.toml Gopkg.lock ./
 RUN dep ensure -vendor-only
-COPY . $GOPATH/src/github.com/Ankr-network/dccn-cli/
+COPY . $GOPATH/src/github.com/Ankr-network/ankrctl/
 
 RUN echo ${URL_BRANCH}
 RUN echo ${TENDERMINT_URL}
@@ -27,7 +27,7 @@ RUN CGO_ENABLED=0 \
     GOARCH=amd64 \
     go build -a \
     -installsuffix cgo \
-    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=${URL_BRANCH} -X github.com/Ankr-network/dccn-cli/commands.tendermintURL=${TENDERMINT_URL} -X github.com/Ankr-network/dccn-cli/commands.tendermintPort=${TENDERMINT_PORT}" \
+    -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=${URL_BRANCH} -X github.com/Ankr-network/ankrctl/commands.tendermintURL=${TENDERMINT_URL} -X github.com/Ankr-network/ankrctl/commands.tendermintPort=${TENDERMINT_PORT}" \
     -o /go/bin/ankrctl \
     cmd/ankrctl/main.go
 

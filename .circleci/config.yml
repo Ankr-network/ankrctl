@@ -7,7 +7,7 @@ jobs:
     docker:
       # Build in Go base container
       - image: circleci/golang:1.10
-    working_directory: /go/src/github.com/Ankr-network/dccn-cli
+    working_directory: /go/src/github.com/Ankr-network/ankrctl
     steps:
       - checkout
       - setup_remote_docker
