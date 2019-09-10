@@ -6,7 +6,6 @@ RUN apk update && \
     apk add git && \
     apk add --update bash && \
     apk add openssh
-#RUN go get github.com/golang/dep/cmd/dep
 
 WORKDIR /ankrctl
 COPY . /ankrctl
