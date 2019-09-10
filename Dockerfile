@@ -17,13 +17,14 @@ RUN chmod 600 /root/.ssh/id_rsa
 WORKDIR $GOPATH/src/github.com/Ankr-network/ankrctl/
 #COPY Gopkg.toml Gopkg.lock ./
 #RUN dep ensure -vendor-only
-RUN export GO111MODULE=on
-RUN go mod download
+#RUN export GO111MODULE=on
+#RUN go mod download
 COPY . $GOPATH/src/github.com/Ankr-network/ankrctl/
 
 RUN echo ${URL_BRANCH}
 RUN echo ${TENDERMINT_URL}
 RUN echo ${TENDERMINT_PORT}
+RUN echo ${GO111MODULE}
 RUN CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
