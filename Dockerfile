@@ -1,4 +1,4 @@
-FROM golang:1.10-alpine3.8 as builder
+FROM golang:1.12-alpine as builder
 ARG URL_BRANCH
 ARG TENDERMINT_URL
 ARG TENDERMINT_PORT
@@ -6,7 +6,7 @@ RUN apk update && \
     apk add git && \
     apk add --update bash && \
     apk add openssh
-RUN go get github.com/golang/dep/cmd/dep
+#RUN go get github.com/golang/dep/cmd/dep
 
 COPY id_rsa /root/.ssh/
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -16,7 +16,8 @@ RUN chmod 600 /root/.ssh/id_rsa
 
 WORKDIR $GOPATH/src/github.com/Ankr-network/ankrctl/
 COPY Gopkg.toml Gopkg.lock ./
-RUN dep ensure -vendor-only
+#RUN dep ensure -vendor-only
+RUN export GO111MODULE=on
 COPY . $GOPATH/src/github.com/Ankr-network/ankrctl/
 
 RUN echo ${URL_BRANCH}

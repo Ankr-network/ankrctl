@@ -6,7 +6,7 @@ jobs:
   build:
     docker:
       # Build in Go base container
-      - image: circleci/golang:1.10
+      - image: circleci/golang:1.12
     working_directory: /go/src/github.com/Ankr-network/ankrctl
     steps:
       - checkout
@@ -21,7 +21,8 @@ jobs:
       - run:
           name: Set dependency
           command: |
-            dep ensure --vendor-only
+            export GO111MODULE=on
+            go mod download
       - run:
           name: Install AWSCLI
           command: |
