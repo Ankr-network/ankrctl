@@ -11,9 +11,9 @@ If you have a Go environment configured, you can install the development version
 
 ```
 git clone https://github.com/Ankr-network/ankrctl.git $GOPATH/src/github.com/Ankr-network/ankrctl
-cd $GOPATH/src/github.com/Ankr-network/dccncli
-dep ensure --vendor-only
-go build -o akrcli cmd/dccncli/main.go
+cd $GOPATH/src/github.com/Ankr-network/ankrctl
+export GO111MODULE=on  
+go build -o akrcli cmd/ankrctl
 ./ankrctl <any_ankrctl_command>
 ```
 
@@ -45,20 +45,5 @@ docker run -it ankrnetwork/ankrctl
 
 ## Building and dependencies
 
-`akrcli`'s dependencies are managed with [`dep`](https://github.com/golang/dep). 
-To add dependencies, use [`dep ensure -add github.com/foo/bar`](https://github.com/golang/dep#adding-a-dependency)
-
-* Initialize the dependency in vendor folder and create `Gopkg.toml` and `Gopkg.lock`:
-```
-dep init
-```
-
-* If any dependency like branch and version changed in `Gopkg.toml`, update the `Gopkg.lock` and vendor:
-```
-dep ensure -update
-```
-
-* Checking the dependency:
-```
-dep status
-```
+`akrcli`'s dependencies are managed with `go module`, make sure `GO111MODULE` environment variable is set  `on`. 
+To download dependencies, use `go mod download` 

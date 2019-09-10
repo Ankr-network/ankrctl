@@ -3,6 +3,8 @@
 CLIENT_URL=client.dccn.ankr.com
 ANKR_CHAIN_URL=https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com
 
+export GO111MODULE=on
+
 build = CGO_ENABLED=0 \
     GOOS=$(GOOS) \
     GOARCH=$(GOARCH) \
