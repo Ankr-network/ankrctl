@@ -18,11 +18,11 @@ jobs:
           name: Copy ssh key in the circleci build context
           command: |
             cp ${HOME}/.ssh/id_rsa id_rsa
-      - run:
-          name: Set dependency
-          command: |
-            export GO111MODULE=on
-            go mod download
+#      - run:
+#          name: Set dependency
+#          command: |
+#            export GO111MODULE=on
+#            go mod download
       - run:
           name: Install AWSCLI
           command: |

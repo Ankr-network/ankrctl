@@ -23,6 +23,7 @@ COPY . $GOPATH/src/github.com/Ankr-network/ankrctl/
 RUN echo ${URL_BRANCH}
 RUN echo ${TENDERMINT_URL}
 RUN echo ${TENDERMINT_PORT}
+RUN go mod download
 RUN CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
