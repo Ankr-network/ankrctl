@@ -8,28 +8,11 @@ RUN apk update && \
     apk add openssh
 #RUN go get github.com/golang/dep/cmd/dep
 
-COPY id_rsa /root/.ssh/
-RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN chmod go-w /root
-RUN chmod 700 /root/.ssh
-RUN chmod 600 /root/.ssh/id_rsa
+WORKDIR /ankrctl
+COPY . /ankrctl
 
-WORKDIR $GOPATH/src/github.com/Ankr-network/ankrctl/
-#COPY Gopkg.toml Gopkg.lock ./
-#RUN dep ensure -vendor-only
-#RUN export GO111MODULE=on
-#RUN go mod download
-COPY . $GOPATH/src/github.com/Ankr-network/ankrctl/
-
-RUN echo ${URL_BRANCH}
-RUN echo ${TENDERMINT_URL}
-RUN echo ${TENDERMINT_PORT}
-RUN echo ${GO111MODULE}
-RUN CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64 \
+RUN GOPROXY=https://goproxy.cn CGO_ENABLED=0 \
     go build -a \
-    -installsuffix cgo \
     -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=${URL_BRANCH} -X github.com/Ankr-network/ankrctl/commands.tendermintURL=${TENDERMINT_URL} -X github.com/Ankr-network/ankrctl/commands.tendermintPort=${TENDERMINT_PORT}" \
     -o /go/bin/ankrctl \
     cmd/ankrctl/main.go
