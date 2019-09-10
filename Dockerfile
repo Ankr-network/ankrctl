@@ -17,13 +17,14 @@ RUN chmod 600 /root/.ssh/id_rsa
 WORKDIR $GOPATH/src/github.com/Ankr-network/ankrctl/
 #COPY Gopkg.toml Gopkg.lock ./
 #RUN dep ensure -vendor-only
-RUN export GO111MODULE=on
 COPY . $GOPATH/src/github.com/Ankr-network/ankrctl/
+
+RUN export GO111MODULE=on
+RUN go mod download
 
 RUN echo ${URL_BRANCH}
 RUN echo ${TENDERMINT_URL}
 RUN echo ${TENDERMINT_PORT}
-RUN go mod download
 RUN CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
@@ -31,7 +32,7 @@ RUN CGO_ENABLED=0 \
     -installsuffix cgo \
     -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=${URL_BRANCH} -X github.com/Ankr-network/ankrctl/commands.tendermintURL=${TENDERMINT_URL} -X github.com/Ankr-network/ankrctl/commands.tendermintPort=${TENDERMINT_PORT}" \
     -o /go/bin/ankrctl \
-    cmd/ankrctl/main.go
+    cmd/ankrctl
 
 FROM alpine:3.7
 RUN  apk update && \
