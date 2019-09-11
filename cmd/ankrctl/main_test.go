@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	ankrctl "github.com/Ankr-network/dccn-cli"
+	ankrctl "github.com/Ankr-network/ankrctl"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	"github.com/stretchr/testify/assert"
 )

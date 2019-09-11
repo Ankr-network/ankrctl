@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	"github.com/Ankr-network/ankrctl/commands/displayers"
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
 

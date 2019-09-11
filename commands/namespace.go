@@ -21,8 +21,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	ankrctl "github.com/Ankr-network/dccn-cli"
-	"github.com/Ankr-network/dccn-cli/commands/displayers"
+	ankrctl "github.com/Ankr-network/ankrctl"
+	"github.com/Ankr-network/ankrctl/commands/displayers"
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
 
@@ -243,6 +243,7 @@ func RunNamespaceList(c *CmdConfig) error {
 	item := &displayers.Namespace{Namespaces: matchedList}
 	return c.Display(item)
 }
+
 
 // RunNamespaceUpdate update the namespace setting.
 func RunNamespaceUpdate(c *CmdConfig) error {

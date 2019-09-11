@@ -40,7 +40,7 @@ updated user test12345@mailinator.com wallet address: 219B0A5F896B7A1949128B8F51
 ## List Wallet Keystore
 You can get address and public key from keystore list.
 ```
-$ ankrctl wallet listkey
+$ ankrctl wallet keylist
 Name             Address                                           Public Key
 testkey          AF9BAD386D0F3A78689AC49563F248ECC3A22E956C65B8    B+ajlpUMxgaKPiOD7aANbPH2wno5JifFLKJUhpHZNvg=
 testkey1         A0B4B94FF2453DD14402D7856B76CEA8BBCDA3A868A632    pkHtcKIOOkKG0GVl3mpDAsv3bbFdrxxnDhhzHVTSi1k=

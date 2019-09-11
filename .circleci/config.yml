@@ -6,8 +6,8 @@ jobs:
   build:
     docker:
       # Build in Go base container
-      - image: circleci/golang:1.10
-    working_directory: /go/src/github.com/Ankr-network/dccn-cli
+      - image: circleci/golang:1.12
+    working_directory: /go/src/github.com/Ankr-network/ankrctl
     steps:
       - checkout
       - setup_remote_docker
@@ -18,10 +18,6 @@ jobs:
           name: Copy ssh key in the circleci build context
           command: |
             cp ${HOME}/.ssh/id_rsa id_rsa
-      - run:
-          name: Set dependency
-          command: |
-            dep ensure --vendor-only
       - run:
           name: Install AWSCLI
           command: |

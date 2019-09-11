@@ -13,7 +13,7 @@ func TestAskForConfirmYes(t *testing.T) {
 		retrieveUserInput = rui
 	}()
 
-	retrieveUserInput = func(string) (string, error) {
+	retrieveUserInput = func() (string, error) {
 		return "yes", nil
 	}
 
@@ -27,7 +27,7 @@ func TestAskForConfirmNo(t *testing.T) {
 		retrieveUserInput = rui
 	}()
 
-	retrieveUserInput = func(string) (string, error) {
+	retrieveUserInput = func() (string, error) {
 		return "no", nil
 	}
 
@@ -41,7 +41,7 @@ func TestAskForConfirmAny(t *testing.T) {
 		retrieveUserInput = rui
 	}()
 
-	retrieveUserInput = func(string) (string, error) {
+	retrieveUserInput = func() (string, error) {
 		return "some-random-message", nil
 	}
 
@@ -55,7 +55,7 @@ func TestAskForConfirmError(t *testing.T) {
 		retrieveUserInput = rui
 	}()
 
-	retrieveUserInput = func(string) (string, error) {
+	retrieveUserInput = func() (string, error) {
 		return "", fmt.Errorf("test-error")
 	}
 

@@ -22,7 +22,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/Ankr-network/dccn-cli"
+	"github.com/Ankr-network/ankrctl"
 )
 
 var (

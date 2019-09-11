@@ -16,7 +16,6 @@ Available Commands:
   wallet      wallet commands
 
 Flags:
-  -u, --hub-url string        Override default Ankr Hub endpoint
   -h, --help                  help for ankrctl
 
 Use `ankrctl [command] --help` for more information about a command.

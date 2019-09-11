@@ -3,12 +3,14 @@
 CLIENT_URL=client.dccn.ankr.com
 ANKR_CHAIN_URL=https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com
 
+export GO111MODULE=on
+
 build = CGO_ENABLED=0 \
     GOOS=$(GOOS) \
     GOARCH=$(GOARCH) \
     go build -a \
     -installsuffix cgo \
-    -ldflags="-w -s -X github.com/Ankr-network/dccn-cli/commands.clientURL=$(CLIENT_URL) -X github.com/Ankr-network/dccn-cli/commands.tendermintURL=$(ANKR_CHAIN_URL)" \
+    -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=$(CLIENT_URL) -X github.com/Ankr-network/ankrctl/commands.tendermintURL=$(ANKR_CHAIN_URL)" \
     -o build/$(GOEXE) \
     cmd/ankrctl/main.go
 
