@@ -43,7 +43,7 @@ func (d *AppReport) ColMap() map[string]string {
 	return map[string]string{
 		"ID": "ID", "Name": "Name", "ChartRepo": "Chart Repo", "ChartName": "Chart Name",
 		"ChartVersion": "Chart Version", "AppVersion": "App Version", "Namespace": "Namespace",
-		"Cluster": "Cluster", "LastModifyDate": "Last Modify Date", "CreationDate": "Creation Date",
+		"Cluster": "Cluster", "LastModifyDate": "Last Modified Date", "CreationDate": "Creation Date",
 		"Status": "Status", "Event": "Event", "Endpoint": "Endpoint",
 	}
 }

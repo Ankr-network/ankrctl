@@ -40,7 +40,7 @@ import (
 
 var port = ":" + strconv.Itoa(ankr_const.DefaultPort)
 
-var clientURL string
+var clientURL = "CLIENT_URL=client.dccn.ankr.com"
 
 // App creates the app command.
 func appCmd() *Command {

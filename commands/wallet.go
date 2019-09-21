@@ -43,7 +43,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-var tendermintURL string
+var tendermintURL = "https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
 var tendermintPort string
 
 // walletCmd creates the wallet command.
