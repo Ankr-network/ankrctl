@@ -10,11 +10,9 @@ There are three ways to install and run `ankrctl`:
 If you have a Go environment configured, you can install the development version of `ankrctl` from the source.(below procedure tested in go version `go1.11.2 darwin/amd64`)
 
 ```
-git clone https://github.com/Ankr-network/ankrctl.git $GOPATH/src/github.com/Ankr-network/ankrctl
-cd $GOPATH/src/github.com/Ankr-network/ankrctl
-export GO111MODULE=on  
-go build -o akrcli cmd/ankrctl
-./ankrctl <any_ankrctl_command>
+export GO111MODULE=on 
+go get github.com/Ankr-network/ankrctl/cmd/ankrctl
+ankrctl <any_ankrctl_command>
 ```
 
 ## Option 2 — Building with Docker
