@@ -14,7 +14,7 @@ RUN GOPROXY=https://goproxy.cn CGO_ENABLED=0 \
     go build -a \
     -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=${URL_BRANCH} -X github.com/Ankr-network/ankrctl/commands.tendermintURL=${TENDERMINT_URL} -X github.com/Ankr-network/ankrctl/commands.tendermintPort=${TENDERMINT_PORT}" \
     -o /go/bin/ankrctl \
-    cmd/ankrctl/main.go
+    main.go
 
 FROM alpine:3.7
 RUN  apk update && \
