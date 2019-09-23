@@ -16,13 +16,13 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"github.com/Ankr-network/ankrctl/types"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
-	ankrctl "github.com/Ankr-network/ankrctl"
 	"github.com/Ankr-network/ankrctl/commands/displayers"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -236,7 +236,7 @@ func AddStringSliceFlag(cmd *Command, name, shorthand string, def []string, desc
 }
 
 func flagName(cmd *Command, name string) string {
-	parentName := ankrctl.NSRoot
+	parentName := types.NSRoot
 	if cmd.Parent() != nil {
 		parentName = cmd.Parent().Name()
 	}
@@ -245,7 +245,7 @@ func flagName(cmd *Command, name string) string {
 }
 
 func cmdNS(cmd *cobra.Command) string {
-	parentName := ankrctl.NSRoot
+	parentName := types.NSRoot
 	if cmd.Parent() != nil {
 		parentName = cmd.Parent().Name()
 	}
@@ -259,7 +259,7 @@ type CmdRunner func(*CmdConfig) error
 // CmdConfig is a command configuration.
 type CmdConfig struct {
 	NS   string
-	Ankr ankrctl.Config
+	Ankr types.Config
 	Out  io.Writer
 	Args []string
 
@@ -268,7 +268,7 @@ type CmdConfig struct {
 }
 
 // NewCmdConfig creates an instance of a CmdConfig.
-func NewCmdConfig(ns string, dc ankrctl.Config, out io.Writer, args []string) (*CmdConfig, error) {
+func NewCmdConfig(ns string, dc types.Config, out io.Writer, args []string) (*CmdConfig, error) {
 
 	cmdConfig := &CmdConfig{
 		NS:   ns,
@@ -286,12 +286,12 @@ func NewCmdConfig(ns string, dc ankrctl.Config, out io.Writer, args []string) (*
 
 			switch context {
 			case "default":
-				token = viper.GetString(ankrctl.ArgAccessToken)
-				userid = viper.GetString(ankrctl.ArgUserID)
+				token = viper.GetString(types.ArgAccessToken)
+				userid = viper.GetString(types.ArgUserID)
 			default:
 				contexts := viper.GetStringMapString("auth-contexts")
-				userid = contexts[ankrctl.ArgUserID]
-				token = contexts[ankrctl.ArgAccessToken]
+				userid = contexts[types.ArgUserID]
+				token = contexts[types.ArgAccessToken]
 			}
 			return token, userid
 		},
@@ -304,12 +304,12 @@ func NewCmdConfig(ns string, dc ankrctl.Config, out io.Writer, args []string) (*
 
 			switch context {
 			case "default":
-				viper.Set(ankrctl.ArgAccessToken, token)
-				viper.Set(ankrctl.ArgUserID, userid)
+				viper.Set(types.ArgAccessToken, token)
+				viper.Set(types.ArgUserID, userid)
 			default:
 				contexts := viper.GetStringMapString("auth-contexts")
-				contexts[ankrctl.ArgAccessToken] = token
-				contexts[ankrctl.ArgUserID] = userid
+				contexts[types.ArgAccessToken] = token
+				contexts[types.ArgUserID] = userid
 
 				viper.Set("auth-contexts", contexts)
 			}
@@ -344,7 +344,7 @@ func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, desc string, out
 		Run: func(cmd *cobra.Command, args []string) {
 			c, err := NewCmdConfig(
 				cmdNS(cmd),
-				ankrctl.AnkrConfig,
+				types.AnkrConfig,
 				out,
 				args,
 			)
@@ -368,8 +368,8 @@ func cmdBuilderWithInit(parent *Command, cr CmdRunner, cliText, desc string, out
 	if cols := c.fmtCols; cols != nil {
 		formatHelp := fmt.Sprintf("Columns for output in a comma separated list. Possible values: %s",
 			strings.Join(cols, ","))
-		AddStringFlag(c, ankrctl.ArgFormat, "", "", formatHelp)
-		AddBoolFlag(c, ankrctl.ArgNoHeader, "", false, "hide headers")
+		AddStringFlag(c, types.ArgFormat, "", "", formatHelp)
+		AddBoolFlag(c, types.ArgNoHeader, "", false, "hide headers")
 	}
 
 	return c

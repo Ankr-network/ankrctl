@@ -16,6 +16,7 @@ package commands
 import (
 	"bytes"
 	"fmt"
+	"github.com/Ankr-network/ankrctl/types"
 	"io/ioutil"
 	"log"
 	"os"
@@ -24,7 +25,6 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/helm/pkg/chartutil"
 
-	ankrctl "github.com/Ankr-network/ankrctl"
 	"github.com/Ankr-network/ankrctl/commands/displayers"
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
@@ -57,40 +57,40 @@ func chartCmd() *Command {
 	//DCCN-CLI chart upload
 	cmdRunChartUpload := CmdBuilder(cmd, RunChartUpload, "upload <upload-name>", "create chart", Writer,
 		aliasOpt("cr"), docCategories("chart"))
-	AddStringFlag(cmdRunChartUpload, ankrctl.ArgUploadVersionSlug, "", "", "Chart Version", requiredOpt())
-	AddStringFlag(cmdRunChartUpload, ankrctl.ArgUploadFileSlug, "", "", "Chart File", requiredOpt())
+	AddStringFlag(cmdRunChartUpload, types.ArgUploadVersionSlug, "", "", "Chart Version", requiredOpt())
+	AddStringFlag(cmdRunChartUpload, types.ArgUploadFileSlug, "", "", "Chart File", requiredOpt())
 
 	//DCCN-CLI chart list
 	cmdRunChartList := CmdBuilder(cmd, RunChartList, "list [GLOB]", "list chart", Writer,
 		aliasOpt("ls"), displayerType(&displayers.Chart{}), docCategories("chart"))
-	AddStringFlag(cmdRunChartList, ankrctl.ArgListRepoSlug, "", "", "List Repo")
+	AddStringFlag(cmdRunChartList, types.ArgListRepoSlug, "", "", "List Repo")
 
 	//DCCN-CLI chart detail
 	cmdRunChartDetail := CmdBuilder(cmd, RunChartDetail, "detail <detail-name>", "get chart details", Writer,
 		aliasOpt("dt"), docCategories("chart"))
-	AddStringFlag(cmdRunChartDetail, ankrctl.ArgDetailRepoSlug, "", "", "Detail Repo", requiredOpt())
-	AddStringFlag(cmdRunChartDetail, ankrctl.ArgShowVersionSlug, "", "", "Show Version", requiredOpt())
+	AddStringFlag(cmdRunChartDetail, types.ArgDetailRepoSlug, "", "", "Detail Repo", requiredOpt())
+	AddStringFlag(cmdRunChartDetail, types.ArgShowVersionSlug, "", "", "Show Version", requiredOpt())
 
 	//DCCN-CLI chart update
 	cmdRunChartSaveas := CmdBuilder(cmd, RunChartSaveas, "saveas <saveas-name>", "saveas chart", Writer,
 		aliasOpt("ud"), docCategories("chart"))
-	AddStringFlag(cmdRunChartSaveas, ankrctl.ArgSourceRepoSlug, "", "", "Source Repo", requiredOpt())
-	AddStringFlag(cmdRunChartSaveas, ankrctl.ArgSourceVersionSlug, "", "", "Source Version", requiredOpt())
-	AddStringFlag(cmdRunChartSaveas, ankrctl.ArgSourceNameSlug, "", "", "Source Name", requiredOpt())
-	AddStringFlag(cmdRunChartSaveas, ankrctl.ArgSaveasVersionSlug, "", "", "SaveAs Version", requiredOpt())
-	AddStringFlag(cmdRunChartSaveas, ankrctl.ArgValuesYamlSlug, "", "", "Values Yaml File", requiredOpt())
+	AddStringFlag(cmdRunChartSaveas, types.ArgSourceRepoSlug, "", "", "Source Repo", requiredOpt())
+	AddStringFlag(cmdRunChartSaveas, types.ArgSourceVersionSlug, "", "", "Source Version", requiredOpt())
+	AddStringFlag(cmdRunChartSaveas, types.ArgSourceNameSlug, "", "", "Source Name", requiredOpt())
+	AddStringFlag(cmdRunChartSaveas, types.ArgSaveasVersionSlug, "", "", "SaveAs Version", requiredOpt())
+	AddStringFlag(cmdRunChartSaveas, types.ArgValuesYamlSlug, "", "", "Values Yaml File", requiredOpt())
 
 	//DCCN-CLI chart download
 	cmdRunChartDownload := CmdBuilder(cmd, RunChartDownload, "download <download-name>",
 		"download chart", Writer, aliasOpt("dl"), docCategories("chart"))
-	AddStringFlag(cmdRunChartDownload, ankrctl.ArgDownloadRepoSlug, "", "", "Download Repo", requiredOpt())
-	AddStringFlag(cmdRunChartDownload, ankrctl.ArgDownloadVersionSlug, "", "", "Download Version", requiredOpt())
+	AddStringFlag(cmdRunChartDownload, types.ArgDownloadRepoSlug, "", "", "Download Repo", requiredOpt())
+	AddStringFlag(cmdRunChartDownload, types.ArgDownloadVersionSlug, "", "", "Download Version", requiredOpt())
 
 	//DCCN-CLI chart delete
 	cmdRunChartDelete := CmdBuilder(cmd, RunChartDelete, "delete <delete-name>", "delete chart",
 		Writer, aliasOpt("dl"), docCategories("chart"))
-	AddStringFlag(cmdRunChartDelete, ankrctl.ArgDeleteVersionSlug, "", "", "Chart Version", requiredOpt())
-	AddBoolFlag(cmdRunChartDelete, ankrctl.ArgForce, ankrctl.ArgShortForce, false, "Force chart delete")
+	AddStringFlag(cmdRunChartDelete, types.ArgDeleteVersionSlug, "", "", "Chart Version", requiredOpt())
+	AddBoolFlag(cmdRunChartDelete, types.ArgForce, types.ArgShortForce, false, "Force chart delete")
 
 	return cmd
 }
@@ -98,7 +98,7 @@ func chartCmd() *Command {
 // RunChartUpload upload a new chart.
 func RunChartUpload(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -129,13 +129,13 @@ func RunChartUpload(c *CmdConfig) error {
 	uploadChartRequest := &gwtaskmgr.UploadChartRequest{}
 	uploadChartRequest.ChartName = c.Args[0]
 
-	uploadChartRequest.ChartVer, err = c.Ankr.GetString(c.NS, ankrctl.ArgUploadVersionSlug)
+	uploadChartRequest.ChartVer, err = c.Ankr.GetString(c.NS, types.ArgUploadVersionSlug)
 	if err != nil {
 		return err
 	}
 	uploadChartRequest.ChartRepo = "user"
 
-	file, err := c.Ankr.GetString(c.NS, ankrctl.ArgUploadFileSlug)
+	file, err := c.Ankr.GetString(c.NS, types.ArgUploadFileSlug)
 	if err != nil {
 		return err
 	}
@@ -190,7 +190,7 @@ func RunChartList(c *CmdConfig) error {
 	defer conn.Close()
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
 
-	chartRepo, err := c.Ankr.GetString(c.NS, ankrctl.ArgListRepoSlug)
+	chartRepo, err := c.Ankr.GetString(c.NS, types.ArgListRepoSlug)
 	if err != nil {
 		return err
 	}
@@ -223,7 +223,7 @@ func RunChartList(c *CmdConfig) error {
 // RunChartDetail returns chart details.
 func RunChartDetail(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -249,11 +249,11 @@ func RunChartDetail(c *CmdConfig) error {
 	appClient := gwtaskmgr.NewAppMgrClient(conn)
 
 	chartDetailRequest := &gwtaskmgr.ChartDetailRequest{ChartName: c.Args[0]}
-	chartDetailRequest.ChartRepo, err = c.Ankr.GetString(c.NS, ankrctl.ArgDetailRepoSlug)
+	chartDetailRequest.ChartRepo, err = c.Ankr.GetString(c.NS, types.ArgDetailRepoSlug)
 	if err != nil {
 		return err
 	}
-	chartDetailRequest.ChartVer, err = c.Ankr.GetString(c.NS, ankrctl.ArgShowVersionSlug)
+	chartDetailRequest.ChartVer, err = c.Ankr.GetString(c.NS, types.ArgShowVersionSlug)
 	if err != nil {
 		return err
 	}
@@ -277,7 +277,7 @@ func RunChartDetail(c *CmdConfig) error {
 // RunChartSaveas save as new version of chart with updated value.
 func RunChartSaveas(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -306,7 +306,7 @@ func RunChartSaveas(c *CmdConfig) error {
 	}
 	saveasChartRequest := &gwtaskmgr.SaveAsChartRequest{}
 
-	saveasVer, err := c.Ankr.GetString(c.NS, ankrctl.ArgSaveasVersionSlug)
+	saveasVer, err := c.Ankr.GetString(c.NS, types.ArgSaveasVersionSlug)
 	if err != nil {
 		return err
 	}
@@ -316,17 +316,17 @@ func RunChartSaveas(c *CmdConfig) error {
 		SaveasVer:  saveasVer,
 	}
 
-	sourceName, err := c.Ankr.GetString(c.NS, ankrctl.ArgSourceNameSlug)
+	sourceName, err := c.Ankr.GetString(c.NS, types.ArgSourceNameSlug)
 	if err != nil {
 		return err
 	}
 
-	sourceVer, err := c.Ankr.GetString(c.NS, ankrctl.ArgSourceVersionSlug)
+	sourceVer, err := c.Ankr.GetString(c.NS, types.ArgSourceVersionSlug)
 	if err != nil {
 		return err
 	}
 
-	sourceRepo, err := c.Ankr.GetString(c.NS, ankrctl.ArgSourceRepoSlug)
+	sourceRepo, err := c.Ankr.GetString(c.NS, types.ArgSourceRepoSlug)
 	if err != nil {
 		return err
 	}
@@ -336,7 +336,7 @@ func RunChartSaveas(c *CmdConfig) error {
 		ChartRepo: sourceRepo,
 		ChartVer:  sourceVer,
 	}
-	file, err := c.Ankr.GetString(c.NS, ankrctl.ArgValuesYamlSlug)
+	file, err := c.Ankr.GetString(c.NS, types.ArgValuesYamlSlug)
 	if err != nil {
 		return err
 	}
@@ -359,7 +359,7 @@ func RunChartSaveas(c *CmdConfig) error {
 // RunChartDownload download chart to local file system.
 func RunChartDownload(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -389,12 +389,12 @@ func RunChartDownload(c *CmdConfig) error {
 	downloadChartRequest := &gwtaskmgr.DownloadChartRequest{}
 
 	downloadChartRequest.ChartName = c.Args[0]
-	downloadChartRequest.ChartVer, err = c.Ankr.GetString(c.NS, ankrctl.ArgDownloadVersionSlug)
+	downloadChartRequest.ChartVer, err = c.Ankr.GetString(c.NS, types.ArgDownloadVersionSlug)
 	if err != nil {
 		return err
 	}
 
-	downloadChartRequest.ChartRepo, err = c.Ankr.GetString(c.NS, ankrctl.ArgDownloadRepoSlug)
+	downloadChartRequest.ChartRepo, err = c.Ankr.GetString(c.NS, types.ArgDownloadRepoSlug)
 	if err != nil {
 		return err
 	}
@@ -428,7 +428,7 @@ func RunChartDownload(c *CmdConfig) error {
 // RunChartDelete delete a chart.
 func RunChartDelete(c *CmdConfig) error {
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -441,7 +441,7 @@ func RunChartDelete(c *CmdConfig) error {
 		"token": authResult.AccessToken,
 	})
 
-	force, err := c.Ankr.GetBool(c.NS, ankrctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, types.ArgForce)
 	if err != nil {
 		return err
 	}
@@ -449,7 +449,7 @@ func RunChartDelete(c *CmdConfig) error {
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
-	chartVersion, err := c.Ankr.GetString(c.NS, ankrctl.ArgDeleteVersionSlug)
+	chartVersion, err := c.Ankr.GetString(c.NS, types.ArgDeleteVersionSlug)
 	if err != nil {
 		return err
 	}

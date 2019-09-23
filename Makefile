@@ -12,7 +12,7 @@ build = CGO_ENABLED=0 \
     -installsuffix cgo \
     -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=$(CLIENT_URL) -X github.com/Ankr-network/ankrctl/commands.tendermintURL=$(ANKR_CHAIN_URL)" \
     -o build/$(GOEXE) \
-    cmd/ankrctl/main.go
+    .
 
 build_win: GOOS=windows
 build_win: GOARCH=amd64

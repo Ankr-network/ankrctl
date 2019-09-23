@@ -21,7 +21,6 @@ import (
 
 	"github.com/spf13/viper"
 
-	ankrctl "github.com/Ankr-network/ankrctl"
 	"github.com/Ankr-network/ankrctl/commands/displayers"
 	"github.com/gobwas/glob"
 	"github.com/spf13/cobra"
@@ -29,6 +28,7 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/Ankr-network/ankrctl/types"
 	ankr_const "github.com/Ankr-network/dccn-common"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwtaskmgr "github.com/Ankr-network/dccn-common/protos/gateway/taskmgr/v1"
@@ -55,10 +55,10 @@ func namespaceCmd() *Command {
 	//DCCN-CLI namespace create
 	cmdRunNamespaceCreate := CmdBuilder(cmd, RunNamespaceCreate, "create <ns-name> [ns-name ...]", "create namespace", Writer,
 		aliasOpt("cr"), docCategories("namespace"))
-	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (in vCPUs)", requiredOpt())
-	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (in GiB)", requiredOpt())
-	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit (in GiB)", requiredOpt())
-	AddStringFlag(cmdRunNamespaceCreate, ankrctl.ArgNsClusterIDSlug, "", "", "Namespace Cluster Id")
+	AddStringFlag(cmdRunNamespaceCreate, types.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (in vCPUs)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceCreate, types.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (in GiB)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceCreate, types.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit (in GiB)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceCreate, types.ArgNsClusterIDSlug, "", "", "Namespace Cluster Id")
 
 	//DCCN-CLI namespace list
 	cmdRunNamespaceList := CmdBuilder(cmd, RunNamespaceList, "list [GLOB]", "list namespace", Writer,
@@ -68,14 +68,14 @@ func namespaceCmd() *Command {
 	//DCCN-CLI namespace update
 	cmdRunNamespaceUpdate := CmdBuilder(cmd, RunNamespaceUpdate, "update <namespace-id> [namespace-id ...]", "update namespace", Writer,
 		aliasOpt("ud"), docCategories("namespace"))
-	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (in vCPUs)", requiredOpt())
-	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (in GiB)", requiredOpt())
-	AddStringFlag(cmdRunNamespaceUpdate, ankrctl.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit (in GiB)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceUpdate, types.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (in vCPUs)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceUpdate, types.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (in GiB)", requiredOpt())
+	AddStringFlag(cmdRunNamespaceUpdate, types.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit (in GiB)", requiredOpt())
 
 	//DCCN-CLI namespace delete
 	cmdRunNamespaceDelete := CmdBuilder(cmd, RunNamespaceDelete, "delete <namespace-id> [namespace-id ...]", "delete namespace",
 		Writer, aliasOpt("dl"), docCategories("namespace"))
-	AddBoolFlag(cmdRunNamespaceDelete, ankrctl.ArgForce, ankrctl.ArgShortForce, false, "Force namespace delete")
+	AddBoolFlag(cmdRunNamespaceDelete, types.ArgForce, types.ArgShortForce, false, "Force namespace delete")
 
 	return cmd
 }
@@ -84,7 +84,7 @@ func namespaceCmd() *Command {
 func RunNamespaceCreate(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -112,7 +112,7 @@ func RunNamespaceCreate(c *CmdConfig) error {
 		return err
 	}
 
-	cpuLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsCpuLimitSlug)
+	cpuLimit, err := c.Ankr.GetString(c.NS, types.ArgNsCpuLimitSlug)
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func RunNamespaceCreate(c *CmdConfig) error {
 		return err
 	}
 
-	memLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsMemLimitSlug)
+	memLimit, err := c.Ankr.GetString(c.NS, types.ArgNsMemLimitSlug)
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func RunNamespaceCreate(c *CmdConfig) error {
 		return err
 	}
 
-	storageLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsStorageLimitSlug)
+	storageLimit, err := c.Ankr.GetString(c.NS, types.ArgNsStorageLimitSlug)
 	if err != nil {
 		return err
 	}
@@ -141,7 +141,7 @@ func RunNamespaceCreate(c *CmdConfig) error {
 		return err
 	}
 
-	nsClusterId, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsClusterIDSlug)
+	nsClusterId, err := c.Ankr.GetString(c.NS, types.ArgNsClusterIDSlug)
 	if err != nil {
 		return err
 	}
@@ -249,7 +249,7 @@ func RunNamespaceList(c *CmdConfig) error {
 func RunNamespaceUpdate(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -280,7 +280,7 @@ func RunNamespaceUpdate(c *CmdConfig) error {
 	updateNamespaceRequest := &gwtaskmgr.UpdateNamespaceRequest{}
 	updateNamespaceRequest.NsId = c.Args[0]
 
-	cpuLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsCpuLimitSlug)
+	cpuLimit, err := c.Ankr.GetString(c.NS, types.ArgNsCpuLimitSlug)
 	if err != nil {
 		return err
 	}
@@ -291,7 +291,7 @@ func RunNamespaceUpdate(c *CmdConfig) error {
 
 	updateNamespaceRequest.NsCpuLimit = uint32(nsCpuLimit)
 
-	memLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsMemLimitSlug)
+	memLimit, err := c.Ankr.GetString(c.NS, types.ArgNsMemLimitSlug)
 	if err != nil {
 		return err
 	}
@@ -301,7 +301,7 @@ func RunNamespaceUpdate(c *CmdConfig) error {
 	}
 	updateNamespaceRequest.NsMemLimit = uint32(nsMemLimit)
 
-	storageLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsStorageLimitSlug)
+	storageLimit, err := c.Ankr.GetString(c.NS, types.ArgNsStorageLimitSlug)
 	if err != nil {
 		return err
 	}
@@ -331,7 +331,7 @@ func RunNamespaceUpdate(c *CmdConfig) error {
 func RunNamespaceDelete(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -344,7 +344,7 @@ func RunNamespaceDelete(c *CmdConfig) error {
 		"token": authResult.AccessToken,
 	})
 
-	force, err := c.Ankr.GetBool(c.NS, ankrctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, types.ArgForce)
 	if err != nil {
 		return err
 	}
