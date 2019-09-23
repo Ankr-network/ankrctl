@@ -22,12 +22,11 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/ssh/terminal"
 
-	ankrctl "github.com/Ankr-network/ankrctl"
-
 	"github.com/spf13/cobra"
 
 	"context"
 
+	"github.com/Ankr-network/ankrctl/types"
 	ankr_const "github.com/Ankr-network/dccn-common"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
@@ -52,14 +51,14 @@ func userCmd() *Command {
 	//DCCN-CLI user register
 	cmdUserRegister := CmdBuilder(cmd, RunUserRegister, "register <user-name>", "user register",
 		Writer, aliasOpt("rg"), docCategories("user"))
-	AddStringFlag(cmdUserRegister, ankrctl.ArgEmailSlug, "", "", "User email", requiredOpt())
-	AddStringFlag(cmdUserRegister, ankrctl.ArgPasswordSlug, "", "", "User password", requiredOpt())
+	AddStringFlag(cmdUserRegister, types.ArgEmailSlug, "", "", "User email", requiredOpt())
+	AddStringFlag(cmdUserRegister, types.ArgPasswordSlug, "", "", "User password", requiredOpt())
 
 	//DCCN-CLI user comfirm registration
 	cmdUserConfirmRegistration := CmdBuilder(cmd, RunUserConfirmRegistration,
 		"confirm-registration <user-email>", "user registration confirmation", Writer,
 		aliasOpt("rc"), docCategories("user"))
-	AddStringFlag(cmdUserConfirmRegistration, ankrctl.ArgRegisterCodeSlug,
+	AddStringFlag(cmdUserConfirmRegistration, types.ArgRegisterCodeSlug,
 		"", "", "User registration confirmation code", requiredOpt())
 
 	//DCCN-CLI user forgot password
@@ -70,17 +69,17 @@ func userCmd() *Command {
 	//DCCN-CLI user comfirm password
 	cmdUserConfirmPassword := CmdBuilder(cmd, RunUserConfirmPassword, "confirm-password <user-email>",
 		"user password change confirmation", Writer, aliasOpt("pc"), docCategories("user"))
-	AddStringFlag(cmdUserConfirmPassword, ankrctl.ArgPasswordCodeSlug,
+	AddStringFlag(cmdUserConfirmPassword, types.ArgPasswordCodeSlug,
 		"", "", "User password change confirmation code", requiredOpt())
-	AddStringFlag(cmdUserConfirmPassword, ankrctl.ArgConfirmPasswordSlug,
+	AddStringFlag(cmdUserConfirmPassword, types.ArgConfirmPasswordSlug,
 		"", "", "User confirm new password", requiredOpt())
 
 	//DCCN-CLI user change password
 	cmdUserChangePassword := CmdBuilder(cmd, RunUserChangePassword, "change-password <user-email>",
 		"user password change", Writer, aliasOpt("cp"), docCategories("user"))
-	AddStringFlag(cmdUserChangePassword, ankrctl.ArgOldPasswordSlug,
+	AddStringFlag(cmdUserChangePassword, types.ArgOldPasswordSlug,
 		"", "", "User old password", requiredOpt())
-	AddStringFlag(cmdUserChangePassword, ankrctl.ArgNewPasswordSlug,
+	AddStringFlag(cmdUserChangePassword, types.ArgNewPasswordSlug,
 		"", "", "User new password", requiredOpt())
 
 	//DCCN-CLI user change email
@@ -91,14 +90,14 @@ func userCmd() *Command {
 	//DCCN-CLI user confirm email
 	cmdUserConfirmEmail := CmdBuilder(cmd, RunUserConfirmEmail, "email-confirm <new-email>",
 		"user confirm email change", Writer, aliasOpt("ce"), docCategories("user"))
-	AddStringFlag(cmdUserConfirmEmail, ankrctl.ArgEmailCodeSlug,
+	AddStringFlag(cmdUserConfirmEmail, types.ArgEmailCodeSlug,
 		"", "", "User email change confirmation code", requiredOpt())
 
 	//DCCN-CLI user update attribute
 	cmdUserUpdate := CmdBuilder(cmd, RunUserUpdate, "update", "user update attribute",
 		Writer, aliasOpt("ua"), docCategories("user"))
-	AddStringFlag(cmdUserUpdate, ankrctl.ArgUpdateKeySlug, "", "", "User attribute key", requiredOpt())
-	AddStringFlag(cmdUserUpdate, ankrctl.ArgUpdateValueSlug, "", "", "User attribute value", requiredOpt())
+	AddStringFlag(cmdUserUpdate, types.ArgUpdateKeySlug, "", "", "User attribute key", requiredOpt())
+	AddStringFlag(cmdUserUpdate, types.ArgUpdateValueSlug, "", "", "User attribute value", requiredOpt())
 
 	//DCCN-CLI user login
 	cmdUserLogin := CmdBuilder(cmd, RunUserLogin, "login", "user login", Writer,
@@ -123,16 +122,16 @@ func userCmd() *Command {
 func RunUserRegister(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
-	email, err := c.Ankr.GetString(c.NS, ankrctl.ArgEmailSlug)
+	email, err := c.Ankr.GetString(c.NS, types.ArgEmailSlug)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	password, err := c.Ankr.GetString(c.NS, ankrctl.ArgPasswordSlug)
+	password, err := c.Ankr.GetString(c.NS, types.ArgPasswordSlug)
 	if err != nil {
 		return err
 	}
@@ -249,10 +248,10 @@ func RunUserLogout(c *CmdConfig) error {
 func RunUserConfirmRegistration(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
-	confirmationCode, err := c.Ankr.GetString(c.NS, ankrctl.ArgRegisterCodeSlug)
+	confirmationCode, err := c.Ankr.GetString(c.NS, types.ArgRegisterCodeSlug)
 	if err != nil {
 		return err
 	}
@@ -279,7 +278,7 @@ func RunUserConfirmRegistration(c *CmdConfig) error {
 func RunUserForgotPassword(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	url := viper.GetString("hub-url")
@@ -305,15 +304,15 @@ func RunUserForgotPassword(c *CmdConfig) error {
 func RunUserConfirmPassword(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
-	confirmationCode, err := c.Ankr.GetString(c.NS, ankrctl.ArgPasswordCodeSlug)
+	confirmationCode, err := c.Ankr.GetString(c.NS, types.ArgPasswordCodeSlug)
 	if err != nil {
 		return err
 	}
 
-	confirmPassword, err := c.Ankr.GetString(c.NS, ankrctl.ArgConfirmPasswordSlug)
+	confirmPassword, err := c.Ankr.GetString(c.NS, types.ArgConfirmPasswordSlug)
 	if err != nil {
 		return err
 	}
@@ -355,12 +354,12 @@ func RunUserChangePassword(c *CmdConfig) error {
 	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
-	oldPassword, err := c.Ankr.GetString(c.NS, ankrctl.ArgOldPasswordSlug)
+	oldPassword, err := c.Ankr.GetString(c.NS, types.ArgOldPasswordSlug)
 	if err != nil {
 		return err
 	}
 
-	newPassword, err := c.Ankr.GetString(c.NS, ankrctl.ArgNewPasswordSlug)
+	newPassword, err := c.Ankr.GetString(c.NS, types.ArgNewPasswordSlug)
 	if err != nil {
 		return err
 	}
@@ -441,7 +440,7 @@ func RunUserChangeEmail(c *CmdConfig) error {
 	defer cancel()
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	url := viper.GetString("hub-url")
@@ -487,10 +486,10 @@ func RunUserConfirmEmail(c *CmdConfig) error {
 	defer cancel()
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
-	confirmationCode, err := c.Ankr.GetString(c.NS, ankrctl.ArgEmailCodeSlug)
+	confirmationCode, err := c.Ankr.GetString(c.NS, types.ArgEmailCodeSlug)
 	if err != nil {
 		return err
 	}
@@ -530,12 +529,12 @@ func RunUserUpdate(c *CmdConfig) error {
 	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
-	updateKey, err := c.Ankr.GetString(c.NS, ankrctl.ArgUpdateKeySlug)
+	updateKey, err := c.Ankr.GetString(c.NS, types.ArgUpdateKeySlug)
 	if err != nil {
 		return err
 	}
 
-	updateValue, err := c.Ankr.GetString(c.NS, ankrctl.ArgUpdateValueSlug)
+	updateValue, err := c.Ankr.GetString(c.NS, types.ArgUpdateValueSlug)
 	if err != nil {
 		return err
 	}

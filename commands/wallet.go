@@ -28,12 +28,12 @@ import (
 	"syscall"
 	"time"
 
-	ankrctl "github.com/Ankr-network/ankrctl"
+	"github.com/Ankr-network/ankrctl/types"
 	"github.com/Ankr-network/ankrctl/commands/displayers"
 	ankr_const "github.com/Ankr-network/dccn-common"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
-	wallet "github.com/Ankr-network/dccn-common/wallet"
+	"github.com/Ankr-network/dccn-common/wallet"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/spf13/cobra"
@@ -73,7 +73,7 @@ func walletCmd() *Command {
 	//DCCN-CLI wallet importkey
 	cmdWalletImportkey := CmdBuilder(cmd, RunWalletImportkey, "importkey <keyname>",
 		"import key from keyfile", Writer, aliasOpt("ik"), docCategories("wallet"))
-	AddStringFlag(cmdWalletImportkey, ankrctl.ArgKeyFileSlug, "", "", "wallet keyfile", requiredOpt())
+	AddStringFlag(cmdWalletImportkey, types.ArgKeyFileSlug, "", "", "wallet keyfile", requiredOpt())
 
 	//DCCN-CLI wallet deletekey
 	cmdWalletDeletekey := CmdBuilder(cmd, RunWalletDeletekey, "deletekey <keyname>",
@@ -83,9 +83,9 @@ func walletCmd() *Command {
 	//DCCN-CLI wallet send coins
 	cmdWalletSendCoins := CmdBuilder(cmd, RunWalletSendCoins, "sendcoins <coins-amount>",
 		"send token to address", Writer, aliasOpt("st"), docCategories("wallet"))
-	AddStringFlag(cmdWalletSendCoins, ankrctl.ArgTargetAddressSlug, "", "", "send token to wallet address",
+	AddStringFlag(cmdWalletSendCoins, types.ArgTargetAddressSlug, "", "", "send token to wallet address",
 		requiredOpt())
-	AddStringFlag(cmdWalletSendCoins, ankrctl.ArgKeyFileSlug, "", "", "wallet keyfile", requiredOpt())
+	AddStringFlag(cmdWalletSendCoins, types.ArgKeyFileSlug, "", "", "wallet keyfile", requiredOpt())
 
 	//DCCN-CLI wallet get balance
 	cmdWalletGetbalance := CmdBuilder(cmd, RunWalletGetbalance, "getbalance <address>",
@@ -95,14 +95,14 @@ func walletCmd() *Command {
 	//DCCN-CLI wallet generate erc address
 	cmdWalletGenAddress := CmdBuilder(cmd, RunWalletGenAddress, "genaddr",
 		"generate wallet address for deposit and withdraw", Writer, aliasOpt("ga"), docCategories("wallet"))
-	AddStringFlag(cmdWalletGenAddress, ankrctl.ArgAddressTypeSlug, "", "", "wallet address type (MAINNET/ERC20/BEP2)", requiredOpt())
-	AddStringFlag(cmdWalletGenAddress, ankrctl.ArgAddressPurposeSlug, "", "", "wallet address purpose (MAINNET/ERC20/BEP2)", requiredOpt())
+	AddStringFlag(cmdWalletGenAddress, types.ArgAddressTypeSlug, "", "", "wallet address type (MAINNET/ERC20/BEP2)", requiredOpt())
+	AddStringFlag(cmdWalletGenAddress, types.ArgAddressPurposeSlug, "", "", "wallet address purpose (MAINNET/ERC20/BEP2)", requiredOpt())
 
 	//DCCN-CLI wallet search deposit in a period
 	cmdWalletSearchDeposit := CmdBuilder(cmd, RunWalletSearchDeposit, "search",
 		"wallet search deposit in a period", Writer, aliasOpt("sd"), docCategories("wallet"))
-	AddStringFlag(cmdWalletSearchDeposit, ankrctl.ArgSearchDepositStartSlug, "", "", "wallet search deposit start date (format: `mm/dd/yyyy`)", requiredOpt())
-	AddStringFlag(cmdWalletSearchDeposit, ankrctl.ArgSearchDepositEndSlug, "", "", "wallet address deposit end date (format: `mm/dd/yyyy`)", requiredOpt())
+	AddStringFlag(cmdWalletSearchDeposit, types.ArgSearchDepositStartSlug, "", "", "wallet search deposit start date (format: `mm/dd/yyyy`)", requiredOpt())
+	AddStringFlag(cmdWalletSearchDeposit, types.ArgSearchDepositEndSlug, "", "", "wallet address deposit end date (format: `mm/dd/yyyy`)", requiredOpt())
 
 	//DCCN-CLI wallet get deposit history
 	cmdWalletDepositHistory := CmdBuilder(cmd, RunWalletDepositHistory, "history",
@@ -117,7 +117,7 @@ func walletCmd() *Command {
 func RunWalletGenkey(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	files, err := ioutil.ReadDir(configHome())
@@ -276,10 +276,10 @@ func RunWalletKeylist(c *CmdConfig) error {
 func RunWalletImportkey(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
-	ks, err := c.Ankr.GetString(c.NS, ankrctl.ArgKeyFileSlug)
+	ks, err := c.Ankr.GetString(c.NS, types.ArgKeyFileSlug)
 	if err != nil {
 		return err
 	}
@@ -371,7 +371,7 @@ func RunWalletImportkey(c *CmdConfig) error {
 func RunWalletDeletekey(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	if AskForConfirm(fmt.Sprintf(`about to delete keystore '%s', type 'yes' to confirm, 'no' to cancel: `, c.Args[0])) == nil {
@@ -422,10 +422,10 @@ func RunWalletDeletekey(c *CmdConfig) error {
 func RunWalletSendCoins(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
-	target, err := c.Ankr.GetString(c.NS, ankrctl.ArgTargetAddressSlug)
+	target, err := c.Ankr.GetString(c.NS, types.ArgTargetAddressSlug)
 	if err != nil {
 		return err
 	}
@@ -464,7 +464,7 @@ func RunWalletSendCoins(c *CmdConfig) error {
 		return nil
 	}
 
-	keystore, err := c.Ankr.GetString(c.NS, ankrctl.ArgKeyFileSlug)
+	keystore, err := c.Ankr.GetString(c.NS, types.ArgKeyFileSlug)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
 		return nil
@@ -595,7 +595,7 @@ func RunWalletSendCoins(c *CmdConfig) error {
 func RunWalletGetbalance(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 	address := c.Args[0]
 
@@ -643,12 +643,12 @@ func RunWalletGenAddress(c *CmdConfig) error {
 
 	s := map[string]bool{"MAINNET": true, "ERC20": true, "BEP2": true}
 
-	addressType, err := c.Ankr.GetString(c.NS, ankrctl.ArgAddressTypeSlug)
+	addressType, err := c.Ankr.GetString(c.NS, types.ArgAddressTypeSlug)
 	if err != nil {
 		return err
 	}
 
-	addressPurpose, err := c.Ankr.GetString(c.NS, ankrctl.ArgAddressPurposeSlug)
+	addressPurpose, err := c.Ankr.GetString(c.NS, types.ArgAddressPurposeSlug)
 	if err != nil {
 		return err
 	}
@@ -706,7 +706,7 @@ func RunWalletGenAddress(c *CmdConfig) error {
 // RunWalletSearchDeposit search deposit for certain period.
 func RunWalletSearchDeposit(c *CmdConfig) error {
 
-	start, err := c.Ankr.GetString(c.NS, ankrctl.ArgSearchDepositStartSlug)
+	start, err := c.Ankr.GetString(c.NS, types.ArgSearchDepositStartSlug)
 	if err != nil {
 		return err
 	}
@@ -715,7 +715,7 @@ func RunWalletSearchDeposit(c *CmdConfig) error {
 		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
 		return nil
 	}
-	end, err := c.Ankr.GetString(c.NS, ankrctl.ArgSearchDepositEndSlug)
+	end, err := c.Ankr.GetString(c.NS, types.ArgSearchDepositEndSlug)
 	if err != nil {
 		return err
 	}

@@ -23,20 +23,20 @@ import (
 	"testing"
 	"time"
 
-	ankrctl "github.com/Ankr-network/ankrctl"
+	"github.com/Ankr-network/ankrctl/types"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
 	MockResultSuccess = "Success"
-	MockAppid        = "100"
-	MockAppName      = "app"
-	MockAppImage     = "nginx:1.12"
+	MockAppid         = "100"
+	MockAppName       = "app"
+	MockAppImage      = "nginx:1.12"
 	MockReplica       = "2"
 	MockUpdateImage   = "nginx:1.13"
 	MockUpdateReplica = "3"
-	MockAppType      = "Deploy"
+	MockAppType       = "Deploy"
 )
 
 type mail struct {
@@ -77,7 +77,7 @@ func TestMockCommand_Run(t *testing.T) {
 	var url = os.Getenv("URL_BRANCH")
 	fmt.Println("url: " + url + "\n")
 
-	lc := ankrctl.NewLiveCommand("go")
+	lc := types.NewLiveCommand("go")
 
 	MockUserEmail := MockUserName + "@mailinator.com"
 

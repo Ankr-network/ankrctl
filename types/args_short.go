@@ -11,15 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package ankrctl
+package types
 
-import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
+const (
+	// ArgShortForce forces confirmation on actions
+	ArgShortForce = "f"
 )
-
-func TestMissingArgsErr(t *testing.T) {
-	err := NewMissingArgsErr("test-cmd")
-	assert.Equal(t, "(test-cmd) command is missing required arguments", err.Error())
-}

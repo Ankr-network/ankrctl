@@ -15,6 +15,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/Ankr-network/ankrctl/types"
 	"log"
 	"strconv"
 	"sync"
@@ -24,7 +25,6 @@ import (
 
 	"context"
 
-	ankrctl "github.com/Ankr-network/ankrctl"
 	"github.com/Ankr-network/ankrctl/commands/displayers"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwtaskmgr "github.com/Ankr-network/dccn-common/protos/gateway/taskmgr/v1"
@@ -59,31 +59,31 @@ func appCmd() *Command {
 	//DCCN-CLI comput app create
 	cmdRunAppCreate := CmdBuilder(cmd, RunAppCreate, "create <app-name> [app-name ...]",
 		"create app", Writer, aliasOpt("cr"), docCategories("app"))
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgChartNameSlug, "", "", "Chart name", requiredOpt())
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgChartRepoSlug, "", "", "Chart repo", requiredOpt())
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgChartVersionSlug, "", "", "Chart version", requiredOpt())
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsIDSlug, "", "", "Namespace ID")
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsClusterIDSlug, "", "", "Namespace Cluster ID")
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsNameSlug, "", "", "Namespace Name")
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (mCPUs)")
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (MBs)")
-	AddStringFlag(cmdRunAppCreate, ankrctl.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit (GBs)")
+	AddStringFlag(cmdRunAppCreate, types.ArgChartNameSlug, "", "", "Chart name", requiredOpt())
+	AddStringFlag(cmdRunAppCreate, types.ArgChartRepoSlug, "", "", "Chart repo", requiredOpt())
+	AddStringFlag(cmdRunAppCreate, types.ArgChartVersionSlug, "", "", "Chart version", requiredOpt())
+	AddStringFlag(cmdRunAppCreate, types.ArgNsIDSlug, "", "", "Namespace ID")
+	AddStringFlag(cmdRunAppCreate, types.ArgNsClusterIDSlug, "", "", "Namespace Cluster ID")
+	AddStringFlag(cmdRunAppCreate, types.ArgNsNameSlug, "", "", "Namespace Name")
+	AddStringFlag(cmdRunAppCreate, types.ArgNsCpuLimitSlug, "", "", "Namespace CPU Limit (mCPUs)")
+	AddStringFlag(cmdRunAppCreate, types.ArgNsMemLimitSlug, "", "", "Namespace MEM Limit (MBs)")
+	AddStringFlag(cmdRunAppCreate, types.ArgNsStorageLimitSlug, "", "", "Namespace Storage Limit (GBs)")
 
 	//DCCN-CLI comput app cancel
 	cmdRunAppCancel := CmdBuilder(cmd, RunAppCancel, "cancel <app-id> [app-id ...]",
 		"Cancel app by id", Writer, aliasOpt("dl"), docCategories("app"))
-	AddBoolFlag(cmdRunAppCancel, ankrctl.ArgForce, ankrctl.ArgShortForce, false, "Force app cancel")
+	AddBoolFlag(cmdRunAppCancel, types.ArgForce, types.ArgShortForce, false, "Force app cancel")
 
 	//DCCN-CLI comput app purge
 	cmdRunAppPurge := CmdBuilder(cmd, RunAppPurge, "purge <app-id> [app-id ...]", "Purge app by id",
 		Writer, aliasOpt("rm"), docCategories("app"))
-	AddBoolFlag(cmdRunAppPurge, ankrctl.ArgForce, ankrctl.ArgShortForce, false, "Force app purge")
+	AddBoolFlag(cmdRunAppPurge, types.ArgForce, types.ArgShortForce, false, "Force app purge")
 
 	//DCCN-CLI comput app update
 	cmdRunAppUpdate := CmdBuilder(cmd, RunAppUpdate, "update <app-id> [app-id ...]",
 		"Update app by id", Writer, aliasOpt("ud"), docCategories("app"))
-	AddStringFlag(cmdRunAppUpdate, ankrctl.ArgAppNameSlug, "", "", "App name")
-	AddStringFlag(cmdRunAppUpdate, ankrctl.ArgUpdateVersionSlug, "", "", "Update version")
+	AddStringFlag(cmdRunAppUpdate, types.ArgAppNameSlug, "", "", "App name")
+	AddStringFlag(cmdRunAppUpdate, types.ArgUpdateVersionSlug, "", "", "Update version")
 
 	//DCCN-CLI app list
 	cmdRunAppList := CmdBuilder(cmd, RunAppList, "list [GLOB]", "list apps", Writer,
@@ -109,22 +109,22 @@ func appCmd() *Command {
 func RunAppCreate(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	createAppRequest := &gwtaskmgr.CreateAppRequest{}
 
-	chartname, err := c.Ankr.GetString(c.NS, ankrctl.ArgChartNameSlug)
+	chartname, err := c.Ankr.GetString(c.NS, types.ArgChartNameSlug)
 	if err != nil {
 		return err
 	}
 
-	chartrepo, err := c.Ankr.GetString(c.NS, ankrctl.ArgChartRepoSlug)
+	chartrepo, err := c.Ankr.GetString(c.NS, types.ArgChartRepoSlug)
 	if err != nil {
 		return err
 	}
 
-	chartver, err := c.Ankr.GetString(c.NS, ankrctl.ArgChartVersionSlug)
+	chartver, err := c.Ankr.GetString(c.NS, types.ArgChartVersionSlug)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func RunAppCreate(c *CmdConfig) error {
 		ChartVer:  chartver,
 	}
 
-	nsID, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsIDSlug)
+	nsID, err := c.Ankr.GetString(c.NS, types.ArgNsIDSlug)
 	if err != nil {
 		return err
 	}
@@ -143,16 +143,16 @@ func RunAppCreate(c *CmdConfig) error {
 	if nsID != "" {
 		createAppRequest.NsId = nsID
 	} else {
-		nsname, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsNameSlug)
+		nsname, err := c.Ankr.GetString(c.NS, types.ArgNsNameSlug)
 		if err != nil {
 			return err
 		}
 
 		if len(nsname) == 0 {
-			return ankrctl.NewMissingArgsErr(c.NS)
+			return types.NewMissingArgsErr(c.NS)
 		}
 
-		cpuLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsCpuLimitSlug)
+		cpuLimit, err := c.Ankr.GetString(c.NS, types.ArgNsCpuLimitSlug)
 		if err != nil {
 			return err
 		}
@@ -162,7 +162,7 @@ func RunAppCreate(c *CmdConfig) error {
 			return fmt.Errorf("Cpu Limit %s is not a valid number", cpuLimit)
 		}
 
-		memLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsMemLimitSlug)
+		memLimit, err := c.Ankr.GetString(c.NS, types.ArgNsMemLimitSlug)
 		if err != nil {
 			return err
 		}
@@ -172,7 +172,7 @@ func RunAppCreate(c *CmdConfig) error {
 			return fmt.Errorf("Mem Limit %s is not a valid number", memLimit)
 		}
 
-		storageLimit, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsStorageLimitSlug)
+		storageLimit, err := c.Ankr.GetString(c.NS, types.ArgNsStorageLimitSlug)
 		if err != nil {
 			return err
 		}
@@ -182,7 +182,7 @@ func RunAppCreate(c *CmdConfig) error {
 			return fmt.Errorf("Storage Limit %s is not a valid number", storageLimit)
 		}
 
-		nsClusterID, err := c.Ankr.GetString(c.NS, ankrctl.ArgNsClusterIDSlug)
+		nsClusterID, err := c.Ankr.GetString(c.NS, types.ArgNsClusterIDSlug)
 		if err != nil {
 			return err
 		}
@@ -253,13 +253,13 @@ func RunAppCreate(c *CmdConfig) error {
 // RunAppPurge purge a app from hub.
 func RunAppPurge(c *CmdConfig) error {
 
-	force, err := c.Ankr.GetBool(c.NS, ankrctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, types.ArgForce)
 	if err != nil {
 		return err
 	}
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -320,13 +320,13 @@ func RunAppCancel(c *CmdConfig) error {
 	tokenctx, cancel := context.WithTimeout(ctx, ankr_const.ClientTimeOut*time.Second)
 	defer cancel()
 
-	force, err := c.Ankr.GetBool(c.NS, ankrctl.ArgForce)
+	force, err := c.Ankr.GetBool(c.NS, types.ArgForce)
 	if err != nil {
 		return err
 	}
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	if force || AskForConfirm(fmt.Sprintf("Are you sure you want to Cancel %d app(s) (y/N) ? ", len(c.Args))) == nil {
@@ -405,7 +405,7 @@ func RunAppList(c *CmdConfig) error {
 func RunAppDetail(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	authResult := gwusermgr.AuthenticationResult{}
@@ -496,12 +496,12 @@ func RunAppUpdate(c *CmdConfig) error {
 	defer cancel()
 
 	if len(c.Args) < 1 {
-		return ankrctl.NewMissingArgsErr(c.NS)
+		return types.NewMissingArgsErr(c.NS)
 	}
 
 	updateAppRequest := &gwtaskmgr.UpdateAppRequest{}
 
-	appname, err := c.Ankr.GetString(c.NS, ankrctl.ArgAppNameSlug)
+	appname, err := c.Ankr.GetString(c.NS, types.ArgAppNameSlug)
 	if err != nil {
 		return err
 	}
@@ -509,7 +509,7 @@ func RunAppUpdate(c *CmdConfig) error {
 		updateAppRequest.AppName = appname
 	}
 
-	chartver, err := c.Ankr.GetString(c.NS, ankrctl.ArgUpdateVersionSlug)
+	chartver, err := c.Ankr.GetString(c.NS, types.ArgUpdateVersionSlug)
 	if err != nil {
 		return err
 	}

@@ -14,13 +14,12 @@ limitations under the License.
 package displayers
 
 import (
+	"github.com/Ankr-network/ankrctl/types"
 	"strings"
-
-	"github.com/Ankr-network/ankrctl"
 )
 
-func handleColumns(ns string, config ankrctl.Config) ([]string, error) {
-	colStr, err := config.GetString(ns, ankrctl.ArgFormat)
+func handleColumns(ns string, config types.Config) ([]string, error) {
+	colStr, err := config.GetString(ns, types.ArgFormat)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +31,7 @@ func handleColumns(ns string, config ankrctl.Config) ([]string, error) {
 		}
 	}
 
-	hh, err := config.GetBool(ns, ankrctl.ArgNoHeader)
+	hh, err := config.GetBool(ns, types.ArgNoHeader)
 	if err != nil {
 		return nil, err
 	}

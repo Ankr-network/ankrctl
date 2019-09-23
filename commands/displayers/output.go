@@ -17,12 +17,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/Ankr-network/ankrctl/types"
 	"io"
 	"reflect"
 	"strings"
 	"text/tabwriter"
-
-	"github.com/Ankr-network/ankrctl"
 )
 
 var (
@@ -73,13 +72,13 @@ type Displayable interface {
 
 type Displayer struct {
 	NS     string
-	Config ankrctl.Config
+	Config types.Config
 	Item   Displayable
 	Out    io.Writer
 }
 
 func (d *Displayer) Display() error {
-	output, err := ankrctl.AnkrConfig.GetString(ankrctl.NSRoot, "output")
+	output, err := types.AnkrConfig.GetString(types.NSRoot, "output")
 	if err != nil {
 		return nil
 	}
