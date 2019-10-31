@@ -14,7 +14,6 @@ COPY . /ankrctl
 RUN GOPROXY=https://goproxy.cn CGO_ENABLED=0 \
     go build -a \
     -ldflags="-w -s -X github.com/Ankr-network/ankrctl/commands.clientURL=${URL_BRANCH} -X github.com/Ankr-network/ankrctl/commands.tendermintURL=${TENDERMINT_URL} -X github.com/Ankr-network/ankrctl/commands.tendermintPort=${TENDERMINT_PORT}" \
-    -X github.com/Ankr-network/ankrctl/commands.ankrChainId=${ANKR_CHAIN_ID} \
     -o /go/bin/ankrctl \
     main.go
 
