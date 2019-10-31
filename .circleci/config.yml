@@ -40,17 +40,20 @@ jobs:
               URL_BRANCH="client.dccn.ankr.com"
               TENDERMINT_URL="https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
               TENDERMINT_PORT="443"
+              ANKR_CHAIN_ID="ankr-chain"
             elif [[ ($BRANCH_NAME == "develop") ]]
             then
               BRANCH_NAME="dev"
               URL_BRANCH="client-stage.dccn.ankr.com"
               TENDERMINT_URL="http://chain-stage.dccn.ankr.com"
               TENDERMINT_PORT="26657"
+              ANKR_CHAIN_ID="test-chain-xxx"
             else 
               BRANCH_NAME="feat"
               URL_BRANCH="client-dev.dccn.ankr.com"
               TENDERMINT_URL="http://chain-dev.dccn.ankr.com"
               TENDERMINT_PORT="26657"
+              ANKR_CHAIN_ID="test-chain-xxx"
             fi
             export URL_BRANCH
             
