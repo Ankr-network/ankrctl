@@ -1,7 +1,14 @@
-FROM golang:1.12-alpine as builder
+FROM golang:1.13-alpine as builder
 ARG URL_BRANCH
 ARG TENDERMINT_URL
 ARG TENDERMINT_PORT
+ARG GITHUB_USER
+ARG GITHUB_TOKEN
+ARG GOPROXY
+ENV GOPROXY=${GOPROXY}
+ENV GOPRIVATE=github.com/Ankr-network
+RUN echo "machine github.com login ${GITHUB_USER} password ${GITHUB_TOKEN}" > ~/.netrc
+
 RUN apk update && \
     apk add git && \
     apk add --update bash && \
