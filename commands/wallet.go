@@ -48,7 +48,7 @@ import (
 
 var tendermintURL = "https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
 var ankrChainId = "ankr-chain"
-var tendermintPort string
+var tendermintPort = "443"
 var ankrCurrency = common.Currency{"ANKR",18}
 var ankrGasLimit = big.NewInt(20000)
 
@@ -87,15 +87,15 @@ func walletCmd() *Command {
 	_ = cmdWalletDeletekey
 
 	//DCCN-CLI wallet send coins
-	cmdWalletSendCoins := CmdBuilder(cmd, RunWalletSendCoins, "sendcoins <coins-amount>",
+	cmdWalletSendCoins := CmdBuilder(cmd, RunWalletSendCoins, "sendcoins <symbol>",
 		"send token to address", Writer, aliasOpt("st"), docCategories("wallet"))
 	AddStringFlag(cmdWalletSendCoins, types.ArgTargetAddressSlug, "", "", "send token to wallet address",
 		requiredOpt())
 	AddStringFlag(cmdWalletSendCoins, types.ArgKeyFileSlug, "", "", "wallet keyfile", requiredOpt())
 	AddStringFlag(cmdWalletSendCoins, types.ArgTxAmount, "", "", "transfer amount", requiredOpt())
-	AddStringFlag(cmdWalletSendCoins, types.ArgTxMemo, "", "", "transaction memo", nil)
-	AddStringFlag(cmdWalletSendCoins, types.ArgGasPrice, "", "10000000000000000", "gas price of the transaction", nil)
-	AddStringFlag(cmdWalletSendCoins, types.ArgTxVersion, "", "1.0", "ankr chain version", nil)
+	AddStringFlag(cmdWalletSendCoins, types.ArgTxMemo, "", "", "transaction memo", )
+	AddStringFlag(cmdWalletSendCoins, types.ArgGasPrice, "", "10000000000000000", "gas price of the transaction", )
+	AddStringFlag(cmdWalletSendCoins, types.ArgTxVersion, "", "1.0", "ankr chain version", )
 
 
 	//DCCN-CLI wallet get balance
@@ -612,7 +612,7 @@ func RunWalletSendCoins(c *CmdConfig) error {
 		transferMsg.Amounts = append(transferMsg.Amounts, msgAmount)
 
 		//start sending transactions
-		cl := client.NewClient(tendermintURL+tendermintPort)
+		cl := client.NewClient(tendermintURL+":"+tendermintPort)
 		builder := client.NewTxMsgBuilder(*txMsgHeader, transferMsg, serializer.NewTxSerializerCDC(), txkey)
 		txHash, txHeight, _, err := builder.BuildAndCommit(cl)
 		if err != nil {
@@ -620,8 +620,8 @@ func RunWalletSendCoins(c *CmdConfig) error {
 			return nil
 		}
 		fmt.Fprintf(os.Stderr, "\nTransaction commit success.")
-		fmt.Fprintf(os.Stderr, "\tx hash: %s\n", txHash)
-		fmt.Fprintf(os.Stderr, "\tx hash: %d\n", txHeight)
+		fmt.Fprintf(os.Stderr, "\ntx hash: %s\n", txHash)
+		fmt.Fprintf(os.Stderr, "\ntx height: %d\n", txHeight)
 	}
 	return nil
 }
@@ -654,7 +654,7 @@ func RunWalletGetbalance(c *CmdConfig) error {
 		}
 	}
 
-	cl := client.NewClient(tendermintURL+tendermintPort)
+	cl := client.NewClient(tendermintURL+":"+tendermintPort)
 	balReq := new(common.BalanceQueryReq)
 	balResp := new(common.BalanceQueryResp)
 	balReq.Symbol = "ANKR"
