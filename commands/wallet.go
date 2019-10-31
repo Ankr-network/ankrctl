@@ -47,7 +47,7 @@ import (
 )
 
 var tendermintURL = "https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
-var ankrChainId = "ankr-chain"
+var ankrChainId string
 var tendermintPort = "443"
 var ankrCurrency = common.Currency{"ANKR",18}
 var ankrGasLimit = big.NewInt(20000)
@@ -96,6 +96,7 @@ func walletCmd() *Command {
 	AddStringFlag(cmdWalletSendCoins, types.ArgTxMemo, "", "", "transaction memo", )
 	AddStringFlag(cmdWalletSendCoins, types.ArgGasPrice, "", "10000000000000000", "gas price of the transaction", )
 	AddStringFlag(cmdWalletSendCoins, types.ArgTxVersion, "", "1.0", "ankr chain version", )
+	AddStringFlag(cmdWalletSendCoins, types.ArgTxChainId, "", "ankr-chain", "chain id", )
 
 
 	//DCCN-CLI wallet get balance
@@ -457,6 +458,12 @@ func RunWalletSendCoins(c *CmdConfig) error {
 	msgAmount := common.Amount{msgCur, tokenAmount.Bytes()}
 
 	txVersion, err := c.Ankr.GetString(c.NS, types.ArgTxVersion)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		return nil
+	}
+
+	ankrChainId, err = c.Ankr.GetString(c.NS, types.ArgTxChainId)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
 		return nil

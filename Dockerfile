@@ -2,7 +2,6 @@ FROM golang:1.12-alpine as builder
 ARG URL_BRANCH
 ARG TENDERMINT_URL
 ARG TENDERMINT_PORT
-ARG ANKR_CHAIN_ID
 RUN apk update && \
     apk add git && \
     apk add --update bash && \

@@ -104,6 +104,8 @@ const (
 	ArgTxVersion = "version"
 	//ArgTxAmount is the amount in transaction to be sent, token symbol followed.
 	ArgTxAmount = "amount"
+	// ArgTxChainId is the chain id specified in transaction
+	ArgTxChainId = "chain-id"
 	// ArgKeyNameSlug is a wallet key name slug argument.
 	ArgKeyNameSlug = "keyname"
 	// ArgPrivateKeySlug is a wallet private key slug argument.
