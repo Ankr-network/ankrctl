@@ -104,6 +104,10 @@ func walletCmd() *Command {
 		"get balance of wallet by address", Writer, aliasOpt("gb"), docCategories("wallet"))
 	_ = cmdWalletGetbalance
 
+	cmdWalletGetAccount := CmdBuilder(cmd, RunWalletGetaccount, "getaccount <address>",
+		"get account info by address", Writer, aliasOpt("ga"), docCategories("wallet"))
+	_ = cmdWalletGetAccount
+
 	//DCCN-CLI wallet generate erc address
 	cmdWalletGenAddress := CmdBuilder(cmd, RunWalletGenAddress, "genaddr",
 		"generate wallet address for deposit and withdraw", Writer, aliasOpt("ga"), docCategories("wallet"))
@@ -671,9 +675,62 @@ func RunWalletGetbalance(c *CmdConfig) error {
 		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
 		return nil
 	}
+	if len(balResp.Amount) == 0 {
+		fmt.Printf("wallet balance: %d\n", 0)
+		return nil
+	}
 
 	fmt.Printf("wallet balance: %s\n", balResp.Amount)
 
+	return nil
+}
+
+// RunWalletGetaccount get balance from chain.
+func RunWalletGetaccount(c *CmdConfig) error {
+
+	if len(c.Args) < 1 {
+		return types.NewMissingArgsErr(c.NS)
+	}
+	address := c.Args[0]
+
+	fmt.Printf("\nquerying balance of address: %s\n", address)
+	if tendermintURL == "" {
+		tendermintURL = "https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
+	}
+	if tendermintPort == "" {
+		tendermintPort = "443"
+	}
+
+	urls := strings.Split(tendermintURL, ";")
+	randomUrls := Shuffle(urls)
+	tendermintURL = randomUrls[0]
+	for _, url := range randomUrls {
+		netinfoURL := url + ":" + tendermintPort + "/net_info"
+		rsp, err := http.Get(netinfoURL)
+		if err == nil && rsp.StatusCode == 200 {
+			tendermintURL = url
+			break
+		}
+	}
+
+	cl := client.NewClient(tendermintURL+":"+tendermintPort)
+	accReq := new(common.AccountQueryReq)
+	accResp := new(common.AccountQueryResp)
+	accReq.Addr = address
+	err := cl.Query("/store/balance", accReq, accResp)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		return nil
+	}
+	jsonByte, err := json.MarshalIndent(accResp, "", "\t")
+	if err != nil {
+		fmt.Println("Response Error.")
+		fmt.Println(err)
+		return nil
+	}
+
+	fmt.Println("Account info: ")
+	fmt.Println(string(jsonByte))
 	return nil
 }
 
