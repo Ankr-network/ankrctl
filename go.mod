@@ -9,6 +9,7 @@ require (
 	github.com/Ankr-network/ankr-chain-sdk-go v0.0.0-20191120081117-286ef43661d1
 	github.com/Ankr-network/dccn-common v0.0.0-20191031140944-a011058c93dd
 	github.com/Masterminds/semver v1.4.2 // indirect
+	github.com/btcsuite/btcd v0.20.1-beta
 	github.com/cyphar/filepath-securejoin v0.2.2 // indirect
 	github.com/fatih/color v1.7.0
 	github.com/gobwas/glob v0.2.3
