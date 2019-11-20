@@ -6,7 +6,6 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/base64"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -14,10 +13,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/Ankr-network/ankr-chain-sdk-go/account"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
 	"golang.org/x/crypto/sha3"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
 const (
@@ -79,14 +78,8 @@ func KeyFileWriter(keyFile string) (io.WriteCloser, error) {
 	return f, nil
 }
 
-func GenAccount() (privateKey, address string) {
-	key :=ed25519.GenPrivKey()
-	privArray := [64]byte(key)
-	privBytes := privArray[:]
-	privB64 := base64.StdEncoding.EncodeToString(privBytes)
-	privateKey = string(privB64)
-	address = fmt.Sprintf("%X", key.PubKey().Address())
-	return
+func GenAccount() (privateKey,pubKey, address string) {
+	return account.GenerateKeys()
 }
 
 func EncryptDataV3(data, auth []byte, scryptN, scryptP int) (CryptoJSON, error) {
