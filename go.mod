@@ -5,11 +5,10 @@ go 1.12
 replace github.com/tendermint/tendermint => github.com/Ankr-network/tendermint v0.31.5
 
 require (
-	github.com/Ankr-network/ankr-chain v1.0.1
-	github.com/Ankr-network/ankr-chain-sdk-go v0.0.0-20191120081117-286ef43661d1
+	github.com/Ankr-network/ankr-chain v1.0.2
+	github.com/Ankr-network/ankr-chain-sdk-go v0.0.0-20191210085204-77c9c68524c6
 	github.com/Ankr-network/dccn-common v0.0.0-20191031140944-a011058c93dd
 	github.com/Masterminds/semver v1.4.2 // indirect
-	github.com/btcsuite/btcd v0.20.1-beta
 	github.com/cyphar/filepath-securejoin v0.2.2 // indirect
 	github.com/fatih/color v1.7.0
 	github.com/gobwas/glob v0.2.3
@@ -20,7 +19,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0
 	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.4.0
-	golang.org/x/crypto v0.0.0-20190909091759-094676da4a83
+	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413
 	google.golang.org/appengine v1.4.0 // indirect
 	google.golang.org/grpc v1.24.0
 	gopkg.in/yaml.v2 v2.2.3

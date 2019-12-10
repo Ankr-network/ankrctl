@@ -473,7 +473,11 @@ func RunWalletSendCoins(c *CmdConfig) error {
 		fmt.Fprintf(os.Stderr, "\nERROR: can not parsing amount '%s'\n", amount)
 		return nil
 	}
-	priceOp := transaction.WithGasPrice("ANKR", 18, gasPriceInt.Uint64())
+	priceOp, err := transaction.WithGasPrice("ANKR", 18, gasPriceInt.String())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		return nil
+	}
 
 	keystore, err := c.Ankr.GetString(c.NS, types.ArgKeyFileSlug)
 	if err != nil {
