@@ -503,7 +503,7 @@ func RunUserConfirmEmail(c *CmdConfig) error {
 	defer conn.Close()
 	userClient := gwusermgr.NewUserMgrClient(conn)
 	if _, err := userClient.ConfirmEmail(tokenctx,
-		&gwusermgr.ConfirmEmailRequest{NewEmail: c.Args[0],
+		&gwusermgr.ConfirmEmailRequest{Email: c.Args[0],
 			ConfirmationCode: confirmationCode}); err != nil {
 		return err
 	}

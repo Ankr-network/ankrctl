@@ -18,7 +18,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"math/big"
 	"math/rand"
 	"net/http"
@@ -33,7 +32,6 @@ import (
 	ankr_const "github.com/Ankr-network/dccn-common"
 	common_proto "github.com/Ankr-network/dccn-common/protos/common"
 	gwusermgr "github.com/Ankr-network/dccn-common/protos/gateway/usermgr/v1"
-	"github.com/Ankr-network/dccn-common/wallet"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/spf13/cobra"
@@ -41,10 +39,17 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"github.com/Ankr-network/ankr-chain/common"
+	"github.com/Ankr-network/ankr-chain-sdk-go/rpc/query"
+	"github.com/Ankr-network/ankr-chain-sdk-go/rpc/wallet"
+	"github.com/Ankr-network/ankr-chain-sdk-go/rpc/transaction"
 )
 
 var tendermintURL = "https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
-var tendermintPort string
+var ankrChainId string
+var tendermintPort = "443"
+var ankrCurrency = common.Currency{"ANKR",18}
+var ankrGasLimit = big.NewInt(20000)
 
 // walletCmd creates the wallet command.
 func walletCmd() *Command {
@@ -81,16 +86,23 @@ func walletCmd() *Command {
 	_ = cmdWalletDeletekey
 
 	//DCCN-CLI wallet send coins
-	cmdWalletSendCoins := CmdBuilder(cmd, RunWalletSendCoins, "sendcoins <coins-amount>",
+	cmdWalletSendCoins := CmdBuilder(cmd, RunWalletSendCoins, "sendcoins <symbol>",
 		"send token to address", Writer, aliasOpt("st"), docCategories("wallet"))
 	AddStringFlag(cmdWalletSendCoins, types.ArgTargetAddressSlug, "", "", "send token to wallet address",
 		requiredOpt())
 	AddStringFlag(cmdWalletSendCoins, types.ArgKeyFileSlug, "", "", "wallet keyfile", requiredOpt())
+	AddStringFlag(cmdWalletSendCoins, types.ArgTxAmount, "", "", "transfer amount", requiredOpt())
+	AddStringFlag(cmdWalletSendCoins, types.ArgTxMemo, "", "", "transaction memo", )
+	AddStringFlag(cmdWalletSendCoins, types.ArgGasPrice, "", "10000000000000000", "gas price of the transaction", )
 
 	//DCCN-CLI wallet get balance
-	cmdWalletGetbalance := CmdBuilder(cmd, RunWalletGetbalance, "getbalance <address>",
+	cmdWalletGetBalance := CmdBuilder(cmd, RunWalletGetBalance, "getbalance <address>",
 		"get balance of wallet by address", Writer, aliasOpt("gb"), docCategories("wallet"))
-	_ = cmdWalletGetbalance
+	_ = cmdWalletGetBalance
+
+	cmdWalletGetAccount := CmdBuilder(cmd, RunWalletGetAccount, "getaccount <address>",
+		"get account info by address", Writer, aliasOpt("ga"), docCategories("wallet"))
+	_ = cmdWalletGetAccount
 
 	//DCCN-CLI wallet generate erc address
 	cmdWalletGenAddress := CmdBuilder(cmd, RunWalletGenAddress, "genaddr",
@@ -158,14 +170,15 @@ func RunWalletGenkey(c *CmdConfig) error {
 
 		fmt.Println("\ngenerating keys...")
 
-		privateKey, publicKey, address := wallet.GenerateKeys()
+		//privateKey, publicKey, address := wallet.GenerateKeys()
+		privateKey,pubKey, address := GenAccount()
 
-		if privateKey == "" || publicKey == "" || address == "" {
+		if privateKey == "" || address == "" {
 			fmt.Fprintf(os.Stderr, "generated keys error: got empty secrets")
 			return nil
 		}
 
-		fmt.Println("private key: ", privateKey, "\npublic key: ", publicKey, "\naddress: ", address)
+		fmt.Println("private key: ", privateKey,"\npublicKey", pubKey, "\naddress: ", address)
 
 		fmt.Print("\nabout to export to keystore...\nplease input the keystore encryption password: ")
 		password, err := terminal.ReadPassword(int(syscall.Stdin))
@@ -193,11 +206,11 @@ func RunWalletGenkey(c *CmdConfig) error {
 		}
 
 		encryptedKeyJSONV3 := EncryptedKeyJSONV3{
-			c.Args[0],
-			address,
-			publicKey,
-			cryptoStruct,
-			keyJSONVersion,
+			Name:c.Args[0],
+			Address:address,
+			PublicKey:pubKey,
+			Crypto:cryptoStruct,
+			KeyJSONVersion:keyJSONVersion,
 		}
 
 		jsonKey, err := json.Marshal(encryptedKeyJSONV3)
@@ -430,37 +443,39 @@ func RunWalletSendCoins(c *CmdConfig) error {
 		return err
 	}
 
-	amount := c.Args[0]
-	amountInt := strings.Split(amount, ".")[0]
-	lenPow := 18
-	if len(amountInt) > 10 {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", "amount range should be within 10^10")
-		return nil
+	txSymbol := c.Args[0]
+	symbolOp := transaction.WithSymbol(txSymbol)
+	amount, err := c.Ankr.GetString(c.NS, types.ArgTxAmount)
+	if err != nil {
+		return err
 	}
 
-	if strings.Contains(amount, ".") {
-		if len(strings.Split(amount, ".")) > 2 {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", "invalid amount format")
-			return nil
-		}
-		amountDecimal := strings.Split(amount, ".")[1]
-		if len(amountDecimal) > 18 {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", "amount should retain less than 18 digits after decimal point")
-			return nil
-		}
-		amountInt = amountInt + amountDecimal
-		lenPow = lenPow - len(amountDecimal)
-	}
-	tokenAmount, ok := new(big.Int).SetString(amountInt, 10)
+	tokenAmount, ok := new(big.Int).SetString(amount, 10)
 	if !ok {
-		fmt.Fprintf(os.Stderr, "\nERROR: can not parsing amount '%s'\n", amountInt)
+		fmt.Fprintf(os.Stderr, "\nERROR: can not parsing amount '%s'\n", amount)
 		return nil
 	}
-	tokenAmount = tokenAmount.Mul(tokenAmount, big.NewInt(int64(math.Pow10(lenPow))))
 
-	tf, _ := new(big.Int).SetString("5000000000000000000", 10)
-	if tokenAmount.Cmp(tf) < 0 {
-		fmt.Fprintf(os.Stderr, "\nERROR: amount must be greater than the gas fee\n")
+	txMemo, err := c.Ankr.GetString(c.NS, types.ArgTxMemo)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		return nil
+	}
+	memoOp := transaction.WithMemo(txMemo)
+
+	txGasPrice, err := c.Ankr.GetString(c.NS, types.ArgGasPrice)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
+		return nil
+	}
+	gasPriceInt, ok := new(big.Int).SetString(txGasPrice, 10)
+	if !ok {
+		fmt.Fprintf(os.Stderr, "\nERROR: can not parsing amount '%s'\n", amount)
+		return nil
+	}
+	priceOp, err := transaction.WithGasPrice("ANKR", 18, gasPriceInt.String())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
 		return nil
 	}
 
@@ -510,49 +525,10 @@ func RunWalletSendCoins(c *CmdConfig) error {
 		return nil
 	}
 
-	var key EncryptedKeyJSONV3
-
-	err = json.Unmarshal(ks, &key)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
-		return nil
-	}
-	address := key.Address
-
 	fmt.Print("please input the keystore password: ")
 	password, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
-		return nil
-	}
-	privateKeyDecrypt, err := DecryptDataV3(key.Crypto, string(password))
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
-		return nil
-	}
-	privateKey := string(privateKeyDecrypt)
-
-	if len(address) == 0 || len(privateKey) == 0 {
-
-		fmt.Println("\nno key found, please sign this transaction with your wallet address and private key")
-
-		fmt.Print("\naddress: ")
-		address, err = retrieveUserInput()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
-			return nil
-		}
-
-		fmt.Print("\nprivate key: ")
-		privateKey, err = retrieveUserInput()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
-			return nil
-		}
-	}
-	fmt.Println("")
-	if len(address) == 0 || len(privateKey) == 0 {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", "empty wallet address or private key")
 		return nil
 	}
 	if len(tendermintURL) == 0 {
@@ -562,7 +538,7 @@ func RunWalletSendCoins(c *CmdConfig) error {
 		tendermintPort = "443"
 	}
 	fmt.Println("")
-	if AskForConfirm(fmt.Sprintf("about to send %s tokens from address '%s' to address '%s', type 'yes' to confirm this action: ", c.Args[0], address, target)) == nil {
+	if AskForConfirm(fmt.Sprintf("about to send %s tokens to address '%s', type 'yes' to confirm this action: ", c.Args[0], target)) == nil {
 		urls := strings.Split(tendermintURL, ";")
 		randomUrls := Shuffle(urls)
 		tendermintURL = randomUrls[0]
@@ -574,25 +550,75 @@ func RunWalletSendCoins(c *CmdConfig) error {
 				break
 			}
 		}
-		fmt.Fprintf(os.Stderr, "\nquerying balance of source address: '%s'\n", address)
-		_, err = wallet.GetBalance(tendermintURL, tendermintPort, address)
+
+		//start sending transaction
+		fmt.Fprintf(os.Stderr, "\nsending %s %s to address '%s'\n", tokenAmount.String(), txSymbol, target)
+
+		//fill transaction meta data into msg
+		//wallet, err := wallet.NewWallet(tendermintURL+":"+tendermintPort, string(password), keystore)
+		if err != nil {
+			fmt.Println("Create wallet failed.")
+			fmt.Println("error:", err)
+			return err
+		}
+
+		//start sending transactions
+		w, err :=wallet.NewWallet(tendermintURL+":"+tendermintPort, string(password), ks)
+		if err != nil {
+			fmt.Println("Create wallet error:", err)
+			return err
+		}
+		txHash, err := w.Transfer(tokenAmount.String(), target, memoOp, priceOp, symbolOp)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
 			return nil
 		}
-		fmt.Fprintf(os.Stderr, "\nsending %s tokens from address '%s' to address '%s'\n", c.Args[0], address, target)
-		txhash, err := wallet.SendCoins(tendermintURL, tendermintPort, privateKey, address, target, tokenAmount.String())
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
-			return nil
-		}
-		fmt.Fprintf(os.Stderr, "\ndone. tx hash: %s\n", txhash)
+		fmt.Fprintf(os.Stderr, "\nTransaction commit success.")
+		fmt.Fprintf(os.Stderr, "\ntx hash: %s\n", txHash)
 	}
 	return nil
 }
 
 // RunWalletGetbalance get balance from chain.
-func RunWalletGetbalance(c *CmdConfig) error {
+func RunWalletGetBalance(c *CmdConfig) error {
+
+	if len(c.Args) < 1 {
+		return types.NewMissingArgsErr(c.NS)
+	}
+	address := c.Args[0]
+
+	fmt.Printf("\nquerying balance of address: %s\n", address)
+	if tendermintURL == "" {
+		tendermintURL = "https://chain-01.dccn.ankr.com;https://chain-02.dccn.ankr.com;https://chain-03.dccn.ankr.com"
+	}
+	if tendermintPort == "" {
+		tendermintPort = "443"
+	}
+
+	urls := strings.Split(tendermintURL, ";")
+	randomUrls := Shuffle(urls)
+	tendermintURL = randomUrls[0]
+	for _, url := range randomUrls {
+		netinfoURL := url + ":" + tendermintPort + "/net_info"
+		rsp, err := http.Get(netinfoURL)
+		if err == nil && rsp.StatusCode == 200 {
+			tendermintURL = url
+			break
+		}
+	}
+	cl := query.NewQueryClient(tendermintURL+":"+tendermintPort)
+	balAmount, err := cl.GetBalance(address, "ANKR")
+	if err != nil {
+		fmt.Println("Query balance error:", err)
+		return err
+	}
+	fmt.Printf("wallet balance: %s\n", balAmount)
+
+	return nil
+}
+
+// RunWalletGetAccount get balance from chain.
+func RunWalletGetAccount(c *CmdConfig) error {
 
 	if len(c.Args) < 1 {
 		return types.NewMissingArgsErr(c.NS)
@@ -619,22 +645,16 @@ func RunWalletGetbalance(c *CmdConfig) error {
 		}
 	}
 
-	balance, err := wallet.GetBalance(tendermintURL, tendermintPort, address)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nERROR: %s\n", err.Error())
-		return nil
-	}
-	if len(balance) <= 18 {
-		balanceDecimalZero := make([]byte, 18-len(balance))
-		for i := 0; i < 18-len(balance); i++ {
-			balanceDecimalZero = append(balanceDecimalZero, '0')
-		}
-		balance = "0." + string(balanceDecimalZero) + balance
-	} else {
-		balance = balance[:len(balance)-18] + "." + balance[len(balance)-18:]
-	}
-	fmt.Printf("wallet balance: %s\n", balance)
+	cl := query.NewQueryClient(tendermintURL+":"+tendermintPort)
+	bal, err := cl.GetAccount(address)
 
+	jsonByte, err := json.MarshalIndent(bal, "", "\t")
+	if err != nil {
+		fmt.Println("Marshal response error:", err)
+		return err
+	}
+	fmt.Println("Account info: ")
+	fmt.Println(string(jsonByte))
 	return nil
 }
 

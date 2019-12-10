@@ -13,6 +13,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/Ankr-network/ankr-chain-sdk-go/account"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
 	"golang.org/x/crypto/sha3"
@@ -75,6 +76,10 @@ func KeyFileWriter(keyFile string) (io.WriteCloser, error) {
 	}
 
 	return f, nil
+}
+
+func GenAccount() (privateKey,pubKey, address string) {
+	return account.GenerateKeys()
 }
 
 func EncryptDataV3(data, auth []byte, scryptN, scryptP int) (CryptoJSON, error) {

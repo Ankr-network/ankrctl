@@ -96,6 +96,12 @@ const (
 	ArgTargetAddressSlug = "target-address"
 	// ArgKeyFileSlug is a wallet keystore slug argument.
 	ArgKeyFileSlug = "keyfile"
+	// ArgTxMemo is a transaction memo
+	ArgTxMemo = "memo"
+	//ArgGasPrice is the gas price of a transaction
+	ArgGasPrice = "gas-price"
+	//ArgTxAmount is the amount in transaction to be sent, token symbol followed.
+	ArgTxAmount = "amount"
 	// ArgKeyNameSlug is a wallet key name slug argument.
 	ArgKeyNameSlug = "keyname"
 	// ArgPrivateKeySlug is a wallet private key slug argument.
